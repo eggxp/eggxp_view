@@ -250,8 +250,8 @@ PackageContainerManager::~PackageContainerManager()
 
 void                        PackageContainerManager::AddWorldPackageContainer()
 {
-	DiabloIIIPackageDispatcher *send = new DiabloIIIPackageDispatcher;
-    DiabloIIIPackageDispatcher *recv = new DiabloIIIPackageDispatcher;
+	DefaultPackageDispatcher *send = new DefaultPackageDispatcher;
+    DefaultPackageDispatcher *recv = new DefaultPackageDispatcher;
     PackageContainer *c = new PackageContainer(send, recv, m_WorldPackageContainer.Count());
     c->SetName(FormatStr("World%d", m_WorldPackageContainer.Count()));
     m_WorldPackageContainer.Add(c);

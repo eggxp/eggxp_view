@@ -95,8 +95,8 @@ private:
     DefaultPackageDispatcher       m_RecvAuthPackageDispatcher;
     PackageContainer            m_AuthPackageContainer;
 
-	AList<DiabloIIIPackageDispatcher>      m_SendWorldPackageDispatcher;
-	AList<DiabloIIIPackageDispatcher>      m_RecvWorldPackageDispatcher;
+	AList<PackageDispatcher>      m_SendWorldPackageDispatcher;
+	AList<PackageDispatcher>      m_RecvWorldPackageDispatcher;
 	AList<PackageContainer>     m_WorldPackageContainer;
 
 	AList<WOWPackage>			m_AllPackage;
