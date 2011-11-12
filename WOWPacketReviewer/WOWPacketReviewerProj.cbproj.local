@@ -358,7 +358,6 @@
     <File Path="..\lib\wylib\include\CommFunc.cpp"/>
     <File Path="..\lib\wylib\include\CommFunc.h"/>
     <File Path="..\lib\zlib"/>
-    <File Path="..\lib\zlib\adler32.c"/>
     <File Path="..\lib\zlib\compress.c"/>
     <File Path="..\lib\zlib\crc32.c"/>
     <File Path="..\lib\zlib\deflate.c"/>
