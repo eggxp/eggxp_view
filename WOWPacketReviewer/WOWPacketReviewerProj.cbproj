@@ -178,184 +178,50 @@
 			<ProjectFileVersion>12</ProjectFileVersion>
 		</ProjectExtensions>
 		<ItemGroup>
-			<CppCompile Include="..\lib\zlib\inftrees.c">
-				<BuildOrder>72</BuildOrder>
+			<CppCompile Include="PackageCommon.cpp">
+				<DependentOn>PackageCommon.h</DependentOn>
+				<BuildOrder>13</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="SharedDefine.cpp">
-				<DependentOn>SharedDefine.h</DependentOn>
-				<BuildOrder>58</BuildOrder>
+			<CppCompile Include="Opcodes.cpp">
+				<DependentOn>Opcodes.h</DependentOn>
+				<BuildOrder>18</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="WOWProxy.cpp">
-				<DependentOn>WOWProxy.h</DependentOn>
-				<BuildOrder>11</BuildOrder>
+			<CppCompile Include="Handlers\ItemHandler.cpp">
+				<DependentOn>Handlers\ItemHandler.h</DependentOn>
+				<BuildOrder>33</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\lib\zlib\infback.c">
-				<BuildOrder>69</BuildOrder>
+			<CppCompile Include="Handlers\QuestHandler.cpp">
+				<DependentOn>Handlers\QuestHandler.h</DependentOn>
+				<BuildOrder>34</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\lib\zlib\inffast.c">
-				<BuildOrder>70</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Handlers\FishHandler.cpp">
-				<DependentOn>Handlers\FishHandler.h</DependentOn>
-				<BuildOrder>29</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Handlers\ChatHandler.cpp">
-				<DependentOn>Handlers\ChatHandler.h</DependentOn>
-				<BuildOrder>81</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="ValuesUpdateFrm.cpp">
-				<Form>FrmValuesUpdate</Form>
-				<DependentOn>ValuesUpdateFrm.h</DependentOn>
-				<BuildOrder>79</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="AuthLoader.cpp">
-				<DependentOn>AuthLoader.h</DependentOn>
-				<BuildOrder>16</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="AI\ShowAllMapAI.cpp">
-				<DependentOn>AI\ShowAllMapAI.h</DependentOn>
-				<BuildOrder>77</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="GameData\MapVmapDrawer.cpp">
-				<DependentOn>GameData\MapVmapDrawer.h</DependentOn>
-				<BuildOrder>27</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\lib\openssl-1.0.0\Auth\BigNumber.cpp">
-				<DependentOn>..\lib\openssl-1.0.0\Auth\BigNumber.h</DependentOn>
-				<BuildOrder>72</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\lib\TestLib\ThreadManager.cpp">
-				<DependentOn>..\lib\TestLib\ThreadManager.h</DependentOn>
-				<BuildOrder>3</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="AI\PackSender.cpp">
-				<DependentOn>AI\PackSender.h</DependentOn>
-				<BuildOrder>40</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\lib\zlib\crc32.c">
-				<BuildOrder>65</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\lib\zlib\inflate.c">
-				<BuildOrder>71</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Handlers\EventHandler.cpp">
-				<DependentOn>Handlers\EventHandler.h</DependentOn>
-				<BuildOrder>68</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="AI\FishAI.cpp">
-				<DependentOn>AI\FishAI.h</DependentOn>
-				<BuildOrder>38</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DataViewerFrm.cpp">
-				<Form>FrmDBCViewer</Form>
-				<DependentOn>DataViewerFrm.h</DependentOn>
-				<BuildOrder>62</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="GameData\DBCStructure.cpp">
-				<DependentOn>GameData\DBCStructure.h</DependentOn>
-				<BuildOrder>24</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="WorldPackageDispatcher.cpp">
-				<DependentOn>WorldPackageDispatcher.h</DependentOn>
-				<BuildOrder>15</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="GameData\DBCFmt.cpp">
-				<DependentOn>GameData\DBCFmt.h</DependentOn>
-				<BuildOrder>23</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\lib\openssl-1.0.0\Auth\SARC4.cpp">
-				<DependentOn>..\lib\openssl-1.0.0\Auth\SARC4.h</DependentOn>
-				<BuildOrder>74</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\lib\openssl-1.0.0\Auth\Sha1.cpp">
-				<DependentOn>..\lib\openssl-1.0.0\Auth\Sha1.h</DependentOn>
+			<CppCompile Include="AI\ReactionAI.cpp">
+				<DependentOn>AI\ReactionAI.h</DependentOn>
 				<BuildOrder>75</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\lib\zlib\example.c">
-				<BuildOrder>67</BuildOrder>
+			<CppCompile Include="GameData\DBCFileLoader.cpp">
+				<DependentOn>GameData\DBCFileLoader.h</DependentOn>
+				<BuildOrder>25</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\lib\zlib\compress.c">
+			<CppCompile Include="GameData\GameMapManager.cpp">
+				<DependentOn>GameData\GameMapManager.h</DependentOn>
+				<BuildOrder>28</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Handlers\AttackHandler.cpp">
+				<DependentOn>Handlers\AttackHandler.h</DependentOn>
+				<BuildOrder>76</BuildOrder>
+			</CppCompile>
+			<LibFiles Include="..\lib\openssl-1.0.0\out32\libeay32.lib">
+				<IgnorePath>true</IgnorePath>
+				<BuildOrder>74</BuildOrder>
+			</LibFiles>
+			<CppCompile Include="Handlers\SpellHandler.cpp">
+				<DependentOn>Handlers\SpellHandler.h</DependentOn>
+				<BuildOrder>30</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="GameDataViewerFrm.cpp">
+				<Form>FrmGameDataViewer</Form>
+				<DependentOn>GameDataViewerFrm.h</DependentOn>
 				<BuildOrder>64</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Path.cpp">
-				<DependentOn>Path.h</DependentOn>
-				<BuildOrder>84</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DockFrm.cpp">
-				<Form>frmDock</Form>
-				<DependentOn>DockFrm.h</DependentOn>
-				<BuildOrder>83</BuildOrder>
-			</CppCompile>
-			<DelphiCompile Include="D:\EurekaLog 6\CBuilder14\ExceptionLog.pas">
-				<BuildOrder>85</BuildOrder>
-			</DelphiCompile>
-			<CppCompile Include="..\lib\openssl-1.0.0\Auth\HMACSHA1.cpp">
-				<BuildOrder>83</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DrawMapFrm.cpp">
-				<Form>FrmDrawMap</Form>
-				<DependentOn>DrawMapFrm.h</DependentOn>
-				<BuildOrder>82</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="WOWPacketReviewerProj.cpp">
-				<BuildOrder>1</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\lib\zlib\zutil.c">
-				<BuildOrder>75</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\lib\zlib\gzio.c">
-				<BuildOrder>68</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\lib\zlib\uncompr.c">
-				<BuildOrder>74</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="GameData\GameMap.cpp">
-				<DependentOn>GameData\GameMap.h</DependentOn>
-				<BuildOrder>21</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\lib\openssl-1.0.0\Auth\AuthCrypt.cpp">
-				<DependentOn>..\lib\openssl-1.0.0\Auth\AuthCrypt.h</DependentOn>
-				<BuildOrder>71</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="GameData\DBCStores.cpp">
-				<DependentOn>GameData\DBCStores.h</DependentOn>
-				<BuildOrder>22</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\lib\TestLib\GodWalk\MapDrawer.cpp">
-				<DependentOn>..\lib\TestLib\GodWalk\MapDrawer.h</DependentOn>
-				<BuildOrder>82</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\lib\zlib\deflate.c">
-				<BuildOrder>66</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\lib\TestLib\FiberContext.cpp">
-				<DependentOn>..\lib\TestLib\FiberContext.h</DependentOn>
-				<BuildOrder>5</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="AuthPackageDispatcher.cpp">
-				<DependentOn>AuthPackageDispatcher.h</DependentOn>
-				<BuildOrder>10</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="GameData\DataObject.cpp">
-				<DependentOn>GameData\DataObject.h</DependentOn>
-				<BuildOrder>20</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="GameData\DBCStructureInfo.cpp">
-				<DependentOn>GameData\DBCStructureInfo.h</DependentOn>
-				<BuildOrder>26</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="ReviewerCommon.cpp">
-				<DependentOn>ReviewerCommon.h</DependentOn>
-				<BuildOrder>9</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="CommentFrm.cpp">
-				<Form>FrmComment</Form>
-				<DependentOn>CommentFrm.h</DependentOn>
-				<BuildOrder>59</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\Shared\ShareDef.cpp">
-				<DependentOn>..\Shared\ShareDef.h</DependentOn>
-				<BuildOrder>68</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MapFrm.cpp">
 				<Form>FrmMap</Form>
@@ -366,17 +232,18 @@
 				<DependentOn>AI\FiberCode.h</DependentOn>
 				<BuildOrder>39</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Handlers\GameNPCHandler.cpp">
-				<DependentOn>Handlers\GameNPCHandler.h</DependentOn>
-				<BuildOrder>36</BuildOrder>
+			<CppCompile Include="..\Shared\ShareDef.cpp">
+				<DependentOn>..\Shared\ShareDef.h</DependentOn>
+				<BuildOrder>68</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\lib\wylib\include\CommFunc.cpp">
-				<DependentOn>..\lib\wylib\include\CommFunc.h</DependentOn>
-				<BuildOrder>7</BuildOrder>
+			<CppCompile Include="ReviewerCommon.cpp">
+				<DependentOn>ReviewerCommon.h</DependentOn>
+				<BuildOrder>9</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Handlers\GameObjectHandler.cpp">
-				<DependentOn>Handlers\GameObjectHandler.h</DependentOn>
-				<BuildOrder>31</BuildOrder>
+			<CppCompile Include="CommentFrm.cpp">
+				<Form>FrmComment</Form>
+				<DependentOn>CommentFrm.h</DependentOn>
+				<BuildOrder>59</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\lib\TestLib\CommPlus.cpp">
 				<DependentOn>..\lib\TestLib\CommPlus.h</DependentOn>
@@ -386,54 +253,75 @@
 				<DependentOn>Libs\ByteBuffer.h</DependentOn>
 				<BuildOrder>56</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="GameDataViewerFrm.cpp">
-				<Form>FrmGameDataViewer</Form>
-				<DependentOn>GameDataViewerFrm.h</DependentOn>
-				<BuildOrder>64</BuildOrder>
+			<CppCompile Include="Handlers\GameObjectHandler.cpp">
+				<DependentOn>Handlers\GameObjectHandler.h</DependentOn>
+				<BuildOrder>31</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Handlers\QuestHandler.cpp">
-				<DependentOn>Handlers\QuestHandler.h</DependentOn>
-				<BuildOrder>34</BuildOrder>
+			<CppCompile Include="Handlers\GameNPCHandler.cpp">
+				<DependentOn>Handlers\GameNPCHandler.h</DependentOn>
+				<BuildOrder>36</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="AI\ReactionAI.cpp">
-				<DependentOn>AI\ReactionAI.h</DependentOn>
-				<BuildOrder>75</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Handlers\ItemHandler.cpp">
-				<DependentOn>Handlers\ItemHandler.h</DependentOn>
-				<BuildOrder>33</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="PackageCommon.cpp">
-				<DependentOn>PackageCommon.h</DependentOn>
-				<BuildOrder>13</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Opcodes.cpp">
-				<DependentOn>Opcodes.h</DependentOn>
-				<BuildOrder>18</BuildOrder>
-			</CppCompile>
-			<LibFiles Include="..\lib\openssl-1.0.0\out32\libeay32.lib">
-				<IgnorePath>true</IgnorePath>
-				<BuildOrder>74</BuildOrder>
-			</LibFiles>
-			<CppCompile Include="Handlers\SpellHandler.cpp">
-				<DependentOn>Handlers\SpellHandler.h</DependentOn>
-				<BuildOrder>30</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Handlers\AttackHandler.cpp">
-				<DependentOn>Handlers\AttackHandler.h</DependentOn>
-				<BuildOrder>76</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="GameData\DBCFileLoader.cpp">
-				<DependentOn>GameData\DBCFileLoader.h</DependentOn>
-				<BuildOrder>25</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="GameData\GameMapManager.cpp">
-				<DependentOn>GameData\GameMapManager.h</DependentOn>
-				<BuildOrder>28</BuildOrder>
+			<CppCompile Include="..\lib\wylib\include\CommFunc.cpp">
+				<DependentOn>..\lib\wylib\include\CommFunc.h</DependentOn>
+				<BuildOrder>7</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\Shared\SharedMemInfo.cpp">
 				<DependentOn>..\Shared\SharedMemInfo.h</DependentOn>
 				<BuildOrder>75</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="AI\AutoChatAI.cpp">
+				<DependentOn>AI\AutoChatAI.h</DependentOn>
+				<BuildOrder>80</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="UpdateFields.cpp">
+				<DependentOn>UpdateFields.h</DependentOn>
+				<BuildOrder>78</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Handlers\PlayerAuthHandler.cpp">
+				<DependentOn>Handlers\PlayerAuthHandler.h</DependentOn>
+				<BuildOrder>67</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Handlers\GroupHandler.cpp">
+				<DependentOn>Handlers\GroupHandler.h</DependentOn>
+				<BuildOrder>32</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="GameWorld.cpp">
+				<DependentOn>GameWorld.h</DependentOn>
+				<BuildOrder>17</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DefaultPackageDispatcher.cpp">
+				<DependentOn>DefaultPackageDispatcher.h</DependentOn>
+				<BuildOrder>86</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DiabloIIIPackageDispatcher.cpp">
+				<DependentOn>DiabloIIIPackageDispatcher.h</DependentOn>
+				<BuildOrder>87</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MSanguoPackageDispatcher.cpp">
+				<DependentOn>MSanguoPackageDispatcher.h</DependentOn>
+				<BuildOrder>85</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="AI\FlyAI.cpp">
+				<DependentOn>AI\FlyAI.h</DependentOn>
+				<BuildOrder>84</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\lib\TestLib\Log4Me.cpp">
+				<DependentOn>..\lib\TestLib\Log4Me.h</DependentOn>
+				<BuildOrder>84</BuildOrder>
+			</CppCompile>
+			<ResFiles Include="WOWPacketReviewerProj.res">
+				<BuildOrder>0</BuildOrder>
+			</ResFiles>
+			<CppCompile Include="Libs\ByteConverter.cpp">
+				<DependentOn>Libs\ByteConverter.h</DependentOn>
+				<BuildOrder>55</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DBCStore.cpp">
+				<DependentOn>DBCStore.h</DependentOn>
+				<BuildOrder>61</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\lib\zlib\trees.c">
+				<BuildOrder>73</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\lib\SelfLib\KOEItlbm.cpp">
 				<DependentOn>..\lib\SelfLib\KOEItlbm.h</DependentOn>
@@ -444,29 +332,6 @@
 				<DependentOn>WOWPacketReviewer.h</DependentOn>
 				<BuildOrder>57</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\lib\zlib\trees.c">
-				<BuildOrder>73</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Libs\ByteConverter.cpp">
-				<DependentOn>Libs\ByteConverter.h</DependentOn>
-				<BuildOrder>55</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DBCStore.cpp">
-				<DependentOn>DBCStore.h</DependentOn>
-				<BuildOrder>61</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Handlers\MoveHandler.cpp">
-				<DependentOn>Handlers\MoveHandler.h</DependentOn>
-				<BuildOrder>37</BuildOrder>
-			</CppCompile>
-			<LibFiles Include="..\lib\openssl-1.0.0\out32\ssleay32.lib">
-				<IgnorePath>true</IgnorePath>
-				<BuildOrder>75</BuildOrder>
-			</LibFiles>
-			<CppCompile Include="Handlers\PlayerHandler.cpp">
-				<DependentOn>Handlers\PlayerHandler.h</DependentOn>
-				<BuildOrder>35</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="PackageContainer.cpp">
 				<DependentOn>PackageContainer.h</DependentOn>
 				<BuildOrder>14</BuildOrder>
@@ -476,58 +341,196 @@
 				<DependentOn>BlockWindowFrm.h</DependentOn>
 				<BuildOrder>19</BuildOrder>
 			</CppCompile>
-			<ResFiles Include="WOWPacketReviewerProj.res">
-				<BuildOrder>0</BuildOrder>
-			</ResFiles>
-			<CppCompile Include="Handlers\GroupHandler.cpp">
-				<DependentOn>Handlers\GroupHandler.h</DependentOn>
-				<BuildOrder>32</BuildOrder>
+			<CppCompile Include="Handlers\PlayerHandler.cpp">
+				<DependentOn>Handlers\PlayerHandler.h</DependentOn>
+				<BuildOrder>35</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="GameWorld.cpp">
-				<DependentOn>GameWorld.h</DependentOn>
-				<BuildOrder>17</BuildOrder>
+			<CppCompile Include="Handlers\MoveHandler.cpp">
+				<DependentOn>Handlers\MoveHandler.h</DependentOn>
+				<BuildOrder>37</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Handlers\PlayerAuthHandler.cpp">
-				<DependentOn>Handlers\PlayerAuthHandler.h</DependentOn>
+			<LibFiles Include="..\lib\openssl-1.0.0\out32\ssleay32.lib">
+				<IgnorePath>true</IgnorePath>
+				<BuildOrder>75</BuildOrder>
+			</LibFiles>
+			<CppCompile Include="GameData\DBCStructureInfo.cpp">
+				<DependentOn>GameData\DBCStructureInfo.h</DependentOn>
+				<BuildOrder>26</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\lib\zlib\crc32.c">
+				<BuildOrder>65</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\lib\zlib\inflate.c">
+				<BuildOrder>71</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="AI\PackSender.cpp">
+				<DependentOn>AI\PackSender.h</DependentOn>
+				<BuildOrder>40</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\lib\openssl-1.0.0\Auth\BigNumber.cpp">
+				<DependentOn>..\lib\openssl-1.0.0\Auth\BigNumber.h</DependentOn>
+				<BuildOrder>72</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\lib\TestLib\ThreadManager.cpp">
+				<DependentOn>..\lib\TestLib\ThreadManager.h</DependentOn>
+				<BuildOrder>3</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="GameData\DBCStructure.cpp">
+				<DependentOn>GameData\DBCStructure.h</DependentOn>
+				<BuildOrder>24</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="WorldPackageDispatcher.cpp">
+				<DependentOn>WorldPackageDispatcher.h</DependentOn>
+				<BuildOrder>15</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DataViewerFrm.cpp">
+				<Form>FrmDBCViewer</Form>
+				<DependentOn>DataViewerFrm.h</DependentOn>
+				<BuildOrder>62</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Handlers\EventHandler.cpp">
+				<DependentOn>Handlers\EventHandler.h</DependentOn>
+				<BuildOrder>68</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="AI\FishAI.cpp">
+				<DependentOn>AI\FishAI.h</DependentOn>
+				<BuildOrder>38</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="GameData\MapVmapDrawer.cpp">
+				<DependentOn>GameData\MapVmapDrawer.h</DependentOn>
+				<BuildOrder>27</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\lib\zlib\infback.c">
+				<BuildOrder>69</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\lib\zlib\inffast.c">
+				<BuildOrder>70</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="WOWProxy.cpp">
+				<DependentOn>WOWProxy.h</DependentOn>
+				<BuildOrder>11</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\lib\zlib\inftrees.c">
+				<BuildOrder>72</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="SharedDefine.cpp">
+				<DependentOn>SharedDefine.h</DependentOn>
+				<BuildOrder>58</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="AuthLoader.cpp">
+				<DependentOn>AuthLoader.h</DependentOn>
+				<BuildOrder>16</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="AI\ShowAllMapAI.cpp">
+				<DependentOn>AI\ShowAllMapAI.h</DependentOn>
+				<BuildOrder>77</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ValuesUpdateFrm.cpp">
+				<Form>FrmValuesUpdate</Form>
+				<DependentOn>ValuesUpdateFrm.h</DependentOn>
+				<BuildOrder>79</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Handlers\FishHandler.cpp">
+				<DependentOn>Handlers\FishHandler.h</DependentOn>
+				<BuildOrder>29</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Handlers\ChatHandler.cpp">
+				<DependentOn>Handlers\ChatHandler.h</DependentOn>
+				<BuildOrder>81</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="GameData\DBCFmt.cpp">
+				<DependentOn>GameData\DBCFmt.h</DependentOn>
+				<BuildOrder>23</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\lib\openssl-1.0.0\Auth\AuthCrypt.cpp">
+				<DependentOn>..\lib\openssl-1.0.0\Auth\AuthCrypt.h</DependentOn>
+				<BuildOrder>71</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="GameData\DBCStores.cpp">
+				<DependentOn>GameData\DBCStores.h</DependentOn>
+				<BuildOrder>22</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="GameData\GameMap.cpp">
+				<DependentOn>GameData\GameMap.h</DependentOn>
+				<BuildOrder>21</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\lib\zlib\gzio.c">
+				<BuildOrder>68</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\lib\zlib\uncompr.c">
+				<BuildOrder>74</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="AuthPackageDispatcher.cpp">
+				<DependentOn>AuthPackageDispatcher.h</DependentOn>
+				<BuildOrder>10</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="GameData\DataObject.cpp">
+				<DependentOn>GameData\DataObject.h</DependentOn>
+				<BuildOrder>20</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\lib\TestLib\FiberContext.cpp">
+				<DependentOn>..\lib\TestLib\FiberContext.h</DependentOn>
+				<BuildOrder>5</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\lib\TestLib\GodWalk\MapDrawer.cpp">
+				<DependentOn>..\lib\TestLib\GodWalk\MapDrawer.h</DependentOn>
+				<BuildOrder>82</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\lib\zlib\deflate.c">
+				<BuildOrder>66</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\lib\zlib\zutil.c">
+				<BuildOrder>75</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\lib\zlib\compress.c">
+				<BuildOrder>64</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Path.cpp">
+				<DependentOn>Path.h</DependentOn>
+				<BuildOrder>84</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\lib\zlib\example.c">
 				<BuildOrder>67</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="AI\AutoChatAI.cpp">
-				<DependentOn>AI\AutoChatAI.h</DependentOn>
-				<BuildOrder>80</BuildOrder>
+			<CppCompile Include="..\lib\openssl-1.0.0\Auth\SARC4.cpp">
+				<DependentOn>..\lib\openssl-1.0.0\Auth\SARC4.h</DependentOn>
+				<BuildOrder>74</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="UpdateFields.cpp">
-				<DependentOn>UpdateFields.h</DependentOn>
-				<BuildOrder>78</BuildOrder>
+			<CppCompile Include="..\lib\openssl-1.0.0\Auth\Sha1.cpp">
+				<DependentOn>..\lib\openssl-1.0.0\Auth\Sha1.h</DependentOn>
+				<BuildOrder>75</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="AI\FlyAI.cpp">
-				<DependentOn>AI\FlyAI.h</DependentOn>
-				<BuildOrder>84</BuildOrder>
+			<CppCompile Include="DrawMapFrm.cpp">
+				<Form>FrmDrawMap</Form>
+				<DependentOn>DrawMapFrm.h</DependentOn>
+				<BuildOrder>82</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\lib\TestLib\Log4Me.cpp">
-				<DependentOn>..\lib\TestLib\Log4Me.h</DependentOn>
-				<BuildOrder>84</BuildOrder>
+			<CppCompile Include="WOWPacketReviewerProj.cpp">
+				<BuildOrder>1</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MSanguoPackageDispatcher.cpp">
-				<DependentOn>MSanguoPackageDispatcher.h</DependentOn>
+			<CppCompile Include="..\lib\openssl-1.0.0\Auth\HMACSHA1.cpp">
+				<BuildOrder>83</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DockFrm.cpp">
+				<Form>frmDock</Form>
+				<DependentOn>DockFrm.h</DependentOn>
+				<BuildOrder>83</BuildOrder>
+			</CppCompile>
+			<DelphiCompile Include="D:\EurekaLog 6\CBuilder14\ExceptionLog.pas">
 				<BuildOrder>85</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DefaultPackageDispatcher.cpp">
-				<DependentOn>DefaultPackageDispatcher.h</DependentOn>
-				<BuildOrder>86</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DiabloIIIPackageDispatcher.cpp">
-				<DependentOn>DiabloIIIPackageDispatcher.h</DependentOn>
+			</DelphiCompile>
+			<CppCompile Include="..\lib\zlib\adler32.c">
 				<BuildOrder>87</BuildOrder>
 			</CppCompile>
-			<FormResources Include="ValuesUpdateFrm.dfm"/>
-			<FormResources Include="DataViewerFrm.dfm"/>
-			<FormResources Include="DockFrm.dfm"/>
-			<FormResources Include="DrawMapFrm.dfm"/>
-			<FormResources Include="CommentFrm.dfm"/>
-			<FormResources Include="MapFrm.dfm"/>
 			<FormResources Include="GameDataViewerFrm.dfm"/>
+			<FormResources Include="MapFrm.dfm"/>
+			<FormResources Include="CommentFrm.dfm"/>
 			<FormResources Include="WOWPacketReviewer.dfm"/>
 			<FormResources Include="BlockWindowFrm.dfm"/>
+			<FormResources Include="DataViewerFrm.dfm"/>
+			<FormResources Include="ValuesUpdateFrm.dfm"/>
+			<FormResources Include="DrawMapFrm.dfm"/>
+			<FormResources Include="DockFrm.dfm"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
