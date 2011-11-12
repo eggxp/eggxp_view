@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2010/05/10 20:23:58.744.cpp,G:\My Documents\RAD Studio\Projects\Unit1.cpp=E:\Projects\RegisterServer\Main.cpp</Transaction>
+    <Transaction>2010/05/10 20:23:58.744.h,G:\My Documents\RAD Studio\Projects\Unit1.h=E:\Projects\RegisterServer\Main.h</Transaction>
+    <Transaction>2010/05/10 20:23:58.744.dfm,G:\My Documents\RAD Studio\Projects\Unit1.dfm=E:\Projects\RegisterServer\Main.dfm</Transaction>
+    <Transaction>2010/05/10 20:24:02.980.cbproj,G:\My Documents\RAD Studio\Projects\Project1.cbproj=E:\Projects\RegisterServer\RegisterServer.cbproj</Transaction>
+    <Transaction>2010/05/13 21:07:28.287.cpp,E:\Projects\RegisterServer\Unit1.cpp=E:\Projects\RegisterServer\AuthServerListener.cpp</Transaction>
+    <Transaction>2010/05/13 21:07:28.287.h,E:\Projects\RegisterServer\Unit1.h=E:\Projects\RegisterServer\AuthServerListener.h</Transaction>
+    <Transaction>2010/05/13 22:43:26.412.cpp,D:\EurekaLog 6\CBuilder11\CExceptionExpert11.cpp=</Transaction>
+    <Transaction>2010/05/13 22:44:08.487.cpp,D:\EurekaLog 6\CBuilder11\CExceptionExpert11.cpp=</Transaction>
+    <Transaction>2010/05/16 21:18:07.876.cpp,E:\Projects\RegisterServer\Unit1.cpp=E:\lib\TestLib\SocketClientUser.cpp</Transaction>
+    <Transaction>2010/05/16 21:18:07.876.h,E:\Projects\RegisterServer\Unit1.h=E:\lib\TestLib\SocketClientUser.h</Transaction>
+    <Transaction>2010/05/17 21:09:04.941.lib,E:\Projects\WOWOpenSSL\WOWOpenSSL\OpenSSL\lib\libeay32.lib=</Transaction>
+    <Transaction>2010/05/23 16:50:18.869.cpp,E:\Projects\WOWProject\RegisterServer\Unit1.cpp=E:\Projects\WOWProject\Shared\ClientServerShared.cpp</Transaction>
+    <Transaction>2010/05/23 16:50:18.869.h,E:\Projects\WOWProject\RegisterServer\Unit1.h=E:\Projects\WOWProject\Shared\ClientServerShared.h</Transaction>
+  </Transactions>
+</BorlandProject>

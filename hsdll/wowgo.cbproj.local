@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2010/03/23 19:38:36.499.cpp,G:\My Documents\RAD Studio\Projects\File1.cpp=E:\Projects\hsdll\hsdll.cpp</Transaction>
+    <Transaction>2010/03/23 19:38:41.403.cbproj,G:\My Documents\RAD Studio\Projects\Project2.cbproj=E:\Projects\hsdll\hsdll.cbproj</Transaction>
+    <Transaction>2010/03/23 19:40:31.488.cbproj,E:\Projects\hsdll\hsdll.cbproj=E:\Projects\hsdll\hs.cbproj</Transaction>
+    <Transaction>2010/03/25 20:33:37.023.cpp,E:\Projects\hsdll\Unit1.cpp=E:\Projects\WOWPacketReviewer\ShareDef.cpp</Transaction>
+    <Transaction>2010/03/25 20:33:37.023.h,E:\Projects\hsdll\Unit1.h=E:\Projects\WOWPacketReviewer\ShareDef.h</Transaction>
+    <Transaction>2010/05/15 15:09:04.259.cbproj,E:\Projects\hsdll\hs.cbproj=E:\Projects\hsdll\wowgo.cbproj</Transaction>
+    <Transaction>2010/05/15 16:47:47.876.pas,D:\EurekaLog 6\CBuilder14\ExceptionLog.pas=</Transaction>
+    <Transaction>2010/05/20 00:01:07.208.lib,E:\lib\wylib\lib\wycommon.lib=</Transaction>
+    <Transaction>2010/05/20 00:21:51.876.cpp,E:\Projects\WOWProject\hsdll\Unit1.cpp=E:\Projects\WOWProject\hsdll\GameFrm.cpp</Transaction>
+    <Transaction>2010/05/20 00:21:51.876.h,E:\Projects\WOWProject\hsdll\Unit1.h=E:\Projects\WOWProject\hsdll\GameFrm.h</Transaction>
+    <Transaction>2010/05/20 00:21:51.876.dfm,E:\Projects\WOWProject\hsdll\Unit1.dfm=E:\Projects\WOWProject\hsdll\GameFrm.dfm</Transaction>
+    <Transaction>2010/05/20 00:26:44.871.cpp,E:\Projects\WOWProject\hsdll\GameFrm.cpp=</Transaction>
+    <Transaction>2010/05/20 00:26:44.871.dfm,E:\Projects\WOWProject\hsdll\GameFrm.dfm=</Transaction>
+  </Transactions>
+</BorlandProject>

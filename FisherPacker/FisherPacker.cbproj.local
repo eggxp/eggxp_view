@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2010/06/11 07:10:43.090.cpp,G:\My Documents\RAD Studio\Projects\Unit1.cpp=E:\Projects\WOWProject\FisherPacker\PackerMain.cpp</Transaction>
+    <Transaction>2010/06/11 07:10:43.103.h,G:\My Documents\RAD Studio\Projects\Unit1.h=E:\Projects\WOWProject\FisherPacker\PackerMain.h</Transaction>
+    <Transaction>2010/06/11 07:10:43.103.dfm,G:\My Documents\RAD Studio\Projects\Unit1.dfm=E:\Projects\WOWProject\FisherPacker\PackerMain.dfm</Transaction>
+    <Transaction>2010/06/11 07:10:49.031.cbproj,G:\My Documents\RAD Studio\Projects\Project1.cbproj=E:\Projects\WOWProject\FisherPacker\FisherPacker.cbproj</Transaction>
+  </Transactions>
+</BorlandProject>

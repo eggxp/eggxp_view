@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2010/05/23 17:26:32.207.cpp,G:\My Documents\RAD Studio\Projects\Unit1.cpp=E:\Projects\WOWProject\WOWFisher\Main.cpp</Transaction>
+    <Transaction>2010/05/23 17:26:32.207.h,G:\My Documents\RAD Studio\Projects\Unit1.h=E:\Projects\WOWProject\WOWFisher\Main.h</Transaction>
+    <Transaction>2010/05/23 17:26:32.207.dfm,G:\My Documents\RAD Studio\Projects\Unit1.dfm=E:\Projects\WOWProject\WOWFisher\Main.dfm</Transaction>
+    <Transaction>2010/05/23 17:26:36.897.cbproj,G:\My Documents\RAD Studio\Projects\Project1.cbproj=E:\Projects\WOWProject\WOWFisher\WOWFisher.cbproj</Transaction>
+    <Transaction>2010/05/23 19:09:04.601.cpp,E:\Projects\WOWProject\WOWPacketReviewer\WOWPacketReviewerProj.cpp=</Transaction>
+    <Transaction>2010/05/23 19:24:31.276.cpp,E:\Projects\WOWProject\WOWFisher\Unit1.cpp=E:\Projects\WOWProject\WOWFisher\ClientAuther.cpp</Transaction>
+    <Transaction>2010/05/23 19:24:31.276.h,E:\Projects\WOWProject\WOWFisher\Unit1.h=E:\Projects\WOWProject\WOWFisher\ClientAuther.h</Transaction>
+    <Transaction>2010/05/26 07:41:21.426.cpp,E:\Projects\WOWProject\WOWPacketReviewer\Libs\shared_ptr.cpp=</Transaction>
+    <Transaction>2010/05/27 22:17:51.199.cpp,E:\Projects\WOWProject\WOWFisher\Unit1.cpp=E:\lib\wylib\include\AThreadLock.cpp</Transaction>
+    <Transaction>2010/05/27 22:17:51.200.h,E:\Projects\WOWProject\WOWFisher\Unit1.h=E:\lib\wylib\include\AThreadLock.h</Transaction>
+    <Transaction>2010/06/02 08:14:23.199.cpp,E:\Projects\WOWProject\WOWFisher\Unit1.cpp=E:\Projects\WOWProject\WOWFisher\ChargeFrm.cpp</Transaction>
+    <Transaction>2010/06/02 08:14:23.199.h,E:\Projects\WOWProject\WOWFisher\Unit1.h=E:\Projects\WOWProject\WOWFisher\ChargeFrm.h</Transaction>
+    <Transaction>2010/06/02 08:14:23.199.dfm,E:\Projects\WOWProject\WOWFisher\Unit1.dfm=E:\Projects\WOWProject\WOWFisher\ChargeFrm.dfm</Transaction>
+    <Transaction>2010/06/07 08:29:17.126.cpp,E:\Projects\WOWProject\WOWFisher\Unit1.cpp=E:\Projects\WOWProject\WOWPacketReviewer\AI\ShowAllMapAI.cpp</Transaction>
+    <Transaction>2010/06/07 08:29:17.126.h,E:\Projects\WOWProject\WOWFisher\Unit1.h=E:\Projects\WOWProject\WOWPacketReviewer\AI\ShowAllMapAI.h</Transaction>
+    <Transaction>2010/06/07 23:37:10.142.pas,D:\EurekaLog 6\CBuilder14\ExceptionLog.pas=</Transaction>
+    <Transaction>2010/06/08 20:39:27.372.cpp,E:\Projects\WOWProject\WOWFisher\Unit1.cpp=E:\Projects\WOWProject\WOWPacketReviewer\UpdateFields.cpp</Transaction>
+    <Transaction>2010/06/08 20:39:27.388.h,E:\Projects\WOWProject\WOWFisher\Unit1.h=E:\Projects\WOWProject\WOWPacketReviewer\UpdateFields.h</Transaction>
+    <Transaction>2010/06/27 17:48:51.400.cpp,E:\Projects\WOWProject\WOWFisher\Unit1.cpp=E:\Projects\WOWProject\WOWPacketReviewer\AI\AutoChat.cpp</Transaction>
+    <Transaction>2010/06/27 17:48:51.400.h,E:\Projects\WOWProject\WOWFisher\Unit1.h=E:\Projects\WOWProject\WOWPacketReviewer\AI\AutoChat.h</Transaction>
+    <Transaction>2010/06/27 17:55:09.795.cpp,E:\Projects\WOWProject\WOWFisher\Unit1.cpp=E:\Projects\WOWProject\WOWPacketReviewer\Handlers\ChatHandler.cpp</Transaction>
+    <Transaction>2010/06/27 17:55:09.795.h,E:\Projects\WOWProject\WOWFisher\Unit1.h=E:\Projects\WOWProject\WOWPacketReviewer\Handlers\ChatHandler.h</Transaction>
+    <Transaction>2010/06/29 06:51:07.770.cpp,E:\Projects\WOWProject\WOWFisher\Unit1.cpp=E:\Projects\WOWProject\WOWFisher\AutoChatFrm.cpp</Transaction>
+    <Transaction>2010/06/29 06:51:07.770.h,E:\Projects\WOWProject\WOWFisher\Unit1.h=E:\Projects\WOWProject\WOWFisher\AutoChatFrm.h</Transaction>
+    <Transaction>2010/06/29 06:51:07.770.dfm,E:\Projects\WOWProject\WOWFisher\Unit1.dfm=E:\Projects\WOWProject\WOWFisher\AutoChatFrm.dfm</Transaction>
+  </Transactions>
+</BorlandProject>

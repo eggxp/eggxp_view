@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2010/05/17 23:29:26.389.cpp,G:\My Documents\RAD Studio\Projects\Unit1.cpp=E:\Projects\testBCBOpenSSL\Unit1.cpp</Transaction>
+    <Transaction>2010/05/17 23:29:26.389.h,G:\My Documents\RAD Studio\Projects\Unit1.h=E:\Projects\testBCBOpenSSL\Unit1.h</Transaction>
+    <Transaction>2010/05/17 23:29:26.389.dfm,G:\My Documents\RAD Studio\Projects\Unit1.dfm=E:\Projects\testBCBOpenSSL\Unit1.dfm</Transaction>
+    <Transaction>2010/05/17 23:29:26.833.cbproj,G:\My Documents\RAD Studio\Projects\Project1.cbproj=E:\Projects\testBCBOpenSSL\Project1.cbproj</Transaction>
+    <Transaction>2010/05/22 19:54:28.720.cpp,E:\Projects\WOWProject\testBCBOpenSSL\Auth\AuthCrypt.cpp=</Transaction>
+    <Transaction>2010/05/22 19:54:29.647.h,E:\Projects\WOWProject\testBCBOpenSSL\Auth\AuthCrypt.h=</Transaction>
+    <Transaction>2010/05/22 19:54:30.376.cpp,E:\Projects\WOWProject\testBCBOpenSSL\Auth\BigNumber.cpp=</Transaction>
+    <Transaction>2010/05/22 19:54:31.542.h,E:\Projects\WOWProject\testBCBOpenSSL\Auth\BigNumber.h=</Transaction>
+    <Transaction>2010/05/22 19:54:32.230.cpp,E:\Projects\WOWProject\testBCBOpenSSL\Auth\Hmac.cpp=</Transaction>
+    <Transaction>2010/05/22 19:54:32.894.h,E:\Projects\WOWProject\testBCBOpenSSL\Auth\Hmac.h=</Transaction>
+    <Transaction>2010/05/22 19:54:33.542.c,E:\Projects\WOWProject\testBCBOpenSSL\Auth\md5.c=</Transaction>
+    <Transaction>2010/05/22 19:54:34.158.h,E:\Projects\WOWProject\testBCBOpenSSL\Auth\md5.h=</Transaction>
+    <Transaction>2010/05/22 19:54:34.750.cpp,E:\Projects\WOWProject\testBCBOpenSSL\Auth\SARC4.cpp=</Transaction>
+    <Transaction>2010/05/22 19:54:35.324.h,E:\Projects\WOWProject\testBCBOpenSSL\Auth\SARC4.h=</Transaction>
+    <Transaction>2010/05/22 19:54:35.890.cpp,E:\Projects\WOWProject\testBCBOpenSSL\Auth\Sha1.cpp=</Transaction>
+    <Transaction>2010/05/22 19:54:36.433.h,E:\Projects\WOWProject\testBCBOpenSSL\Auth\Sha1.h=</Transaction>
+    <Transaction>2010/05/22 19:59:08.964.cpp,E:\Projects\WOWProject\testBCBOpenSSL\Unit2.cpp=E:\lib\openssl-1.0.0\Auth\SRP6Auth.cpp</Transaction>
+    <Transaction>2010/05/22 19:59:08.964.h,E:\Projects\WOWProject\testBCBOpenSSL\Unit2.h=E:\lib\openssl-1.0.0\Auth\SRP6Auth.h</Transaction>
+    <Transaction>2010/05/22 21:52:49.072.cpp,E:\Projects\WOWProject\testBCBOpenSSL\Common\AuthKey.cpp=</Transaction>
+    <Transaction>2010/05/22 21:52:49.107.h,E:\Projects\WOWProject\testBCBOpenSSL\Common\AuthKey.h=</Transaction>
+    <Transaction>2010/05/23 19:30:13.257.cbproj,E:\Projects\WOWProject\testBCBOpenSSL\Project1.cbproj=E:\Projects\WOWProject\testBCBOpenSSL\testOpenSSLAuth.cbproj</Transaction>
+    <Transaction>2010/09/09 07:58:38.588.cpp,E:\lib\TestLib\Log4Me.cpp=</Transaction>
+  </Transactions>
+</BorlandProject>
