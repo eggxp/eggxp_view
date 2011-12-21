@@ -287,6 +287,33 @@ void __fastcall TWOWReviewerMainFrm::miStartMenuClick(TObject *Sender)
 	GetWOWProxyManager()->SetForceRealmdIP(splitStr->Strings[0], splitStr->Strings[1].ToIntDef(0));
 	tbStartGameClick(Sender);
 }
+void TWOWReviewerMainFrm::AddMessageToPackage(String msg)
+{
+    PackageContainer * curPackageContainer = GetPackageContainerManager()->GetAuthPackageContainer();
+    if(!curPackageContainer)
+		return;
+	auto_ptr<TStringList>   splitStr(new TStringList);
+    SplitStr(msg, "|", splitStr.get());
+	if(splitStr->Count != 4)
+	{
+		return;
+	}
+	// LogMsg(FormatStr("sendto|%s|%d|%s", ip, port, BinToStr((char FAR * )buf, len)), MSG_ADD_PACKAGE);
+
+	WOWPackage fillPackage;
+	fillPackage.SetProcessed(1);
+	fillPackage.SetData(HexStrToBinStr(splitStr->Strings[3]));
+	if (splitStr->Strings[0] == "sendto")
+	{
+		fillPackage.SetMark(SEND_MARK);
+		curPackageContainer->OnGetSendWOWPack(&fillPackage);
+	}
+	else
+	{
+		fillPackage.SetMark(RECV_MARK);
+		curPackageContainer->OnGetRecvWOWPack(&fillPackage);
+	}
+}
 //---------------------------------------------------------------------------
 void __fastcall TWOWReviewerMainFrm::WndProcs(Messages::TMessage &Message)
 {
@@ -294,24 +321,31 @@ void __fastcall TWOWReviewerMainFrm::WndProcs(Messages::TMessage &Message)
     {
         COPYDATASTRUCT * sendData = (COPYDATASTRUCT *)Message.LParam;
 		String msg = String((TCHAR *)sendData->lpData, sendData->cbData / sizeof(TCHAR));
-		this->LogMsg(msg);
-        if(sendData->dwData == MSG_CONNECT)
-        {
-            GetWOWProxyManager()->SetDestAddress(msg);
-        }
-        else if(sendData->dwData == MSG_TOP_WINDOW)
-        {
-            this->SetFocus();
-            this->BringToFront();
-            this->Show();
-            Application->BringToFront();
-        }
-        else if(sendData->dwData == MSG_SESSIONKEY)
-        {
-            //得到了SessionKey
-			//颠倒一下
-			GetGameWorld()->SetClientSessionKey(msg);
-        }
+		if(sendData->dwData == MSG_ADD_PACKAGE)
+		{
+			AddMessageToPackage(msg);
+		}
+		else
+		{
+			this->LogMsg(msg);
+			if(sendData->dwData == MSG_CONNECT)
+			{
+				GetWOWProxyManager()->SetDestAddress(msg);
+			}
+			else if(sendData->dwData == MSG_TOP_WINDOW)
+			{
+				this->SetFocus();
+				this->BringToFront();
+				this->Show();
+				Application->BringToFront();
+			}
+			else if(sendData->dwData == MSG_SESSIONKEY)
+			{
+				//得到了SessionKey
+				//颠倒一下
+				GetGameWorld()->SetClientSessionKey(msg);
+			}
+		}
 	}
 	else if(Message.Msg == WM_MOVE)
 	{

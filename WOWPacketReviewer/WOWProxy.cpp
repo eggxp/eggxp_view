@@ -7,6 +7,7 @@
 #include "Log4Me.h"
 #include "Opcodes.h"
 #include "ReviewerCommon.h"
+#include "ShareDef.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -50,6 +51,30 @@ WOWProxy::~WOWProxy()
 	DeleteCriticalSection(&m_csLock);
 }
 
+bool            WOWProxy::SendToBuf_O(SOCKET  s, char * buf, int len, const struct sockaddr FAR * to, int tolen)
+{
+    int result = 0;
+    while(len != 0)
+    {
+        result = sendto(s, buf, len, 0, to, tolen);
+        if(result == SOCKET_ERROR)
+        {
+            return  false;
+        }
+
+        len = len - result;
+        buf = buf + result;
+
+		if(len == 0)
+		{
+			return true;
+		}
+//		GetLog()->Warn("resend");
+    }
+
+    return  true;
+}
+
 bool            WOWProxy::SendBuf_O(SOCKET  s, char * buf, int len)
 {
     int result = 0;
@@ -74,13 +99,57 @@ bool            WOWProxy::SendBuf_O(SOCKET  s, char * buf, int len)
     return  true;
 }
 
-int             WOWProxy::RecvProxy(SOCKET  from)
+int             WOWProxy::RecvFromProxy(SOCKET  from)
 {
+	struct sockaddr_in addr;
+	int addrlen=0, n=0;
 	char        recvBuf[MAX_BUF_SIZE] = {'\0'};
 	int         recvLen = 0;
+	n = recvfrom(from, recvBuf, MAX_BUF_SIZE, 0, (struct sockaddr*)&addr, &addrlen);
+	if (n == 0) {
+        return 1;
+	}
+	return RecvNormalProxy(from, recvBuf, recvLen);
+}
 
-    recvLen = recv(from, recvBuf, sizeof(recvBuf), 0);
+int             WOWProxy::SendToProxy(SOCKET  to, ASharedPtrQueue<WOWPackage>  *pool, const struct sockaddr FAR * addrto, int tolen)
+{
+	if(m_StopProxy)
+		return -1;
+	shared_ptr<WOWPackage> curPack;
+	if(!pool->Pop(&curPack))
+	{
+		return  2;
+	}
 
+	AnsiString pack = curPack->GetOrgPrefixData();
+
+//    if(m_ProxyType != PROXY_TYPE_REALM)
+//    {
+//        GetLog()->Warn("m_DesIP = %s, m_DesPort = %d, m_DestIndex = %d", m_DesIP, m_DesPort, m_DestIndex);
+//        if(pool == &m_ClientToServerQueue)
+//        {
+//            GetLog()->Warn("Finial Send To Server:(%d):%s", pack.Length(), BinToStr(pack.c_str(), pack.Length()));
+//        }
+//        else
+//        {
+//            GetLog()->Warn("Finial Send To Client:(%d):%s", pack.Length(), BinToStr(pack.c_str(), pack.Length()));
+//        }
+//    }
+
+	pack = pack.Unique();
+//	GetLog()->Warn("Delete Pack:%s, p = %p", curPack->GetOpCodeMsg(), curPack);
+    if(!SendToBuf_O(to, pack.c_str(), pack.Length(), addrto, tolen))
+    {
+        GetLog()->Warn("WOWProxy::HostRecvThread socket send error");
+        Close();
+        return  -1;
+    }
+    return      0;
+}
+
+int             WOWProxy::RecvNormalProxy(SOCKET  from, char *recvBuf, int recvLen)
+{
 	if(recvLen <= 0)
 	{
         GetLog()->Warn("WOWProxy::RecvProxy socket error. m_DesIP = %s, msg = %s", m_DesIP, SysErrorMessage(GetLastError()));
@@ -157,6 +226,15 @@ int             WOWProxy::RecvProxy(SOCKET  from)
     return          0;
 }
 
+int             WOWProxy::RecvProxy(SOCKET  from)
+{
+	char        recvBuf[MAX_BUF_SIZE] = {'\0'};
+	int         recvLen = 0;
+
+    recvLen = recv(from, recvBuf, sizeof(recvBuf), 0);
+	return RecvNormalProxy(from, recvBuf, recvLen);
+}
+
 int             WOWProxy::SendProxy(SOCKET  to, ASharedPtrQueue<WOWPackage>  *pool)
 {
 	if(m_StopProxy)
@@ -194,6 +272,33 @@ int             WOWProxy::SendProxy(SOCKET  to, ASharedPtrQueue<WOWPackage>  *po
 
     return      0;
 }
+
+int             WOWProxy::HostRecvFromThread(SingleThread * self)
+{
+	ASharedPtrQueue<WOWPackage>  * queue = &m_ServerToClientQueue;
+	return      RecvFromProxy(m_HostSocket);
+}
+
+int             WOWProxy::ClientRecvFromThread(SingleThread * self)
+{
+	ASharedPtrQueue<WOWPackage>  * queue = &m_ClientToServerQueue;
+    return      RecvFromProxy(m_ClientSocket);
+}
+
+int             WOWProxy::HostSendToThread(SingleThread * self)
+{
+    sockaddr_in their_addr; /* connector's address information */
+	their_addr.sin_family = AF_INET; /* host byte order */
+	their_addr.sin_port = htons(m_DesPort); /* 远程主机端口 */
+	AnsiString ansiIP = m_DesIP;
+	their_addr.sin_addr.s_addr=inet_addr(ansiIP.c_str()); /* 远程主机ip地址 */
+	return      SendToProxy(m_HostSocket, &m_ClientToServerQueue, (const sockaddr *)&their_addr, sizeof(their_addr));
+}
+
+//int             WOWProxy::ClientSendToThread(SingleThread * self)
+//{
+//	return      SendProxy(m_ClientSocket, &m_ServerToClientQueue);
+//}
 
 int             WOWProxy::HostRecvThread(SingleThread * self)
 {
@@ -233,14 +338,38 @@ int				WOWProxy::ThreadUnInitFunc(SingleThread * self)
 	return 0;
 }
 
+bool            WOWProxy::StartUDP(SOCKET client, SOCKADDR_IN clientAddr, String ip, int port)
+{
+	m_DesIP = ip;
+    m_DesPort = port;
+	m_ClientSocket = client;
+    m_ClientAddr = clientAddr;
+
+	m_HostSocket = socket(AF_INET,SOCK_DGRAM,0);
+
+	UserThread *curThread = GetThreadManager()->ManagerCreateThread("ClientRecvThread", ClientRecvThread, false);
+	curThread->GetThread()->fpInitFunc = ThreadInitFunc;
+	curThread->GetThread()->fpUnInitFunc = ThreadUnInitFunc;
+	#if defined(WOW_FISHER) && !defined(_DEBUG)
+	if(!fpOnUserAuthPacket)
+	{
+		ServerAuthOKBeginProxyUDP();
+	}
+	#else
+	ServerAuthOKBeginProxyUDP();
+	#endif
+	GetLog()->Warn("Finish Starting InitProxy Threads");
+	return true;
+}
+
 bool            WOWProxy::Start(SOCKET client, SOCKADDR_IN clientAddr, String ip, int port)
 {
     m_DesIP = ip;
     m_DesPort = port;
-    m_ClientSocket = client;
+	m_ClientSocket = client;
     m_ClientAddr = clientAddr;
 
-    m_HostSocket = socket(AF_INET,SOCK_STREAM,0);
+	m_HostSocket = socket(AF_INET,SOCK_STREAM,0);
 
 
     sockaddr_in their_addr; /* connector's address information */
@@ -273,6 +402,22 @@ bool            WOWProxy::Start(SOCKET client, SOCKADDR_IN clientAddr, String ip
 	GetLog()->Warn("Finish Starting InitProxy Threads");
 	return true;
 }
+
+void			WOWProxy::ServerAuthOKBeginProxyUDP()
+{
+	GetLog()->Warn("Starting WorkerProxy Threads");
+	UserThread *curThread = GetThreadManager()->ManagerCreateThread("ClientSendThread", ClientSendThread, false);
+	curThread->GetThread()->fpInitFunc = ThreadInitFunc;
+	curThread->GetThread()->fpUnInitFunc = ThreadUnInitFunc;
+	curThread = GetThreadManager()->ManagerCreateThread("HostRecvFromThread", HostRecvFromThread, false);
+	curThread->GetThread()->fpInitFunc = ThreadInitFunc;
+	curThread->GetThread()->fpUnInitFunc = ThreadUnInitFunc;
+	curThread = GetThreadManager()->ManagerCreateThread("HostSendToThread", HostSendToThread, false);
+	curThread->GetThread()->fpInitFunc = ThreadInitFunc;
+	curThread->GetThread()->fpUnInitFunc = ThreadUnInitFunc;
+	GetLog()->Warn("Finish Starting WorkerProxy Threads");
+}
+
 
 void			WOWProxy::ServerAuthOKBeginProxy()
 {
@@ -369,7 +514,15 @@ int            WOWProxyManager::ListenThread(SingleThread * self)
 			//验证
 			curProxy->fpOnUserAuthPacket = fpOnUserAuthPacket;
 		}
-		curProxy->Start(serConn, clientsocket, m_DestIP, m_DestPort);
+		if (m_ConnectStyle == "udp")
+		{
+			curProxy->StartUDP(serConn, clientsocket, m_DestIP, m_DestPort);
+		}
+		else
+		{
+			curProxy->Start(serConn, clientsocket, m_DestIP, m_DestPort);
+		}
+
         if (m_ProxyType == PROXY_TYPE_REALM)
         {
             m_RealmIndex++;
@@ -394,16 +547,17 @@ void            WOWProxyManager::SetDestAddress(String addr)
 
     auto_ptr<TStringList>   splitStr(new TStringList);
     SplitStr(addr, "|", splitStr.get());
-    if(splitStr->Count != 3)
+    if(splitStr->Count != 4)
     {
         GetLog()->Warn("WOWProxy::SetDestAddress, Split error, addr = %s", addr);
         return;
     }
 
-    m_DestIP = splitStr->Strings[0];
-	m_DestPort = splitStr->Strings[1].ToIntDef(0);
+	m_ConnectStyle = splitStr->Strings[0];
+	m_DestIP = splitStr->Strings[1];
+	m_DestPort = splitStr->Strings[2].ToIntDef(0);
 
-    int connectIndex = splitStr->Strings[2].ToIntDef(0);
+    int connectIndex = splitStr->Strings[3].ToIntDef(0);
     if (connectIndex == 0)
     {
 		m_ProxyType = PROXY_TYPE_REALM;
@@ -451,7 +605,7 @@ WOWProxy    *   WOWProxyManager::GetActiveWorld(int worldIndex)
     return          NULL;
 }
 
-bool            WOWProxyManager::Start(int listenPort, int listenThreadCount)
+bool 			WOWProxyManager::StartListPort(int listenPort, int listenThreadCount)
 {
     m_ListenPort = listenPort;
     m_ListenThreadCount = listenThreadCount;
@@ -477,6 +631,20 @@ bool            WOWProxyManager::Start(int listenPort, int listenThreadCount)
 	}
 
 	GetThreadManager()->ManagerCreateThread("ListenThread", ListenThread, false);
+	return true;
+}
+
+bool            WOWProxyManager::Start(int listenPort, int listenThreadCount)
+{
+	if (!StartListPort(listenPort, listenThreadCount))
+	{
+		return false;
+	}
+//	// UDP
+//	if (!StartListPort(listenPort + UDP_PORT_START, listenThreadCount))
+//	{
+//		return false;
+//	}
 	return true;
 }
 

@@ -13,6 +13,7 @@
 #define MSG_KEY_UP       WM_USER+0x1134
 #define MSG_TOP_WINDOW   WM_USER+0x1135
 #define MSG_SESSIONKEY   WM_USER+0x1136
+#define MSG_ADD_PACKAGE  WM_USER+0x1137
 
 #define	PACKER_MAGIC "wowf"
 
@@ -74,5 +75,7 @@ String		GBText(String text);
 #else
 #define		HOST_PORT				34888
 #endif
+
+#define		UDP_PORT_START			1000
 
 #endif

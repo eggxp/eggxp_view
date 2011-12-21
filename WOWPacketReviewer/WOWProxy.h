@@ -40,17 +40,27 @@ private:
     int             m_DestIndex;
     int             m_RealmIndex;       // 20110328 多realm机制
 
-    bool            SendBuf_O(SOCKET  s, char * buf, int len);
+	bool            SendBuf_O(SOCKET  s, char * buf, int len);
+	bool            SendToBuf_O(SOCKET  s, char * buf, int len, const struct sockaddr FAR * to, int tolen);
 
 	//接收需走逻辑，不直接发给客户端
 	int             RecvProxy(SOCKET  from);
 	int             SendProxy(SOCKET  to, ASharedPtrQueue<WOWPackage>  *pool);
 
+	int             RecvNormalProxy(SOCKET  from, char *recvBuf, int recvLen);
+	//UDP模式
+	int             RecvFromProxy(SOCKET  from);
+	int             SendToProxy(SOCKET  to, ASharedPtrQueue<WOWPackage>  *pool, const struct sockaddr FAR * addrto, int tolen);
 
 	int             HostRecvThread(SingleThread * self);
 	int             HostSendThread(SingleThread * self);
 	int             ClientRecvThread(SingleThread * self);
 	int             ClientSendThread(SingleThread * self);
+
+	int             HostRecvFromThread(SingleThread * self);
+	int             HostSendToThread(SingleThread * self);
+	int             ClientRecvFromThread(SingleThread * self);
+//	int             ClientSendToThread(SingleThread * self);
 
 	int				ThreadInitFunc(SingleThread * self);
 	int				ThreadUnInitFunc(SingleThread * self);
@@ -59,7 +69,8 @@ public:
     WOWProxy();
 	~WOWProxy();
    	TOnUserAuthPacket	fpOnUserAuthPacket;
-    bool            Start(SOCKET client, SOCKADDR_IN clientAddr, String ip, int port);
+	bool            Start(SOCKET client, SOCKADDR_IN clientAddr, String ip, int port);
+	bool            StartUDP(SOCKET client, SOCKADDR_IN clientAddr, String ip, int port);
     void            Close();
 
 	ASharedPtrQueue<WOWPackage>   * GetClientToServerQueue(){return  &m_ClientToServerQueue;}
@@ -74,6 +85,7 @@ public:
 	int             GetProxyType(){return      (int)m_ProxyType;}
 
 	void			ServerAuthOKBeginProxy();
+	void			ServerAuthOKBeginProxyUDP();
     int             GetDesPort(){return m_DesPort;}
     String          GetDesIP(){return m_DesIP;}
     GEN_GET_SET(int, IsDesabled)
@@ -89,7 +101,8 @@ private:
 	String          m_DestIP;
 	int				m_GateIndex;
     int             m_RealmIndex;
-    TProxyType      m_ProxyType;
+	TProxyType      m_ProxyType;
+	String			m_ConnectStyle;
 
     int             m_ListenPort;
     SOCKET          m_ListenSocket;
@@ -102,7 +115,7 @@ private:
 	bool			m_DirectModel;
 
 	int             ListenThread(SingleThread * self);
-
+	bool 			StartListPort(int listenPort, int listenThreadCount = 100);
 public:
 	WOWProxyManager();
 	~WOWProxyManager();

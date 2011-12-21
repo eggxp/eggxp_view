@@ -227,6 +227,7 @@ private:	// User declarations
 	void WriteServerMSTime(int type, String titleName, TStrings *output);
 
 	bool GetVisibleListView(TListView **lv, AList<WOWPackage> **listData);
+	void AddMessageToPackage(String msg);
 public:		// User declarations
 	__fastcall TWOWReviewerMainFrm(TComponent* Owner);
 

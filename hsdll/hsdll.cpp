@@ -26,6 +26,7 @@ using namespace std;
 static      map<SOCKET, int> gNonBlockingSocket;
 static      int                 gConnectPort = 0;
 //static      map<String, String> gRedirectIPList;
+static      map<String, SOCKET> gUDPConnectList;
 
 //自定义APIHOOK结构
 struct  HOOKSTRUCT
@@ -145,6 +146,8 @@ HOOKSTRUCT gRecvHookData; //ws2_32.dll HOOK结构
 HOOKSTRUCT gConnectHookData; //ws2_32.dll HOOK结构
 HOOKSTRUCT gSendHookData; //ws2_32.dll HOOK结构
 HOOKSTRUCT gIoctlsocketHookData;
+HOOKSTRUCT gSendToHookData;
+HOOKSTRUCT gRecvFromHookData;
 
 
 ////////////////////////////////////////
@@ -253,7 +256,7 @@ WINSOCK_API_LINKAGE
 	static int index = 0;
 
 	gWOWHookViewInfo->ClientConnectIndex = index;
-	LogMsg(FormatStr("%s|%d|%d", ip, port, gWOWHookViewInfo->ClientConnectIndex), MSG_CONNECT);
+	LogMsg(FormatStr("tcp|%s|%d|%d", ip, port, gWOWHookViewInfo->ClientConnectIndex), MSG_CONNECT);
     sockaddr_in * their_addr = (sockaddr_in *)name;
 	their_addr->sin_port = htons(gConnectPort);
 	AnsiString ansiIP = HOST_IP;
@@ -438,7 +441,142 @@ IoctlsocketHook(
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
+//  UDP Hook
+SOCKET CheckConnectUDPToTCP(const struct sockaddr FAR * dest)
+{
+	AnsiString ansiIP = HOST_IP;
+	WORD hport = (BYTE)dest->sa_data[0];
+	WORD lport = (BYTE)dest->sa_data[1];
+	hport *= 0x100;
+	WORD   sendtoPort = hport + lport;
+	String  sendtoIP=FormatStr("%d.%d.%d.%d", (BYTE)dest->sa_data[2],
+										(BYTE)dest->sa_data[3],
+										(BYTE)dest->sa_data[4],
+										(BYTE)dest->sa_data[5]);
+	String  sendtoKey=FormatStr("%s:%d", sendtoIP, sendtoPort);
+	if (gUDPConnectList.find(sendtoKey) != gUDPConnectList.end())
+		return gUDPConnectList[sendtoKey];
 
+
+	// 连接操作
+	SOCKET udp_tcp_socket = socket(AF_INET,SOCK_STREAM,0);
+
+
+	sockaddr_in tcp_their_addr; /* connector's address information */
+	tcp_their_addr.sin_family = AF_INET; /* host byte order */
+	tcp_their_addr.sin_port = htons(gConnectPort + UDP_PORT_START); /* 远程主机端口 */
+	tcp_their_addr.sin_addr.s_addr=inet_addr(ansiIP.c_str()); /* 远程主机ip地址 */
+
+	LogMsg(FormatStr("udp|%s|%d|%d", sendtoIP, sendtoPort, gWOWHookViewInfo->ClientConnectIndex), MSG_CONNECT);
+	gWOWHookViewInfo->ClientConnectIndex++;
+	/* 调用connect函数与服务器建立连接 */
+	LogMsg(FormatStr("connect ip=%s, port=%d", sendtoIP, sendtoPort));
+	if (connect(udp_tcp_socket, (const sockaddr *)&tcp_their_addr, sizeof(tcp_their_addr)) == -1)
+	{
+		return 0;
+	}
+	LogMsg(FormatStr("connect OK. ip=%s, port=%d", sendtoIP, sendtoPort));
+	gUDPConnectList[sendtoKey] = udp_tcp_socket;
+	return udp_tcp_socket;
+}
+
+WINSOCK_API_LINKAGE
+int
+WSAAPI
+SendToHook(
+    __in SOCKET s,
+    __in_bcount(len) const char FAR * buf,
+    __in int len,
+    __in int flags,
+    __in_bcount(tolen) const struct sockaddr FAR * to,
+    __in int tolen
+	)
+{
+	if (to) {
+		WORD hport = (BYTE)to->sa_data[0];
+		WORD lport = (BYTE)to->sa_data[1];
+		hport *= 0x100;
+		WORD   port = hport + lport;
+		String  ip=FormatStr("%d.%d.%d.%d", (BYTE)to->sa_data[2],
+											(BYTE)to->sa_data[3],
+											(BYTE)to->sa_data[4],
+											(BYTE)to->sa_data[5]);
+		if (ip != "1.0.0.0")
+		{
+			LogMsg(FormatStr("sendto|%s|%d|%s", ip, port, BinToStr((char FAR * )buf, len)), MSG_ADD_PACKAGE);
+		}
+	}
+	HookOffOne(&gSendToHookData);
+	int nReturn = sendto(s, buf, len, flags, to, tolen);
+	HookOnOne(&gSendToHookData);
+	return(nReturn);
+
+
+//	HookOffOne(&gSendToHookData);
+////	sockaddr_in * their_addr = (sockaddr_in *)to;
+////	their_addr->sin_port = htons(gConnectPort);
+//	SOCKET sendtoSocket = CheckConnectUDPToTCP(to);
+//	int nReturn = send(sendtoSocket, buf, len, flags);
+//    // their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
+//	//int nReturn = sendto(s, buf, len, flags, to, tolen);
+//    HookOnOne(&gSendToHookData);
+//    return(nReturn);
+}
+
+__control_entrypoint(DllExport) WINSOCK_API_LINKAGE
+int
+WSAAPI
+RecvFromHook(
+    __in SOCKET s,
+	__out_bcount_part(len, return) __out_data_source(NETWORK) char FAR * buf,
+    __in int len,
+    __in int flags,
+    __out_bcount_part_opt(*fromlen, *fromlen) struct sockaddr FAR * from,
+    __inout_opt int FAR * fromlen
+	)
+{
+	HookOffOne(&gSendToHookData);
+	int nReturn = recvfrom(s, buf, len, flags, from, fromlen);
+	HookOnOne(&gSendToHookData);
+	if (from && nReturn > 0) {
+		WORD hport = (BYTE)from->sa_data[0];
+		WORD lport = (BYTE)from->sa_data[1];
+		hport *= 0x100;
+		WORD   port = hport + lport;
+		String  ip=FormatStr("%d.%d.%d.%d", (BYTE)from->sa_data[2],
+											(BYTE)from->sa_data[3],
+											(BYTE)from->sa_data[4],
+											(BYTE)from->sa_data[5]);
+		if (ip != "1.0.0.0")
+		{
+//			LogMsg(FormatStr("%s|%d", ip, nReturn));
+			LogMsg(FormatStr("recvfrom|%s|%d|%s", ip, port, BinToStr(buf, nReturn)), MSG_ADD_PACKAGE);
+		}
+	}
+	return(nReturn);
+
+
+//	HookOffOne(&gRecvFromHookData);
+////    sockaddr_in * their_addr = (sockaddr_in *)from;
+////	their_addr->sin_port = htons(gConnectPort);
+////	AnsiString ansiIP = HOST_IP;
+////    their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
+//	SOCKET recvFromSocket = CheckConnectUDPToTCP(from);
+//	int nReturn = recv(recvFromSocket, buf, len, flags);
+////	if (from && nReturn > 0) {
+////		WORD hport = (BYTE)from->sa_data[0];
+////		WORD lport = (BYTE)from->sa_data[1];
+////		hport *= 0x100;
+////		WORD   port = hport + lport;
+////		String  ip=FormatStr("%d.%d.%d.%d", (BYTE)from->sa_data[2],
+////											(BYTE)from->sa_data[3],
+////											(BYTE)from->sa_data[4],
+////											(BYTE)from->sa_data[5]);
+////		LogMsg(FormatStr("recvfrom(%s:%d), len = %d", ip, port, nReturn));
+////	}
+//    HookOnOne(&gRecvFromHookData);
+//    return(nReturn);
+}
 
 void        ProcessHook()
 {
@@ -475,11 +613,20 @@ void        ProcessHook()
 
     DWORD sendAddr = (DWORD)GetProcAddress(libHandle, "send");
     LogMsg(FormatStr("Hook Send, Addr = 0x%x", sendAddr));
-    HOOKAPI(sendAddr,&gSendHookData,(DWORD)SendHook);
+	HOOKAPI(sendAddr,&gSendHookData,(DWORD)SendHook);
 
-    DWORD ioctlAddr = (DWORD)GetProcAddress(libHandle, "ioctlsocket");
-    LogMsg(FormatStr("Hook Ioctl, Addr = 0x%x", ioctlAddr));
-    HOOKAPI(ioctlAddr,&gIoctlsocketHookData,(DWORD)IoctlsocketHook);
+	DWORD ioctlAddr = (DWORD)GetProcAddress(libHandle, "ioctlsocket");
+	LogMsg(FormatStr("Hook Ioctl, Addr = 0x%x", ioctlAddr));
+	HOOKAPI(ioctlAddr,&gIoctlsocketHookData,(DWORD)IoctlsocketHook);
+
+	// UDP
+	DWORD sendToAddr = (DWORD)GetProcAddress(libHandle, "sendto");
+	LogMsg(FormatStr("Hook SendTo, Addr = 0x%x", sendToAddr));
+	HOOKAPI(sendToAddr,&gSendToHookData,(DWORD)SendToHook);
+
+	DWORD recvFromAddr = (DWORD)GetProcAddress(libHandle, "recvfrom");
+	LogMsg(FormatStr("Hook SendTo, Addr = 0x%x", recvFromAddr));
+	HOOKAPI(recvFromAddr,&gRecvFromHookData,(DWORD)RecvFromHook);
 
     LogMsg("HiJack OK!");
 }
