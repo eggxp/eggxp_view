@@ -303,6 +303,7 @@ void TWOWReviewerMainFrm::AddMessageToPackage(String msg)
 	WOWPackage fillPackage;
 	fillPackage.SetProcessed(1);
 	fillPackage.SetData(HexStrToBinStr(splitStr->Strings[3]));
+	fillPackage.SetOpCodeMsg(FormatStr("%s:%s", splitStr->Strings[1], splitStr->Strings[2]));
 	if (splitStr->Strings[0] == "sendto")
 	{
 		fillPackage.SetMark(SEND_MARK);

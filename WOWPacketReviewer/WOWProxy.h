@@ -49,7 +49,7 @@ private:
 
 	int             RecvNormalProxy(SOCKET  from, char *recvBuf, int recvLen);
 	//UDPģʽ
-	int             RecvFromProxy(SOCKET  from);
+	int             RecvFromProxy(SOCKET  from, struct sockaddr FAR * addrto, int tolen);
 	int             SendToProxy(SOCKET  to, ASharedPtrQueue<WOWPackage>  *pool, const struct sockaddr FAR * addrto, int tolen);
 
 	int             HostRecvThread(SingleThread * self);
@@ -60,7 +60,7 @@ private:
 	int             HostRecvFromThread(SingleThread * self);
 	int             HostSendToThread(SingleThread * self);
 	int             ClientRecvFromThread(SingleThread * self);
-//	int             ClientSendToThread(SingleThread * self);
+	int             ClientSendToThread(SingleThread * self);
 
 	int				ThreadInitFunc(SingleThread * self);
 	int				ThreadUnInitFunc(SingleThread * self);
@@ -70,7 +70,7 @@ public:
 	~WOWProxy();
    	TOnUserAuthPacket	fpOnUserAuthPacket;
 	bool            Start(SOCKET client, SOCKADDR_IN clientAddr, String ip, int port);
-	bool            StartUDP(SOCKET client, SOCKADDR_IN clientAddr, String ip, int port);
+	bool            StartUDP(SOCKET client, String ip, int port);
     void            Close();
 
 	ASharedPtrQueue<WOWPackage>   * GetClientToServerQueue(){return  &m_ClientToServerQueue;}
@@ -99,13 +99,16 @@ private:
     AList<WOWProxy> m_WOWProxys;
     int             m_DestPort;
 	String          m_DestIP;
+    int             m_UDPDestPort;
+	String          m_UDPDestIP;
 	int				m_GateIndex;
     int             m_RealmIndex;
 	TProxyType      m_ProxyType;
 	String			m_ConnectStyle;
 
     int             m_ListenPort;
-    SOCKET          m_ListenSocket;
+	SOCKET          m_ListenSocket;
+	SOCKET          m_ListenSocketUDP;
 	int             m_ListenThreadCount;
 	String			m_RealmdIP;
 	int				m_RealmdPort;
@@ -115,7 +118,8 @@ private:
 	bool			m_DirectModel;
 
 	int             ListenThread(SingleThread * self);
-	bool 			StartListPort(int listenPort, int listenThreadCount = 100);
+	bool 			StartListenPort(int listenPort, int listenThreadCount = 100);
+	bool 			StartListenPortUDP(int listenPort);
 public:
 	WOWProxyManager();
 	~WOWProxyManager();
