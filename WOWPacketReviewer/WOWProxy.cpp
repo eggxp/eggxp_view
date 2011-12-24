@@ -472,6 +472,8 @@ WOWProxyManager::WOWProxyManager()
 	m_DirectModel = false;
 	m_ProxyType = PROXY_TYPE_REALM;
 	m_UDPDestPort = 0;
+	m_GateIndex = 0;
+	m_RealmIndex = 0;
 }
 
 WOWProxyManager::~WOWProxyManager()
