@@ -187,10 +187,15 @@ void                    PackageContainer::OnGetSendWOWPack(WOWPackage *	packet)
     WOWPackage *	curPack = new WOWPackage;
     curPack->Assign(packet);
     curPack->SetPacketProxyIndex(this->GetPackageContainerIndex());
-    curPack->SetIndex(gLogicPackIndex);
+	curPack->SetIndex(gLogicPackIndex);
 	gLogicPackIndex++;
 
 	GetPackageContainerManager()->AddAllWOWPackage(curPack);
+
+	if(curPack->GetPacketProxyType() == PROXY_TYPE_REALM)
+	{
+		int a=0;
+	}
 }
 
 void                    PackageContainer::OnGetRecvWOWPack(WOWPackage *	packet)
@@ -201,6 +206,11 @@ void                    PackageContainer::OnGetRecvWOWPack(WOWPackage *	packet)
 	curPack->SetIndex(gLogicPackIndex);
 	gLogicPackIndex++;
 	GetPackageContainerManager()->AddAllWOWPackage(curPack);
+
+	if(curPack->GetPacketProxyType() == PROXY_TYPE_REALM)
+	{
+		int a=0;
+	}
 }
 
 void                    PackageContainer::ClearPackageContainer()

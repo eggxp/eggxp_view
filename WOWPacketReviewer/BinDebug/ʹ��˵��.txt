@@ -1,0 +1,24 @@
+修改wowconfig.ini：
+WOWPath 填写魔兽世界全路径
+DataPath 填写dbc，map，vmap的父目录，如果没有，直接填写魔兽世界wow.exe所在目录
+UserDefineClassName 自定义窗口类名
+iplist 需要连出的ip列表，逗号分隔。
+
+
+
+对非魔兽世界进程使用方式如下：
+1.修改UserDefineClassName配置，改为主窗口类名，如果不知道，可以用spy++看看
+2.在得到SRP6的SessionKey的时候，把key的16进制编码（倒置的）送给指定窗口，代码如下：
+void	SendToMsg(String msg)
+{
+	COPYDATASTRUCT copyData;
+	copyData.cbData = msg.Length() * sizeof(TCHAR);
+	copyData.lpData = msg.c_str();
+	copyData.dwData = WM_USER+0x1136;
+	HWND pWindow = FindWindow(L"TWOWReviewerMainFrm", NULL);
+	::SendMessage(pWindow,WM_COPYDATA, NULL, (LPARAM)&copyData);
+}
+
+SendToMsg("1ED2EB72B64BC28CBCE049D990E77FAF327A9D17")
+
+注意：这个key为倒置的，服务器端的key为：179D7A32AF7FE790...........1E

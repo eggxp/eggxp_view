@@ -563,8 +563,9 @@ void            WOWProxyManager::SetDestAddress(String addr)
 		m_UDPDestPort = splitStr->Strings[2].ToIntDef(0);
 		WOWProxy * curProxy = new WOWProxy();
 		m_WOWProxys.Add(curProxy);
-		curProxy->SetDestIndex(0);
-		curProxy->SetRealmIndex(0);
+		curProxy->SetDestIndex(m_GateIndex);
+		m_GateIndex++;
+		curProxy->SetRealmIndex(m_RealmIndex);
 		curProxy->SetProxyType(PROXY_TYPE_WORLD);
 		curProxy->StartUDP(m_ListenSocketUDP, m_UDPDestIP, m_UDPDestPort);
 		return;

@@ -197,8 +197,8 @@ RecvHook(
     )
 {
     if(s == gLogSocket)
-    {
-        LogMsg(FormatStr("Call Recv"));
+	{
+		LogMsg(FormatStr("Call Recv"));
     }
 
 
@@ -482,20 +482,20 @@ SendToHook(
     __in int tolen
 	)
 {
-	if (to) {
-		WORD hport = (BYTE)to->sa_data[0];
-		WORD lport = (BYTE)to->sa_data[1];
-		hport *= 0x100;
-		WORD   port = hport + lport;
-		String  ip=FormatStr("%d.%d.%d.%d", (BYTE)to->sa_data[2],
-											(BYTE)to->sa_data[3],
-											(BYTE)to->sa_data[4],
-											(BYTE)to->sa_data[5]);
-		if (ip != "1.0.0.0")
-		{
-			LogMsg(FormatStr("sendto|%s|%d|%s", ip, port, BinToStr((char FAR * )buf, len)), MSG_ADD_PACKAGE);
-		}
-	}
+//	if (to) {
+//		WORD hport = (BYTE)to->sa_data[0];
+//		WORD lport = (BYTE)to->sa_data[1];
+//		hport *= 0x100;
+//		WORD   port = hport + lport;
+//		String  ip=FormatStr("%d.%d.%d.%d", (BYTE)to->sa_data[2],
+//											(BYTE)to->sa_data[3],
+//											(BYTE)to->sa_data[4],
+//											(BYTE)to->sa_data[5]);
+//		if (ip != "1.0.0.0")
+//		{
+//			LogMsg(FormatStr("sendto|%s|%d|%s", ip, port, BinToStr((char FAR * )buf, len)), MSG_ADD_PACKAGE);
+//		}
+//	}
 	HookOffOne(&gSendToHookData);
 //	int nReturn = sendto(s, buf, len, flags, to, tolen);
 	CheckConnectUDPToTCP(to);
@@ -596,31 +596,36 @@ WSASendToHook(
     __in_opt LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
 	)
 {
-	if (lpTo) {
-		WORD hport = (BYTE)lpTo->sa_data[0];
-		WORD lport = (BYTE)lpTo->sa_data[1];
-		hport *= 0x100;
-		WORD   port = hport + lport;
-		String  ip=FormatStr("%d.%d.%d.%d", (BYTE)lpTo->sa_data[2],
-											(BYTE)lpTo->sa_data[3],
-											(BYTE)lpTo->sa_data[4],
-											(BYTE)lpTo->sa_data[5]);
-		if (ip != "1.0.0.0")
-		{
-			LogMsg(FormatStr("sendto|%s|%d|%s", ip, port, BinToStr((char FAR * )lpBuffers, dwBufferCount)), MSG_ADD_PACKAGE);
-		}
-	}
+//	if (lpTo) {
+//		WORD hport = (BYTE)lpTo->sa_data[0];
+//		WORD lport = (BYTE)lpTo->sa_data[1];
+//		hport *= 0x100;
+//		WORD   port = hport + lport;
+//		String  ip=FormatStr("%d.%d.%d.%d", (BYTE)lpTo->sa_data[2],
+//											(BYTE)lpTo->sa_data[3],
+//											(BYTE)lpTo->sa_data[4],
+//											(BYTE)lpTo->sa_data[5]);
+//		if (ip != "1.0.0.0")
+//		{
+//			LogMsg(FormatStr("sendto|%s|%d|%s", ip, port, BinToStr((char FAR * )lpBuffers, dwBufferCount)), MSG_ADD_PACKAGE);
+//		}
+//	}
 	HookOffOne(&gWSASendToHookData);
-//	int nReturn = sendto(s, buf, len, flags, to, tolen);
+//	int nReturn = WSASendTo(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent,
+//							dwFlags, lpTo, iTolen, lpOverlapped, lpCompletionRoutine);
+//	LogMsg(FormatStr("sendto| |0|%s", BinToStr((char FAR * )lpBuffers, *lpNumberOfBytesRecvd)), MSG_ADD_PACKAGE);
+
 	CheckConnectUDPToTCP(lpTo);
 	AnsiString ansiIP = HOST_IP;
 	sockaddr_in * their_addr = (sockaddr_in *)lpTo;
+
 	their_addr->sin_port = htons(gConnectPort + UDP_PORT_START);
 	their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
 	int nReturn = WSASendTo(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent,
 							dwFlags, lpTo, iTolen, lpOverlapped, lpCompletionRoutine);
 	HookOnOne(&gWSASendToHookData);
-	return(nReturn);
+
+	return nReturn;
 }
 
 WINSOCK_API_LINKAGE
@@ -639,9 +644,12 @@ WSARecvFromHook(
 	)
 {
 	HookOffOne(&gWSARecvFromHookData);
-//	int nReturn = recvfrom(s, buf, len, flags, from, fromlen);
+//	int nReturn = WSARecvFrom(s, lpBuffers, dwBufferCount, lpNumberOfBytesRecvd,
+//								lpFlags, lpFrom, lpFromlen, lpOverlapped, lpCompletionRoutine);
+//	LogMsg(FormatStr("recvfrom| |0|%s", BinToStr((char FAR * )lpBuffers, *lpNumberOfBytesRecvd)), MSG_ADD_PACKAGE);
 	AnsiString ansiIP = HOST_IP;
 	sockaddr_in * their_addr = (sockaddr_in *)lpFrom;
+
 	their_addr->sin_port = htons(gConnectPort + UDP_PORT_START);
 	their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
 	int nReturn = WSARecvFrom(s, lpBuffers, dwBufferCount, lpNumberOfBytesRecvd,
@@ -675,39 +683,57 @@ void        ProcessHook()
 //    }
                
 
-    HANDLE libHandle = GetModuleHandle(libStr.c_str());
-    DWORD connectAddr = (DWORD)GetProcAddress(libHandle, "connect");
-    LogMsg(FormatStr("Hook Connect, Addr = 0x%x", connectAddr));
-    HOOKAPI(connectAddr,&gConnectHookData,(DWORD)ConnectHook);
+	HANDLE libHandle = GetModuleHandle(libStr.c_str());
 
-    DWORD recvAddr = (DWORD)GetProcAddress(libHandle, "recv");
-    LogMsg(FormatStr("Hook Recv, Addr = 0x%x", recvAddr));
-    HOOKAPI(recvAddr,&gRecvHookData,(DWORD)RecvHook);
+	{
+		DWORD connectAddr = (DWORD)GetProcAddress(libHandle, "connect");
+		LogMsg(FormatStr("Hook Connect, Addr = 0x%x", connectAddr));
+		HOOKAPI(connectAddr,&gConnectHookData,(DWORD)ConnectHook);
+	}
 
-    DWORD sendAddr = (DWORD)GetProcAddress(libHandle, "send");
-    LogMsg(FormatStr("Hook Send, Addr = 0x%x", sendAddr));
-	HOOKAPI(sendAddr,&gSendHookData,(DWORD)SendHook);
+	{
+		DWORD recvAddr = (DWORD)GetProcAddress(libHandle, "recv");
+		LogMsg(FormatStr("Hook Recv, Addr = 0x%x", recvAddr));
+		HOOKAPI(recvAddr,&gRecvHookData,(DWORD)RecvHook);
+	}
 
-	DWORD ioctlAddr = (DWORD)GetProcAddress(libHandle, "ioctlsocket");
-	LogMsg(FormatStr("Hook Ioctl, Addr = 0x%x", ioctlAddr));
-	HOOKAPI(ioctlAddr,&gIoctlsocketHookData,(DWORD)IoctlsocketHook);
+	{
+		DWORD sendAddr = (DWORD)GetProcAddress(libHandle, "send");
+		LogMsg(FormatStr("Hook Send, Addr = 0x%x", sendAddr));
+		HOOKAPI(sendAddr,&gSendHookData,(DWORD)SendHook);
+	}
+
+	{
+		DWORD ioctlAddr = (DWORD)GetProcAddress(libHandle, "ioctlsocket");
+		LogMsg(FormatStr("Hook Ioctl, Addr = 0x%x", ioctlAddr));
+		HOOKAPI(ioctlAddr,&gIoctlsocketHookData,(DWORD)IoctlsocketHook);
+	}
 
 	// UDP
-	DWORD sendToAddr = (DWORD)GetProcAddress(libHandle, "sendto");
-	LogMsg(FormatStr("Hook SendTo, Addr = 0x%x", sendToAddr));
-	HOOKAPI(sendToAddr,&gSendToHookData,(DWORD)SendToHook);
+	{
+		DWORD sendToAddr = (DWORD)GetProcAddress(libHandle, "sendto");
+		LogMsg(FormatStr("Hook SendTo, Addr = 0x%x", sendToAddr));
+		HOOKAPI(sendToAddr,&gSendToHookData,(DWORD)SendToHook);
+	}
 
-	DWORD recvFromAddr = (DWORD)GetProcAddress(libHandle, "recvfrom");
-	LogMsg(FormatStr("Hook RecvFrom, Addr = 0x%x", recvFromAddr));
-	HOOKAPI(recvFromAddr,&gRecvFromHookData,(DWORD)RecvFromHook);
+	{
+		DWORD recvFromAddr = (DWORD)GetProcAddress(libHandle, "recvfrom");
+		LogMsg(FormatStr("Hook RecvFrom, Addr = 0x%x", recvFromAddr));
+		HOOKAPI(recvFromAddr,&gRecvFromHookData,(DWORD)RecvFromHook);
+	}
 
-	DWORD wsaSendToAddr = (DWORD)GetProcAddress(libHandle, "WSASendTo");
-	LogMsg(FormatStr("Hook WSASendTo, Addr = 0x%x", wsaSendToAddr));
-	HOOKAPI(wsaSendToAddr,&gWSASendToHookData,(DWORD)WSASendToHook);
+	{
+		DWORD wsaSendToAddr = (DWORD)GetProcAddress(libHandle, "WSASendTo");
+		LogMsg(FormatStr("Hook WSASendTo, Addr = 0x%x", wsaSendToAddr));
+		HOOKAPI(wsaSendToAddr,&gWSASendToHookData,(DWORD)WSASendToHook);
+	}
 
-	DWORD wsaRecvFromAddr = (DWORD)GetProcAddress(libHandle, "WSARecvFrom");
-	LogMsg(FormatStr("Hook WSARecvFrom, Addr = 0x%x", wsaRecvFromAddr));
-	HOOKAPI(wsaRecvFromAddr,&gWSARecvFromHookData,(DWORD)WSARecvFromHook);
+	{
+		DWORD wsaRecvFromAddr = (DWORD)GetProcAddress(libHandle, "WSARecvFrom");
+		LogMsg(FormatStr("Hook WSARecvFrom, Addr = 0x%x", wsaRecvFromAddr));
+		HOOKAPI(wsaRecvFromAddr,&gWSARecvFromHookData,(DWORD)WSARecvFromHook);
+	}
+
     LogMsg("HiJack OK!");
 }
 

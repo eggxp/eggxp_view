@@ -314,7 +314,7 @@
     <Transaction>2011/10/02 10:23:49.797.h,E:\Projects\WOWProject\WOWPacketReviewer\Unit1.h=E:\Projects\WOWProject\WOWPacketReviewer\DiabloIIIPackageDispatcher.h</Transaction>
   </Transactions>
 	<ProjectSortOrder AutoSort="0" SortType="0">
-    <File Path="..\..\wowproject"/>
+    <File Path="..\..\WOWProject"/>
     <File Path="..\lib"/>
     <File Path="..\lib\openssl-1.0.0"/>
     <File Path="..\lib\openssl-1.0.0\Auth"/>
