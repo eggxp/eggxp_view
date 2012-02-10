@@ -447,7 +447,7 @@ IoctlsocketHook(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //  UDP Hook
-void CheckConnectUDPToTCP(const struct sockaddr FAR * dest, bool is_wsa)
+void CheckConnectUDPToTCP(const struct sockaddr FAR * dest)
 {
 	AnsiString ansiIP = HOST_IP;
 	WORD hport = (BYTE)dest->sa_data[0];
@@ -465,14 +465,8 @@ void CheckConnectUDPToTCP(const struct sockaddr FAR * dest, bool is_wsa)
 	String  sendtoKey=FormatStr("%s:%d", sendtoIP, sendtoPort);
 	if (gUDPConnectList.find(sendtoKey) != gUDPConnectList.end())
 		return;
-	if(is_wsa == false)
-	{
-		LogMsg(FormatStr("udp|%s|%d|%d", sendtoIP, sendtoPort, gWOWHookViewInfo->ClientConnectIndex), MSG_CONNECT);
-	}
-	else
-	{
-		LogMsg(FormatStr("wsaudp|%s|%d|%d", sendtoIP, sendtoPort, gWOWHookViewInfo->ClientConnectIndex), MSG_CONNECT);
-	}
+	LogMsg(FormatStr("udp|%s|%d|%d", sendtoIP, sendtoPort, gWOWHookViewInfo->ClientConnectIndex), MSG_CONNECT);
+	
 	gUDPConnectList[sendtoKey] = 0;
 	return;
 }
@@ -505,7 +499,7 @@ SendToHook(
 //	}
 	HookOffOne(&gSendToHookData);
 //	int nReturn = sendto(s, buf, len, flags, to, tolen);
-	CheckConnectUDPToTCP(to, false);
+	CheckConnectUDPToTCP(to);
 	AnsiString ansiIP = HOST_IP;
 	sockaddr_in * their_addr = (sockaddr_in *)to;
 	their_addr->sin_port = htons(gConnectPort + UDP_PORT_START);
@@ -576,62 +570,45 @@ WSASendToHook(
     __in_opt LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
 	)
 {
-//	if (lpTo) {
-//		WORD hport = (BYTE)lpTo->sa_data[0];
-//		WORD lport = (BYTE)lpTo->sa_data[1];
-//		hport *= 0x100;
-//		WORD   port = hport + lport;
-//		String  ip=FormatStr("%d.%d.%d.%d", (BYTE)lpTo->sa_data[2],
-//											(BYTE)lpTo->sa_data[3],
-//											(BYTE)lpTo->sa_data[4],
-//											(BYTE)lpTo->sa_data[5]);
-//		if (ip != "1.0.0.0")
-//		{
-//			LogMsg(FormatStr("sendto|%s|%d|%s", ip, port, BinToStr((char FAR * )lpBuffers, dwBufferCount)), MSG_ADD_PACKAGE);
-//		}
-//	}
 	HookOffOne(&gWSASendToHookData);
-//	{
-//	    // 调试
-//		int nReturn = WSASendTo(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent,
-//								dwFlags, lpTo, iTolen, lpOverlapped, lpCompletionRoutine);
-//		if(nReturn == 0)
-//		{
-////			LogMsg(FormatStr("send:%d, %d", *lpNumberOfBytesSent, lpBuffers->len));
-//			LogMsg(FormatStr("sendto| |0|%s", BinToStr((char FAR * )lpBuffers->buf, *lpNumberOfBytesSent)), MSG_ADD_PACKAGE);
-//		}
-//		HookOnOne(&gWSASendToHookData);
-//
-//		return nReturn;
-//	}
-
-	CheckConnectUDPToTCP(lpTo, false);
-	AnsiString ansiIP = HOST_IP;
-	sockaddr_in * their_addr = (sockaddr_in *)lpTo;
-
-	their_addr->sin_port = htons(gConnectPort + UDP_PORT_START);
-	their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
-	int nReturn = WSASendTo(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent,
-							dwFlags, lpTo, iTolen, lpOverlapped, lpCompletionRoutine);
-	HookOnOne(&gWSASendToHookData);
-
-	if(nReturn == 0)
 	{
-		if(dwBufferCount > 1)
+		// 调试
+		int nReturn = WSASendTo(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent,
+								dwFlags, lpTo, iTolen, lpOverlapped, lpCompletionRoutine);
+		if(nReturn == 0)
 		{
-			LogMsg(FormatStr("sendto, dwBufferCount = %d", dwBufferCount));
+			String send_string;
+			for (DWORD i=0; i<dwBufferCount; i++)
+			{
+				send_string += BinToStr((char FAR * )lpBuffers[i].buf, lpBuffers[i].len);
+			}
+			LogMsg(FormatStr("sendto| |%d|%s", 0, send_string), MSG_ADD_PACKAGE);
 		}
-		for (DWORD i=0; i<dwBufferCount; i++)
-		{
-			LogMsg(FormatStr("sendto| |%d|%s", i, BinToStr((char FAR * )lpBuffers[i].buf, lpBuffers[i].len)), MSG_ADD_PACKAGE);
-		}
-//		LogMsg(FormatStr("sendto dwFlags = %d", dwFlags));
-//		LogMsg(FormatStr("sendto lpTo = %d", lpTo));
-//		LogMsg(FormatStr("sendto iTolen = %d", iTolen));
-//		LogMsg(FormatStr("sendto lpOverlapped = %d", lpOverlapped));
-//		LogMsg(FormatStr("sendto lpCompletionRoutine = %d", lpCompletionRoutine));
+		HookOnOne(&gWSASendToHookData);
+
+		return nReturn;
 	}
-	return nReturn;
+
+//	CheckConnectUDPToTCP(lpTo);
+//	AnsiString ansiIP = HOST_IP;
+//	sockaddr_in * their_addr = (sockaddr_in *)lpTo;
+//
+//	their_addr->sin_port = htons(gConnectPort + UDP_PORT_START);
+//	their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
+//	int nReturn = WSASendTo(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent,
+//							dwFlags, lpTo, iTolen, lpOverlapped, lpCompletionRoutine);
+//	HookOnOne(&gWSASendToHookData);
+//
+//	if(nReturn == 0)
+//	{
+//		String send_string;
+//		for (DWORD i=0; i<dwBufferCount; i++)
+//		{
+//			send_string += BinToStr((char FAR * )lpBuffers[i].buf, lpBuffers[i].len);
+//		}
+//		LogMsg(FormatStr("sendto| |%d|%s", 0, send_string), MSG_ADD_PACKAGE);
+//	}
+//	return nReturn;
 }
 
 WINSOCK_API_LINKAGE
@@ -650,41 +627,36 @@ WSARecvFromHook(
 	)
 {
 	HookOffOne(&gWSARecvFromHookData);
-//	{
-//		// 调试
-//		int nReturn = WSARecvFrom(s, lpBuffers, dwBufferCount, lpNumberOfBytesRecvd,
-//									lpFlags, lpFrom, lpFromlen, lpOverlapped, lpCompletionRoutine);
-//		if(nReturn == 0)
-//		{
-////			LogMsg(FormatStr("recv:%d, %d", *lpNumberOfBytesRecvd, lpBuffers->len));
-//			LogMsg(FormatStr("recvfrom| |0|%s", BinToStr((char FAR * )lpBuffers->buf, *lpNumberOfBytesRecvd)), MSG_ADD_PACKAGE);
-//		}
-//		HookOnOne(&gWSARecvFromHookData);
-//		return nReturn;
-//	}
-	AnsiString ansiIP = HOST_IP;
-	sockaddr_in * their_addr = (sockaddr_in *)lpFrom;
-
-	their_addr->sin_port = htons(gConnectPort + UDP_PORT_START);
-	their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
-	int nReturn = WSARecvFrom(s, lpBuffers, dwBufferCount, lpNumberOfBytesRecvd,
-								lpFlags, lpFrom, lpFromlen, lpOverlapped, lpCompletionRoutine);
-	HookOnOne(&gWSARecvFromHookData);
-
-	if(nReturn == 0)
 	{
-		if(dwBufferCount > 1)
+		// 调试
+		int nReturn = WSARecvFrom(s, lpBuffers, dwBufferCount, lpNumberOfBytesRecvd,
+									lpFlags, lpFrom, lpFromlen, lpOverlapped, lpCompletionRoutine);
+		if(nReturn == 0)
 		{
-			LogMsg(FormatStr("recvfrom, dwBufferCount = %d", dwBufferCount));
+//			LogMsg(FormatStr("recv:%d, %d", *lpNumberOfBytesRecvd, lpBuffers->len));
+			LogMsg(FormatStr("recvfrom| |0|%s", BinToStr((char FAR * )lpBuffers->buf, *lpNumberOfBytesRecvd)), MSG_ADD_PACKAGE);
 		}
-		LogMsg(FormatStr("recvfrom| |0|%s", BinToStr((char FAR * )lpBuffers[0].buf, *lpNumberOfBytesRecvd)), MSG_ADD_PACKAGE);
-//		LogMsg(FormatStr("recvfrom lpFlags = %d", *lpFlags));
-//		LogMsg(FormatStr("recvfrom lpFrom = %d", lpFrom));
-//		LogMsg(FormatStr("recvfrom lpFromlen = %d", lpFromlen));
-//		LogMsg(FormatStr("recvfrom lpOverlapped = %d", lpOverlapped));
-//		LogMsg(FormatStr("recvfrom lpCompletionRoutine = %d", lpCompletionRoutine));
+		HookOnOne(&gWSARecvFromHookData);
+		return nReturn;
 	}
-	return nReturn;
+//	AnsiString ansiIP = HOST_IP;
+//	sockaddr_in * their_addr = (sockaddr_in *)lpFrom;
+//
+//	their_addr->sin_port = htons(gConnectPort + UDP_PORT_START);
+//	their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
+//	int nReturn = WSARecvFrom(s, lpBuffers, dwBufferCount, lpNumberOfBytesRecvd,
+//								lpFlags, lpFrom, lpFromlen, lpOverlapped, lpCompletionRoutine);
+//	HookOnOne(&gWSARecvFromHookData);
+//
+//	if(nReturn == 0)
+//	{
+//		if(dwBufferCount > 1)
+//		{
+//			LogMsg(FormatStr("recvfrom, dwBufferCount = %d", dwBufferCount));
+//		}
+//		LogMsg(FormatStr("recvfrom| |0|%s", BinToStr((char FAR * )lpBuffers[0].buf, *lpNumberOfBytesRecvd)), MSG_ADD_PACKAGE);
+//	}
+//	return nReturn;
 }
 //////////////////////////////END///////////////////////////////
 

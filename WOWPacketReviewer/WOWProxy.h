@@ -42,7 +42,6 @@ private:
 
 	bool            SendBuf_O(SOCKET  s, char * buf, int len);
 	bool            SendToBuf_O(SOCKET  s, char * buf, int len, const struct sockaddr FAR * to, int tolen);
-	bool            WSASendToBuf_O(SOCKET  s, char * buf, int len, const struct sockaddr FAR * to, int tolen);
 
 	//接收需走逻辑，不直接发给客户端
 	int             RecvProxy(SOCKET  from);
@@ -52,9 +51,6 @@ private:
 	//UDP模式
 	int             RecvFromProxy(SOCKET  from, struct sockaddr FAR * addrto, int tolen);
 	int             SendToProxy(SOCKET  to, ASharedPtrQueue<WOWPackage>  *pool, const struct sockaddr FAR * addrto, int tolen);
-	//WSAUDP
-	int             WSARecvFromProxy(SOCKET  from, struct sockaddr FAR * addrto, int tolen);
-	int             WSASendToProxy(SOCKET  to, ASharedPtrQueue<WOWPackage>  *pool, const struct sockaddr FAR * addrto, int tolen);
 
 	int             HostRecvThread(SingleThread * self);
 	int             HostSendThread(SingleThread * self);
@@ -66,11 +62,6 @@ private:
 	int             ClientRecvFromThread(SingleThread * self);
 	int             ClientSendToThread(SingleThread * self);
 
-	int             HostWSARecvFromThread(SingleThread * self);
-	int             HostWSASendToThread(SingleThread * self);
-	int             ClientWSARecvFromThread(SingleThread * self);
-	int             ClientWSASendToThread(SingleThread * self);
-
 	int				ThreadInitFunc(SingleThread * self);
 	int				ThreadUnInitFunc(SingleThread * self);
     
@@ -79,7 +70,7 @@ public:
 	~WOWProxy();
    	TOnUserAuthPacket	fpOnUserAuthPacket;
 	bool            Start(SOCKET client, SOCKADDR_IN clientAddr, String ip, int port);
-	bool            StartUDP(SOCKET client, String ip, int port, bool is_wsa);
+	bool            StartUDP(SOCKET client, String ip, int port);
     void            Close();
 
 	ASharedPtrQueue<WOWPackage>   * GetClientToServerQueue(){return  &m_ClientToServerQueue;}
@@ -95,7 +86,7 @@ public:
 
 	void			ServerAuthOKBeginProxy();
 	void			ServerAuthOKBeginProxyUDP();
-	void			ServerAuthOKBeginProxyWSAUDP();
+
     int             GetDesPort(){return m_DesPort;}
     String          GetDesIP(){return m_DesIP;}
     GEN_GET_SET(int, IsDesabled)
