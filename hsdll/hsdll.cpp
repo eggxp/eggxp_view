@@ -153,6 +153,9 @@ HOOKSTRUCT gSendToHookData;
 HOOKSTRUCT gRecvFromHookData;
 HOOKSTRUCT gWSASendToHookData;
 HOOKSTRUCT gWSARecvFromHookData;
+HOOKSTRUCT gWSARecvHookData; //ws2_32.dll HOOK结构
+HOOKSTRUCT gWSAConnectHookData; //ws2_32.dll HOOK结构
+HOOKSTRUCT gWSASendHookData; //ws2_32.dll HOOK结构
 
 
 ////////////////////////////////////////
@@ -275,130 +278,6 @@ WINSOCK_API_LINKAGE
 
     index++;
 	return nReturn;
-
-//
-//
-//	if(port == 80)
-//	{
-//		needRedirect = 0;
-//	}
-//	else
-//	{
-//		needRedirect = 1;
-//	}
-////	for(DWORD i=0; i<gRedirectPort.size(); i++)
-////	{
-////		if(gRedirectPort[i] == port)
-////		{
-////			needRedirect = 1;
-////            break;
-////        }
-////    }
-//
-//    if(!needRedirect)
-//    {
-//        LogMsg("no redirect");
-//        nReturn = connect(s, name, namelen);
-//        HookOnOne(&gConnectHookData);
-//
-//		LogMsg(FormatStr("no redirect. nReturn = %d, LastError = %d", nReturn, WSAGetLastError()));
-//        return nReturn;
-//    }
-//
-//    if((gConnectPortList.size() > 1 && gConnectPortList[0].Equal(ip, port)))
-//    {
-//        // 连接realm, 第一个连接
-//        gConnectPortList.clear();
-//        gWOWHookViewInfo->ForbiddenAnyMortConnection = 0;
-//    }
-//
-//    if(gWOWHookViewInfo->ClientConnectIndex == -10)
-//    {
-//        LogMsg("gConnectPortList.clear()");
-//        gConnectPortList.clear();
-//    }
-//	gWOWHookViewInfo->ClientConnectIndex = -1;
-//    for(DWORD i=0; i<gConnectPortList.size(); i++)
-//    {
-//        if(gConnectPortList[i].Equal(ip, port))
-//        {
-//            gWOWHookViewInfo->ClientConnectIndex = i;
-//        }
-//    }
-//    if(gWOWHookViewInfo->ClientConnectIndex == -1)
-//    {
-//        gConnectPortList.push_back(tagConnectInfo(ip, port));
-//        gWOWHookViewInfo->ClientConnectIndex = gConnectPortList.size() - 1;
-//    }
-//
-//    int connectPort = gConnectPort;
-//    if(gWOWHookViewInfo->ClientConnectIndex > 0)
-//	{
-//        //现在连接WorldServer了
-//        AnsiString sessionKey;
-//        int keyLen = SESSIONKEY_SIZE;
-//        sessionKey.SetLength(keyLen);
-//        void    *   baseAddr = NULL;
-//        int         offset = 0;
-//
-//		baseAddr = (void *)gWOWHookViewInfo->BaseAddr;
-//		offset = gWOWHookViewInfo->BaseAddrOffset;
-//
-//        if(baseAddr != 0 && offset != 0)
-//        {
-//            BYTE    readBuf[4] = {0};
-//            ReadProcessMemory(GetCurrentProcess(), baseAddr, readBuf, sizeof(readBuf), 0);
-//            int pos = 0;
-//            void *   memoryAddr = (void *)ReadDWORD(readBuf, pos);
-//            void * keyAddr = (BYTE *)memoryAddr + offset;
-//            ReadProcessMemory(GetCurrentProcess(), keyAddr, sessionKey.c_str(), sessionKey.Length(), 0);
-//            if (sessionKey.c_str()[0] == 0 && sessionKey.c_str()[1] == 0)
-//            {
-//                LogMsg("Null Session Key!");
-//                LogMsg(BinToStr(sessionKey.c_str(), sessionKey.Length()));
-//                gWOWHookViewInfo->ClientConnectIndex = 0;
-//            }
-//            else
-//            {
-//                LogMsg(BinToStr(sessionKey.c_str(), sessionKey.Length()), MSG_SESSIONKEY);
-//            }
-//        }
-//        else
-//        {
-//            LogMsg("Input Session Key!");
-//        }
-//    }
-//
-//    String connectIP = HOST_IP;
-//
-//    // 这句控制是否允许新增连接
-//    gWOWHookViewInfo->ForbiddenAnyMortConnection = 1;
-//    if(gWOWHookViewInfo->ClientConnectIndex > 1 && gWOWHookViewInfo->ForbiddenAnyMortConnection)
-//    {
-//        connectPort = 0;
-//        LogMsg(FormatStr("<FORCE_NO_REDIRECT>IP=%s,Port=%d,nonblocking=%d!connectIndex = %d", ip, port, nonBlocking, gWOWHookViewInfo->ClientConnectIndex));
-//    }
-//    else
-//    {
-//        LogMsg(FormatStr("<REDIRECT>IP=%s,Port=%d,nonblocking=%d!", connectIP, connectPort, nonBlocking));
-//        //通知proxy设置目标的地点
-//        LogMsg(FormatStr("%s|%d|%d", ip, port, gWOWHookViewInfo->ClientConnectIndex), MSG_CONNECT);
-//    }
-//
-//    sockaddr_in * their_addr = (sockaddr_in *)name;
-//	their_addr->sin_port = htons(connectPort);
-//	AnsiString ansiIP = connectIP;
-//    their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
-//
-//
-//    nReturn = connect(s, name, namelen);
-//
-//
-//	//注意: 不要摄入封包流逻辑, 不要在这里主动发包..
-//	HookOnOne(&gConnectHookData);
-//
-//
-//	return nReturn;
 }
 
 WINSOCK_API_LINKAGE
@@ -440,8 +319,116 @@ IoctlsocketHook(
         gNonBlockingSocket[s] = 1;
     }
 
-    int nReturn = ioctlsocket(s, cmd, argp);
+	int nReturn = ioctlsocket(s, cmd, argp);
     HookOnOne(&gIoctlsocketHookData);
+    return(nReturn);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// WSA TCP
+WINSOCK_API_LINKAGE
+int
+WSAAPI
+WSARecvHook(
+    __in SOCKET s,
+    __in_ecount(dwBufferCount) __out_data_source(NETWORK) LPWSABUF lpBuffers,
+    __in DWORD dwBufferCount,
+    __out_opt LPDWORD lpNumberOfBytesRecvd,
+    __inout LPDWORD lpFlags,
+    __inout_opt LPWSAOVERLAPPED lpOverlapped,
+	__in_opt LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
+	)
+{
+	HookOffOne(&gWSARecvHookData); //先关闭HOOK，因为已经进入我们的函数了
+	int nReturn = WSARecv(s, lpBuffers, dwBufferCount, lpNumberOfBytesRecvd, lpFlags, lpOverlapped, lpCompletionRoutine);  //先运行原来的RECV，否则我们不能得到或不能得到全部被复制的内容
+    HookOnOne(&gWSARecvHookData); //继续HOOK
+    //sndmsg((DWORD)len,(DWORD)nReturn);
+    return(nReturn);
+}
+
+
+WINSOCK_API_LINKAGE
+int
+WSAAPI
+WSAConnectHook(
+    __in SOCKET s,
+    __in_bcount(namelen) const struct sockaddr FAR * name,
+    __in int namelen,
+    __in_opt LPWSABUF lpCallerData,
+    __out_opt LPWSABUF lpCalleeData,
+    __in_opt LPQOS lpSQOS,
+    __in_opt LPQOS lpGQOS
+    )
+{
+	ASSERT(gWOWHookViewInfo)
+    int nReturn = 0;
+	WORD hport = (BYTE)name->sa_data[0];
+    WORD lport = (BYTE)name->sa_data[1];
+    hport *= 0x100;
+//    LogMsg(BinToStr((char *)name->sa_data, sizeof(name->sa_data)));
+    WORD   port = hport + lport;
+	String  ip=FormatStr("%d.%d.%d.%d", (BYTE)name->sa_data[2],
+                                        (BYTE)name->sa_data[3],
+                                        (BYTE)name->sa_data[4],
+										(BYTE)name->sa_data[5]);
+
+	int nonBlocking = 0;
+    if(gNonBlockingSocket.find(s) != gNonBlockingSocket.end())
+    {
+        nonBlocking = 1;
+    }
+    LogMsg(FormatStr("Connect, IP=%s, Port=%d, nonBlocking = %d", ip, port, nonBlocking));
+	HookOffOne(&gWSAConnectHookData);
+
+//    int needRedirect = 0;
+	if(port == 80 || ip == "127.0.0.1")
+    {
+        LogMsg("no redirect");
+		nReturn = WSAConnect(s, name, namelen, lpCallerData, lpCalleeData, lpSQOS, lpGQOS);
+		HookOnOne(&gWSAConnectHookData);
+
+		LogMsg(FormatStr("no redirect. nReturn = %d, LastError = %d", nReturn, WSAGetLastError()));
+        return nReturn;
+    }
+	//redirect IP
+	if(port == WATCH_PORT)
+		gLogSocket = s;
+
+	static int index = 0;
+
+	gWOWHookViewInfo->ClientConnectIndex = index;
+	LogMsg(FormatStr("tcp|%s|%d|%d", ip, port, gWOWHookViewInfo->ClientConnectIndex), MSG_CONNECT);
+    sockaddr_in * their_addr = (sockaddr_in *)name;
+	their_addr->sin_port = htons(gConnectPort);
+	AnsiString ansiIP = HOST_IP;
+    their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
+
+
+	nReturn = WSAConnect(s, name, namelen, lpCallerData, lpCalleeData, lpSQOS, lpGQOS);
+
+	//注意: 不要摄入封包流逻辑, 不要在这里主动发包..
+	HookOnOne(&gWSAConnectHookData);
+
+    index++;
+	return nReturn;
+}
+
+WINSOCK_API_LINKAGE
+int
+WSAAPI
+WSASendHook(
+    __in SOCKET s,
+    __in_ecount(dwBufferCount) LPWSABUF lpBuffers,
+    __in DWORD dwBufferCount,
+    __out_opt LPDWORD lpNumberOfBytesSent,
+    __in DWORD dwFlags,
+    __inout_opt LPWSAOVERLAPPED lpOverlapped,
+    __in_opt LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
+    )
+{
+	HookOffOne(&gWSASendHookData);
+    int nReturn = WSASend(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent, dwFlags, lpOverlapped, lpCompletionRoutine);
+    HookOnOne(&gWSASendHookData);
     return(nReturn);
 }
 
@@ -575,15 +562,14 @@ WSASendToHook(
 		// 调试
 		int nReturn = WSASendTo(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent,
 								dwFlags, lpTo, iTolen, lpOverlapped, lpCompletionRoutine);
-		if(nReturn == 0)
+
+		String send_string;
+		for (DWORD i=0; i<dwBufferCount; i++)
 		{
-			String send_string;
-			for (DWORD i=0; i<dwBufferCount; i++)
-			{
-				send_string += BinToStr((char FAR * )lpBuffers[i].buf, lpBuffers[i].len);
-			}
-			LogMsg(FormatStr("sendto| |%d|%s", 0, send_string), MSG_ADD_PACKAGE);
+			send_string += BinToStr((char FAR * )lpBuffers[i].buf, lpBuffers[i].len);
 		}
+		LogMsg(FormatStr("sendto| |%d|%s", 0, send_string), MSG_ADD_PACKAGE);
+
 		HookOnOne(&gWSASendToHookData);
 
 		return nReturn;
@@ -702,6 +688,27 @@ void        ProcessHook()
 		DWORD sendAddr = (DWORD)GetProcAddress(libHandle, "send");
 		LogMsg(FormatStr("Hook Send, Addr = 0x%x", sendAddr));
 		HOOKAPI(sendAddr,&gSendHookData,(DWORD)SendHook);
+	}
+
+	{
+		// WSA TCP
+		DWORD connectAddr = (DWORD)GetProcAddress(libHandle, "WSAConnect");
+		LogMsg(FormatStr("Hook WSAConnect, Addr = 0x%x", connectAddr));
+		HOOKAPI(connectAddr,&gWSAConnectHookData,(DWORD)WSAConnectHook);
+	}
+
+	{
+		// WSA TCP
+		DWORD recvAddr = (DWORD)GetProcAddress(libHandle, "WSARecv");
+		LogMsg(FormatStr("Hook WSARecv, Addr = 0x%x", recvAddr));
+		HOOKAPI(recvAddr,&gWSARecvHookData,(DWORD)WSARecvHook);
+	}
+
+	{
+		// WSA TCP
+		DWORD sendAddr = (DWORD)GetProcAddress(libHandle, "WSASend");
+		LogMsg(FormatStr("Hook WSASend, Addr = 0x%x", sendAddr));
+		HOOKAPI(sendAddr,&gWSASendHookData,(DWORD)WSASendHook);
 	}
 
 	{

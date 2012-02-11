@@ -191,11 +191,6 @@ void                    PackageContainer::OnGetSendWOWPack(WOWPackage *	packet)
 	gLogicPackIndex++;
 
 	GetPackageContainerManager()->AddAllWOWPackage(curPack);
-
-	if(curPack->GetPacketProxyType() == PROXY_TYPE_REALM)
-	{
-		int a=0;
-	}
 }
 
 void                    PackageContainer::OnGetRecvWOWPack(WOWPackage *	packet)
