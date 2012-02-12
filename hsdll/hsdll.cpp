@@ -602,15 +602,15 @@ WSASendToHook(
 							dwFlags, lpTo, iTolen, lpOverlapped, lpCompletionRoutine);
 	HookOnOne(&gWSASendToHookData);
 
-	if(nReturn == 0)
-	{
-		String send_string;
-		for (DWORD i=0; i<dwBufferCount; i++)
-		{
-			send_string += BinToStr((char FAR * )lpBuffers[i].buf, lpBuffers[i].len);
-		}
-		LogMsg(FormatStr("sendto| |%d|%s", 0, send_string), MSG_ADD_PACKAGE);
-	}
+//	if(nReturn == 0)
+//	{
+//		String send_string;
+//		for (DWORD i=0; i<dwBufferCount; i++)
+//		{
+//			send_string += BinToStr((char FAR * )lpBuffers[i].buf, lpBuffers[i].len);
+//		}
+//		LogMsg(FormatStr("sendto| |%d|%s", 0, send_string), MSG_ADD_PACKAGE);
+//	}
 	return nReturn;
 }
 
@@ -658,10 +658,10 @@ WSARecvFromHook(
 		their_addr->sin_port = wsasendto_sin_port;
 		their_addr->sin_addr.s_addr = wsasendto_sin_addr;
 	}
-	if(nReturn == 0)
-	{
-		LogMsg(FormatStr("recvfrom| |0|%s", BinToStr((char FAR * )lpBuffers[0].buf, *lpNumberOfBytesRecvd)), MSG_ADD_PACKAGE);
-	}
+//	if(nReturn == 0)
+//	{
+//		LogMsg(FormatStr("recvfrom| |0|%s", BinToStr((char FAR * )lpBuffers[0].buf, *lpNumberOfBytesRecvd)), MSG_ADD_PACKAGE);
+//	}
 	return nReturn;
 }
 //////////////////////////////END///////////////////////////////
