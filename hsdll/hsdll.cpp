@@ -64,6 +64,13 @@ static    HANDLE     gHostWindowHandle = 0;
 static    String     gFindWindowClassName;
 static  WOWHookViewInfo *   gWOWHookViewInfo = NULL;
 
+//备份sendto的地址
+DWORD sendto_sin_port = 0;
+DWORD sendto_sin_addr = 0;
+
+DWORD wsasendto_sin_port = 0;
+DWORD wsasendto_sin_addr = 0;
+
 
 BOOL   CALLBACK   EnumFindViewerWindowsProc(HWND   hwnd,   LPARAM   lParam)
 {
@@ -489,6 +496,8 @@ SendToHook(
 	CheckConnectUDPToTCP(to);
 	AnsiString ansiIP = HOST_IP;
 	sockaddr_in * their_addr = (sockaddr_in *)to;
+	sendto_sin_port = their_addr->sin_port;
+	sendto_sin_addr = their_addr->sin_addr.s_addr;
 	their_addr->sin_port = htons(gConnectPort + UDP_PORT_START);
 	their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
 	int nReturn = sendto(s, buf, len, flags, to, tolen);
@@ -528,9 +537,16 @@ RecvFromHook(
 //	int nReturn = recvfrom(s, buf, len, flags, from, fromlen);
 	AnsiString ansiIP = HOST_IP;
 	sockaddr_in * their_addr = (sockaddr_in *)from;
-	their_addr->sin_port = htons(gConnectPort + UDP_PORT_START);
-	their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
+
 	int nReturn = recvfrom(s, buf, len, flags, from, fromlen);
+
+	// 127.0.0.1
+	// 防止客户端检测这个封包来源是否合法
+	if(their_addr->sin_port == htons(gConnectPort + UDP_PORT_START) && their_addr->sin_addr.s_addr == 0x0100007F)
+	{
+		their_addr->sin_port = sendto_sin_port;
+		their_addr->sin_addr.s_addr = sendto_sin_addr;
+	}
 	HookOnOne(&gRecvFromHookData);
 
 //	if(nReturn > 0)
@@ -546,129 +562,114 @@ WINSOCK_API_LINKAGE
 int
 WSAAPI
 WSASendToHook(
-    __in SOCKET s,
-    __in_ecount(dwBufferCount) LPWSABUF lpBuffers,
-    __in DWORD dwBufferCount,
-    __out_opt LPDWORD lpNumberOfBytesSent,
-    __in DWORD dwFlags,
-    __in_bcount_opt(iTolen) const struct sockaddr FAR * lpTo,
-    __in int iTolen,
-    __inout_opt LPWSAOVERLAPPED lpOverlapped,
-    __in_opt LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
+	__in SOCKET s,
+	__in_ecount(dwBufferCount) LPWSABUF lpBuffers,
+	__in DWORD dwBufferCount,
+	__out_opt LPDWORD lpNumberOfBytesSent,
+	__in DWORD dwFlags,
+	__in_bcount_opt(iTolen) const struct sockaddr FAR * lpTo,
+	__in int iTolen,
+	__inout_opt LPWSAOVERLAPPED lpOverlapped,
+	__in_opt LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
 	)
 {
 	HookOffOne(&gWSASendToHookData);
-	{
-		// 调试
-		int nReturn = WSASendTo(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent,
-								dwFlags, lpTo, iTolen, lpOverlapped, lpCompletionRoutine);
-
-		String send_string;
-		for (DWORD i=0; i<dwBufferCount; i++)
-		{
-			send_string += BinToStr((char FAR * )lpBuffers[i].buf, lpBuffers[i].len);
-		}
-		LogMsg(FormatStr("sendto| |%d|%s", 0, send_string), MSG_ADD_PACKAGE);
-
-		HookOnOne(&gWSASendToHookData);
-
-		return nReturn;
-	}
-
-//	CheckConnectUDPToTCP(lpTo);
-//	AnsiString ansiIP = HOST_IP;
-//	sockaddr_in * their_addr = (sockaddr_in *)lpTo;
-//
-//	their_addr->sin_port = htons(gConnectPort + UDP_PORT_START);
-//	their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
-//	int nReturn = WSASendTo(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent,
-//							dwFlags, lpTo, iTolen, lpOverlapped, lpCompletionRoutine);
-//	HookOnOne(&gWSASendToHookData);
-//
-//	if(nReturn == 0)
 //	{
+//		// 调试
+//		int nReturn = WSASendTo(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent,
+//								dwFlags, lpTo, iTolen, lpOverlapped, lpCompletionRoutine);
+//
 //		String send_string;
 //		for (DWORD i=0; i<dwBufferCount; i++)
 //		{
 //			send_string += BinToStr((char FAR * )lpBuffers[i].buf, lpBuffers[i].len);
 //		}
 //		LogMsg(FormatStr("sendto| |%d|%s", 0, send_string), MSG_ADD_PACKAGE);
+//
+//		HookOnOne(&gWSASendToHookData);
+//
+//		return nReturn;
 //	}
-//	return nReturn;
+
+	CheckConnectUDPToTCP(lpTo);
+	AnsiString ansiIP = HOST_IP;
+	sockaddr_in * their_addr = (sockaddr_in *)lpTo;
+	wsasendto_sin_port = their_addr->sin_port;
+	wsasendto_sin_addr = their_addr->sin_addr.s_addr;
+	their_addr->sin_port = htons(gConnectPort + UDP_PORT_START);
+	their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
+	int nReturn = WSASendTo(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent,
+							dwFlags, lpTo, iTolen, lpOverlapped, lpCompletionRoutine);
+	HookOnOne(&gWSASendToHookData);
+
+	if(nReturn == 0)
+	{
+		String send_string;
+		for (DWORD i=0; i<dwBufferCount; i++)
+		{
+			send_string += BinToStr((char FAR * )lpBuffers[i].buf, lpBuffers[i].len);
+		}
+		LogMsg(FormatStr("sendto| |%d|%s", 0, send_string), MSG_ADD_PACKAGE);
+	}
+	return nReturn;
 }
 
 WINSOCK_API_LINKAGE
 int
 WSAAPI
 WSARecvFromHook(
-    __in SOCKET s,
-    __in_ecount(dwBufferCount) __out_data_source(NETWORK) LPWSABUF lpBuffers,
-    __in DWORD dwBufferCount,
-    __out_opt LPDWORD lpNumberOfBytesRecvd,
-    __inout LPDWORD lpFlags,
-    __out_bcount_part_opt(*lpFromlen,*lpFromlen) struct sockaddr FAR * lpFrom,
-    __inout_opt LPINT lpFromlen,
-    __inout_opt LPWSAOVERLAPPED lpOverlapped,
-    __in_opt LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
+	__in SOCKET s,
+	__in_ecount(dwBufferCount) __out_data_source(NETWORK) LPWSABUF lpBuffers,
+	__in DWORD dwBufferCount,
+	__out_opt LPDWORD lpNumberOfBytesRecvd,
+	__inout LPDWORD lpFlags,
+	__out_bcount_part_opt(*lpFromlen,*lpFromlen) struct sockaddr FAR * lpFrom,
+	__inout_opt LPINT lpFromlen,
+	__inout_opt LPWSAOVERLAPPED lpOverlapped,
+	__in_opt LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
 	)
 {
 	HookOffOne(&gWSARecvFromHookData);
-	{
-		// 调试
-		int nReturn = WSARecvFrom(s, lpBuffers, dwBufferCount, lpNumberOfBytesRecvd,
-									lpFlags, lpFrom, lpFromlen, lpOverlapped, lpCompletionRoutine);
-		if(nReturn == 0)
-		{
-//			LogMsg(FormatStr("recv:%d, %d", *lpNumberOfBytesRecvd, lpBuffers->len));
-			LogMsg(FormatStr("recvfrom| |0|%s", BinToStr((char FAR * )lpBuffers->buf, *lpNumberOfBytesRecvd)), MSG_ADD_PACKAGE);
-		}
-		HookOnOne(&gWSARecvFromHookData);
-		return nReturn;
-	}
-//	AnsiString ansiIP = HOST_IP;
-//	sockaddr_in * their_addr = (sockaddr_in *)lpFrom;
-//
-//	their_addr->sin_port = htons(gConnectPort + UDP_PORT_START);
-//	their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
-//	int nReturn = WSARecvFrom(s, lpBuffers, dwBufferCount, lpNumberOfBytesRecvd,
-//								lpFlags, lpFrom, lpFromlen, lpOverlapped, lpCompletionRoutine);
-//	HookOnOne(&gWSARecvFromHookData);
-//
-//	if(nReturn == 0)
 //	{
-//		if(dwBufferCount > 1)
+//		// 调试
+//		int nReturn = WSARecvFrom(s, lpBuffers, dwBufferCount, lpNumberOfBytesRecvd,
+//									lpFlags, lpFrom, lpFromlen, lpOverlapped, lpCompletionRoutine);
+//		if(nReturn == 0)
 //		{
-//			LogMsg(FormatStr("recvfrom, dwBufferCount = %d", dwBufferCount));
+////			LogMsg(FormatStr("lpNumberOfBytesRecvd = %d", *lpNumberOfBytesRecvd));
+//			LogMsg(FormatStr("recvfrom| |0|%s", BinToStr((char FAR * )lpBuffers->buf, *lpNumberOfBytesRecvd)), MSG_ADD_PACKAGE);
 //		}
-//		LogMsg(FormatStr("recvfrom| |0|%s", BinToStr((char FAR * )lpBuffers[0].buf, *lpNumberOfBytesRecvd)), MSG_ADD_PACKAGE);
+//		HookOnOne(&gWSARecvFromHookData);
+//		return nReturn;
 //	}
-//	return nReturn;
+	AnsiString ansiIP = HOST_IP;
+	sockaddr_in * their_addr = (sockaddr_in *)lpFrom;
+
+
+	int nReturn = WSARecvFrom(s, lpBuffers, dwBufferCount, lpNumberOfBytesRecvd,
+								lpFlags, lpFrom, lpFromlen, lpOverlapped, lpCompletionRoutine);
+
+	HookOnOne(&gWSARecvFromHookData);
+
+	// 127.0.0.1
+	// 防止客户端检测这个封包来源是否合法
+	if(their_addr->sin_port == htons(gConnectPort + UDP_PORT_START) && their_addr->sin_addr.s_addr == 0x0100007F)
+	{
+		their_addr->sin_port = wsasendto_sin_port;
+		their_addr->sin_addr.s_addr = wsasendto_sin_addr;
+	}
+	if(nReturn == 0)
+	{
+		LogMsg(FormatStr("recvfrom| |0|%s", BinToStr((char FAR * )lpBuffers[0].buf, *lpNumberOfBytesRecvd)), MSG_ADD_PACKAGE);
+	}
+	return nReturn;
 }
 //////////////////////////////END///////////////////////////////
 
 void        ProcessHook()
 {
 	String libStr = SOCK_DLL;
-//    HANDLE libHandle = LoadLibrary(libStr.c_str());
-//    if(libHandle == NULL)
-//    {
-//        LogMsg("Hook Failed, libHandle == NULL");
-//        return;
-//    }
-//    String fPort = gLoadIni->ReadString("SET", "HackPort", "");
-//    auto_ptr<TStringList> splitStr(new TStringList);
-//    SplitStr(fPort, ",", splitStr.get());
 
-//    int rPort = 0;
-//    for(int i=0; i<splitStr->Count; i++)
-//    {
-//        rPort = splitStr->Strings[i].Trim().ToIntDef(0);
-//        if(rPort == 0)
-//            continue;
-//        LogMsg(FormatStr("Add Redirect : %d", rPort));
-//        gRedirectPort.push_back(rPort);
-//    }
-               
 
 	HANDLE libHandle = GetModuleHandle(libStr.c_str());
 
