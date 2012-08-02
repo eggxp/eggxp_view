@@ -957,11 +957,13 @@ void TWOWReviewerMainFrm::WriteServerMSTime(int type, String titleName, TStrings
 void __fastcall TWOWReviewerMainFrm::TimeInfoTimer(TObject *Sender)
 {
 	memPosInfo->Lines->Clear();
+	memPosInfo->Lines->Add(FormatStr("Total Recv: %.2fkb", float(GetWOWProxyManager()->GetTotalRecvBytes()) / 1024));
+	memPosInfo->Lines->Add(FormatStr("Total Send: %.2fkb", float(GetWOWProxyManager()->GetTotalSendBytes()) / 1024));
     float x,y,z;
     x = GetGameWorld()->GetDataFloat("self/posx");
     y = GetGameWorld()->GetDataFloat("self/posy");
     memPosInfo->Lines->Add(FormatStr("GUID  :[low %s, high %s]", GetGameWorld()->GetDataStr("self/guidl"),
-                                            GetGameWorld()->GetDataStr("self/guidh")));
+											GetGameWorld()->GetDataStr("self/guidh")));
     memPosInfo->Lines->Add(FormatStr("mapid :%s", GetGameWorld()->GetDataStr("mapid")));
     memPosInfo->Lines->Add(FormatStr("zoneid:%s", GetGameWorld()->GetDataStr("zoneid")));
 	memPosInfo->Lines->Add(FormatStr("areaid:%s", GetGameWorld()->GetDataStr("areaid")));

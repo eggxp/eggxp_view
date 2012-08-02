@@ -96,6 +96,7 @@ public:
 class WOWProxyManager
 {
 private:
+	CRITICAL_SECTION m_csLock;
 	ASharedPtrQueue<WOWPackage>  m_AllQueue;
     AList<WOWProxy> m_WOWProxys;
     int             m_DestPort;
@@ -113,7 +114,10 @@ private:
 	int             m_ListenThreadCount;
 	String			m_RealmdIP;
 	int				m_RealmdPort;
-    int             m_IsFirstStartWorking;
+	int             m_IsFirstStartWorking;
+
+	DWORD			m_TotalSendBytes;
+	DWORD			m_TotalRecvBytes;
 
 	//简单代理直接模式， 转发任何封包, 不解密
 	bool			m_DirectModel;
@@ -147,6 +151,11 @@ public:
 	//注意： 魔兽世界发给realm和发给world的封包顺序有要求，必须保证顺序！所以allqueue放到公用类来
 	//[达拉然不能登入问题]
 	ASharedPtrQueue<WOWPackage>   * GetAllQueue(){return    &m_AllQueue;}
+
+	DWORD			GetTotalSendBytes() {return m_TotalSendBytes;}
+	DWORD			GetTotalRecvBytes() {return m_TotalRecvBytes;}
+	void			AddTotalSendBytes(DWORD bytes);
+	void			AddTotalRecvBytes(DWORD bytes);
 };
 
 class WOWProxyPool

@@ -161,12 +161,14 @@ int             WOWProxy::RecvNormalProxy(SOCKET  from, char *recvBuf, int recvL
 	allReq->SetPacketProxyType(this->GetProxyType());
 	if(from == m_HostSocket)
 	{
+		GetWOWProxyManager()->AddTotalRecvBytes(recvLen);
 		allReq->SetMark(RECV_MARK);
 	}
 	else
 	{
 //		GetLog()->Info("DirectModel:%s", BinToStr(recvBuf, recvLen));
 		allReq->SetMark(SEND_MARK);
+		GetWOWProxyManager()->AddTotalSendBytes(recvLen);
 	}
 
 	//------------------------------------------------------------
@@ -464,10 +466,14 @@ WOWProxyManager::WOWProxyManager()
 	m_UDPDestPort = 0;
 	m_GateIndex = 0;
 	m_RealmIndex = 0;
+	m_TotalSendBytes = 0;
+	m_TotalRecvBytes = 0;
+	InitializeCriticalSection(&m_csLock);
 }
 
 WOWProxyManager::~WOWProxyManager()
 {
+	DeleteCriticalSection(&m_csLock);
     WSACleanup();//释放资源的操作
 }
 
@@ -703,7 +709,19 @@ WOWProxy    *   WOWProxyManager::GetWOWProxy(int index)
 
 int             WOWProxyManager::GetWOWProxyCount()
 {
-    return      m_WOWProxys.Count();
+	return      m_WOWProxys.Count();
+}
+
+void			WOWProxyManager::AddTotalSendBytes(DWORD bytes)
+{
+	ThreadLock lock(&m_csLock);
+	m_TotalSendBytes += bytes;
+}
+
+void			WOWProxyManager::AddTotalRecvBytes(DWORD bytes)
+{
+	ThreadLock lock(&m_csLock);
+	m_TotalRecvBytes += bytes;
 }
 
 ////////////////////////////////////////////////////////////////
