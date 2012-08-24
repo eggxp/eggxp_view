@@ -445,14 +445,14 @@ void        GameWorld::InternalHandlerPacket(AIndexList<tagPacketHandler>   *han
 	{
 		packet->GetComment()->Add(FormatString("READ EXCEPTION! MESSAGE = %s", e.Message));
 		auto_ptr<TStringList> info(new TStringList);
-		packet->GetInfo(GIT_DETAIL, false, info.get());
+		packet->GetInfo(GIT_DETAIL, false, false, info.get());
 		GetLog()->Warn("e.Message = %s, packet = %s, Info = \r\n%s", e.Message, packet->GetOpCodeMsg(), info->Text);
 	}
 	catch(...)
 	{
 		packet->GetComment()->Add("READ EXCEPTION! ANY");
 		auto_ptr<TStringList> info(new TStringList);
-		packet->GetInfo(GIT_DETAIL, false, info.get());
+		packet->GetInfo(GIT_DETAIL, false, false, info.get());
 		GetLog()->Warn("Excepthon : packet = %s, Info = \r\n%s", packet->GetOpCodeMsg(), info->Text);
 	}
 }

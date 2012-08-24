@@ -255,8 +255,8 @@ PackageContainerManager::~PackageContainerManager()
 
 void                        PackageContainerManager::AddWorldPackageContainer()
 {
-	DefaultPackageDispatcher *send = new DefaultPackageDispatcher;
-    DefaultPackageDispatcher *recv = new DefaultPackageDispatcher;
+	LOLPackageDispatcher *send = new LOLPackageDispatcher;
+    LOLPackageDispatcher *recv = new LOLPackageDispatcher;
     PackageContainer *c = new PackageContainer(send, recv, m_WorldPackageContainer.Count());
     c->SetName(FormatStr("World%d", m_WorldPackageContainer.Count()));
     m_WorldPackageContainer.Add(c);
@@ -409,18 +409,18 @@ bool                        PackageContainerManager::ProcessOneClientMessage(WOW
 	newWOWPackage->SetOrgPrefixData(newWOWPackage->GetOrgData());
     if(newWOWPackage->GetMark() == SEND_MARK)
     {
-        if(newWOWPackage->GetData() != newWOWPackage->GetOrgData())
-        {
-            newWOWPackage->ClientToServerEncrypt();
-		}
+//        if(newWOWPackage->GetData() != newWOWPackage->GetOrgData())
+//        {
+//            newWOWPackage->ClientToServerEncrypt();
+//		}
 		curWOWProxyWorld->GetClientToServerQueue()->Push(newWOWPackage);
 	}
 	else    if(newWOWPackage->GetMark() == RECV_MARK)
 	{
-		if(newWOWPackage->GetData() != newWOWPackage->GetOrgData())
-		{
-			newWOWPackage->ServerToClientEncrypt();
-		}
+//		if(newWOWPackage->GetData() != newWOWPackage->GetOrgData())
+//		{
+//			newWOWPackage->ServerToClientEncrypt();
+//		}
 //		GetLog()->Warn("Push : %s", newWOWPackage->GetOpCodeMsg());
         curWOWProxyWorld->GetServerToClientQueue()->Push(newWOWPackage);
 	}

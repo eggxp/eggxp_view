@@ -11,6 +11,7 @@
 #include "MSanguoPackageDispatcher.h"
 #include "DefaultPackageDispatcher.h"
 #include "DiabloIIIPackageDispatcher.h"
+#include "LOLPackageDispatcher.h"
 #include "AQueue.h"
 
 int GetLogicPackIndex();
@@ -91,8 +92,8 @@ class WOWProxy;
 class PackageContainerManager
 {
 private:
-	DefaultPackageDispatcher       m_SendAuthPackageDispatcher;
-    DefaultPackageDispatcher       m_RecvAuthPackageDispatcher;
+	LOLPackageDispatcher       m_SendAuthPackageDispatcher;
+    LOLPackageDispatcher       m_RecvAuthPackageDispatcher;
     PackageContainer            m_AuthPackageContainer;
 
 	AList<PackageDispatcher>      m_SendWorldPackageDispatcher;

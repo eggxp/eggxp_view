@@ -10,6 +10,7 @@
 #include "WOWPacketReviewer.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
+#pragma link "cspin"
 #pragma resource "*.dfm"
 TfrmBlock *frmBlock;
 
@@ -48,7 +49,7 @@ void                CopyListViewSelectText(TListView * lv, AList<WOWPackage> * l
             if(!curPack)
                 continue;
 
-			curPack->GetInfo(getInfoType, !WOWReviewerMainFrm->cbShowHead->Checked, copyStr.get());
+			curPack->GetInfo(getInfoType, !WOWReviewerMainFrm->cbShowHead->Checked, WOWReviewerMainFrm->cbShowOrgPack->Checked, copyStr.get());
         }
     }
 
@@ -265,29 +266,32 @@ void __fastcall TfrmBlock::lvAllCustomDrawSubItem(TCustomListView *Sender,
 //---------------------------------------------------------------------------
 void __fastcall TfrmBlock::btNextClick(TObject *Sender)
 {
-	if(!cbBlockOnly->Checked)
+	for(int i=0; i < edtNextCount->Value; i++)
 	{
-		GetPackageContainerManager()->ProcessClientMessage(1, 1, -1);
-	}
-	else
-	{
-		PackageContainer * curPackageContainer = GetPackageContainerManager()->GetWorldPackageContainer(m_WatchConnectionIndex);
-		if(!curPackageContainer)
-			return;
-		for(; m_BlockOnlyPackIndex < curPackageContainer->GetFilterAll()->Count(); m_BlockOnlyPackIndex++)
+		if(!cbBlockOnly->Checked)
 		{
-			WOWPackage * curPack = curPackageContainer->GetFilterAll()->At(m_BlockOnlyPackIndex);
-			if(!curPack)
-			{
+			GetPackageContainerManager()->ProcessClientMessage(1, 1, -1);
+		}
+		else
+		{
+			PackageContainer * curPackageContainer = GetPackageContainerManager()->GetWorldPackageContainer(m_WatchConnectionIndex);
+			if(!curPackageContainer)
 				return;
-			}
-			if (curPack->GetProcessed())
+			for(; m_BlockOnlyPackIndex < curPackageContainer->GetFilterAll()->Count(); m_BlockOnlyPackIndex++)
 			{
-				continue;
+				WOWPackage * curPack = curPackageContainer->GetFilterAll()->At(m_BlockOnlyPackIndex);
+				if(!curPack)
+				{
+					return;
+				}
+				if (curPack->GetProcessed())
+				{
+					continue;
+				}
+				GetPackageContainerManager()->ProcessOneClientMessage(curPack);
+				WOWReviewerMainFrm->SetCommentText(GetListViewCommentTextByIndex(m_BlockOnlyPackIndex, curPackageContainer->GetFilterAll()));
+				break;
 			}
-			GetPackageContainerManager()->ProcessOneClientMessage(curPack);
-			WOWReviewerMainFrm->SetCommentText(GetListViewCommentTextByIndex(m_BlockOnlyPackIndex, curPackageContainer->GetFilterAll()));
-			break;
 		}
 	}
     this->Refresh();

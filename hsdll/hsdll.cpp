@@ -579,12 +579,13 @@ WSASendToHook(
 //		int nReturn = WSASendTo(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent,
 //								dwFlags, lpTo, iTolen, lpOverlapped, lpCompletionRoutine);
 //
-//		String send_string;
-//		for (DWORD i=0; i<dwBufferCount; i++)
-//		{
-//			send_string += BinToStr((char FAR * )lpBuffers[i].buf, lpBuffers[i].len);
-//		}
-//		LogMsg(FormatStr("sendto| |%d|%s", 0, send_string), MSG_ADD_PACKAGE);
+//	String send_string;
+//	for (DWORD i=0; i<dwBufferCount; i++)
+//	{
+//		send_string = BinToStr((char FAR * )lpBuffers[i].buf, lpBuffers[i].len);
+//		LogMsg(FormatStr("sendto| |%d|%s", 0, send_string));
+//	}
+//	LogMsg("--------------------------------");
 //
 //		HookOnOne(&gWSASendToHookData);
 //
@@ -670,6 +671,8 @@ void        ProcessHook()
 {
 	String libStr = SOCK_DLL;
 
+	String commandLine = ::GetCommandLine();
+	LogMsg(commandLine, MSG_COMMANDLINE);
 
 	HANDLE libHandle = GetModuleHandle(libStr.c_str());
 

@@ -129,7 +129,7 @@ public:
 
 	int             GetHeadSize();
 	char    *       GetHead();
-	void            GetInfo(TGetInfoType getInfoType, bool showPackHead, TStrings * output);
+	void            GetInfo(TGetInfoType getInfoType, bool showPackHead, bool showOrgPack, TStrings * output);
 	void			ChangeOPCode(int opcode);
 	void  			RemoveContent(int pos, int size);
 };

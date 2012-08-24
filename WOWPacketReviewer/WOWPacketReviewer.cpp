@@ -15,6 +15,7 @@
 #include "gameworld.h"
 #include "BlockWindowFrm.h"
 #include "Opcodes.h"
+#include "LOLPackageDispatcher.h"
 #include "FiberContext.h"
 #include "KOEItlbm.h"
 #include "FiberCode.h"
@@ -346,6 +347,20 @@ void __fastcall TWOWReviewerMainFrm::WndProcs(Messages::TMessage &Message)
 				//颠倒一下
 				GetGameWorld()->SetClientSessionKey(msg);
 			}
+			else if(sendData->dwData == MSG_COMMANDLINE)
+			{
+				//LOL:得到了LOL的命令行, 开始获取base64数值
+				//"F:/LOL_EN_GAME/League of Legends/RADS/solutions/lol_game_client_sln/releases/0.0.0.179/deploy/League of Legends.exe" "8394" "LoLLauncher.exe" "F:/LOL_EN_GAME/League of Legends/RADS/projects/lol_air_client/releases/0.0.0.193/deploy/LolClient.exe" "216.133.234.60 5211 SKkFXb9Hz8x/1+o5reAOyg== 29529788"
+                auto_ptr<TStringList> split_strs(new TStringList);
+				SplitStr(msg, " ", split_strs.get());
+				if (split_strs->Count < 2)
+				{
+					return;
+				}
+				String lol_key_base64 = split_strs->Strings[split_strs->Count - 2];
+				GetLOLBlowFish()->Init(lol_key_base64);
+				this->LogMsg(FormatStr("LOL Key = %s",lol_key_base64));
+			}
 		}
 	}
 	else if(Message.Msg == WM_MOVE)
@@ -454,19 +469,28 @@ void __fastcall TWOWReviewerMainFrm::lvSendData(TObject *Sender,
     if(!curPack)
     {
         return;
-    }
+	}
 
+	AnsiString curData;
+	if (cbShowOrgPack->Checked)
+	{
+		curData = curPack->GetOrgData();
+	}
+	else
+	{
+		curData = curPack->GetData();
+	}
     Item->Caption = IntToStr(curPack->GetIndex());
     Item->SubItems->Add(curPack->GetTime());
-    Item->SubItems->Add(curPack->GetData().Length());
+    Item->SubItems->Add(curData.Length());
     Item->SubItems->Add(curPack->GetOpCodeMsg());
     if(cbWatchType->ItemIndex == 0)
     {
-        Item->SubItems->Add(BinToStr(curPack->GetData().c_str(), curPack->GetData().Length()));
+        Item->SubItems->Add(BinToStr(curData.c_str(), curData.Length()));
     }
     else
     {
-        Item->SubItems->Add(BinToStr(curPack->GetData().c_str()+GetShowHeadSize(curPack), curPack->GetData().Length()-GetShowHeadSize(curPack)));
+        Item->SubItems->Add(BinToStr(curData.c_str()+GetShowHeadSize(curPack), curData.Length()-GetShowHeadSize(curPack)));
     }
 }
 //---------------------------------------------------------------------------
@@ -483,20 +507,28 @@ void __fastcall TWOWReviewerMainFrm::lvRecvData(TObject *Sender,
         return;
     }
 
+	AnsiString curData;
+	if (cbShowOrgPack->Checked)
+	{
+		curData = curPack->GetOrgData();
+	}
+	else
+	{
+		curData = curPack->GetData();
+	}
     Item->Caption = IntToStr(curPack->GetIndex());
     Item->SubItems->Add(curPack->GetTime());
-    Item->SubItems->Add(curPack->GetData().Length());
+    Item->SubItems->Add(curData.Length());
     Item->SubItems->Add(curPack->GetOpCodeMsg());
 
     if(cbWatchType->ItemIndex == 0)
     {
-        Item->SubItems->Add(BinToStr(curPack->GetData().c_str(), curPack->GetData().Length()));
+        Item->SubItems->Add(BinToStr(curData.c_str(), curData.Length()));
     }
     else
     {
-        Item->SubItems->Add(BinToStr(curPack->GetData().c_str()+GetShowHeadSize(curPack), curPack->GetData().Length()-GetShowHeadSize(curPack)));
+        Item->SubItems->Add(BinToStr(curData.c_str()+GetShowHeadSize(curPack), curData.Length()-GetShowHeadSize(curPack)));
     }
-//    Item->SubItems->Add(curPack->GetData());
 }
 //---------------------------------------------------------------------------
 
@@ -511,23 +543,28 @@ void __fastcall TWOWReviewerMainFrm::lvAllData(TObject *Sender, TListItem *Item)
         return;
     }
 
-    Item->Caption = IntToStr(curPack->GetIndex());
-    Item->SubItems->Add(curPack->GetTime());
-    Item->SubItems->Add(curPack->GetMark());
-    Item->SubItems->Add(curPack->GetData().Length());
-    Item->SubItems->Add(curPack->GetOpCodeMsg());
-    if(cbWatchType->ItemIndex == 0)
-    {
-        Item->SubItems->Add(BinToStr(curPack->GetData().c_str(), curPack->GetData().Length()));
+	AnsiString curData;
+	if (cbShowOrgPack->Checked)
+	{
+		curData = curPack->GetOrgData();
+	}
+	else
+	{
+		curData = curPack->GetData();
+	}
+	Item->Caption = IntToStr(curPack->GetIndex());
+	Item->SubItems->Add(curPack->GetTime());
+	Item->SubItems->Add(curPack->GetMark());
+	Item->SubItems->Add(curData.Length());
+	Item->SubItems->Add(curPack->GetOpCodeMsg());
+	if(cbWatchType->ItemIndex == 0)
+	{
+		Item->SubItems->Add(BinToStr(curData.c_str(), curData.Length()));
     }
     else
     {
-        Item->SubItems->Add(BinToStr(curPack->GetData().c_str()+GetShowHeadSize(curPack), curPack->GetData().Length()-GetShowHeadSize(curPack)));
+        Item->SubItems->Add(BinToStr(curData.c_str()+GetShowHeadSize(curPack), curData.Length()-GetShowHeadSize(curPack)));
     }
-
-//    Item->SubItems->Add(curPack->GetData());
-
-
 }
 //---------------------------------------------------------------------------
 bool TWOWReviewerMainFrm::GetVisibleListView(TListView **lv, AList<WOWPackage> **listData)
@@ -693,9 +730,9 @@ void __fastcall TWOWReviewerMainFrm::lvAllClick(TObject *Sender)
 void            TWOWReviewerMainFrm::AddParseStr(String mark)
 {
     WOWPackage   curPack;
-    GetSendPack(&curPack, mark);
-    GetGameWorld()->HandlerPacket(&curPack);
-    curPack.GetInfo(GIT_DETAIL, !WOWReviewerMainFrm->cbShowHead->Checked, memComment->Lines);
+	GetSendPack(&curPack, mark);
+	GetGameWorld()->HandlerPacket(&curPack);
+    curPack.GetInfo(GIT_DETAIL, !WOWReviewerMainFrm->cbShowHead->Checked, WOWReviewerMainFrm->cbShowOrgPack->Checked, memComment->Lines);
     SetCommentText(curPack.GetComment()->Text);
 }
 //---------------------------------------------------------------------------
@@ -758,7 +795,8 @@ void __fastcall TWOWReviewerMainFrm::btFloatToTimeClick(TObject *Sender)
 
 void __fastcall TWOWReviewerMainFrm::cbShowOrgPackClick(TObject *Sender)
 {
-    GetGameWorld()->SetEnableShowOrgPacket(cbShowOrgPack->Checked);
+	GetGameWorld()->SetEnableShowOrgPacket(cbShowOrgPack->Checked);
+	this->Refresh(1);
 }
 //---------------------------------------------------------------------------
 

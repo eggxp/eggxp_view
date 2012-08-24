@@ -5,20 +5,20 @@
 #include <tchar.h>
 
 //---------------------------------------------------------------------------
-USEFORM("GameDataViewerFrm.cpp", FrmGameDataViewer);
-USEFORM("MapFrm.cpp", FrmMap);
 USEFORM("CommentFrm.cpp", FrmComment);
-USEFORM("WOWPacketReviewer.cpp", WOWReviewerMainFrm);
-USEFORM("BlockWindowFrm.cpp", frmBlock);
 USEFORM("DataViewerFrm.cpp", FrmDBCViewer);
+USEFORM("BlockWindowFrm.cpp", frmBlock);
+USEFORM("GameDataViewerFrm.cpp", FrmGameDataViewer);
+USEFORM("WOWPacketReviewer.cpp", WOWReviewerMainFrm);
 USEFORM("ValuesUpdateFrm.cpp", FrmValuesUpdate);
+USEFORM("MapFrm.cpp", FrmMap);
 USEFORM("DrawMapFrm.cpp", FrmDrawMap);
 USEFORM("DockFrm.cpp", frmDock);
 //---------------------------------------------------------------------------
 WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
-    try
-    {
+	try
+	{
 		Application->Initialize();
 		Application->MainFormOnTaskBar = true;
 		Application->CreateForm(__classid(TWOWReviewerMainFrm), &WOWReviewerMainFrm);
@@ -31,7 +31,7 @@ WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 		Application->CreateForm(__classid(TFrmDrawMap), &FrmDrawMap);
 		Application->CreateForm(__classid(TfrmDock), &frmDock);
 		Application->Run();
-    }
+	}
     catch (Exception &exception)
     {
          Application->ShowException(&exception);

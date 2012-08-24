@@ -8,11 +8,16 @@
 #include "Opcodes.h"
 #include "ReviewerCommon.h"
 #include "ShareDef.h"
+
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
 
+#define		USE_ENET_CONNECT
+
 #define     MAX_BUF_SIZE    5120
+
+#define PEER_MTU 996
 
 #define     WATCH_PORT      8085
 
@@ -45,6 +50,10 @@ WOWProxy::WOWProxy()
 	fpOnUserAuthPacket = NULL;
 	m_ProxyType = PROXY_TYPE_REALM;
 	m_ClientAddr.sin_port = 0;
+	m_enet_server = NULL;
+	m_enet_client_peer = NULL;
+	m_enet_server_peer = NULL;
+	m_enet_client = NULL;
 }
 
 WOWProxy::~WOWProxy()
@@ -121,7 +130,8 @@ int             WOWProxy::SendToProxy(SOCKET  to, ASharedPtrQueue<WOWPackage>  *
 		return  2;
 	}
 
-	AnsiString pack = curPack->GetOrgPrefixData();
+//	AnsiString pack = curPack->GetOrgPrefixData();
+	AnsiString pack = curPack->GetOrgData();
 
 	pack = pack.Unique();
 
@@ -233,7 +243,8 @@ int             WOWProxy::SendProxy(SOCKET  to, ASharedPtrQueue<WOWPackage>  *po
 		return  2;
 	}
 
-	AnsiString pack = curPack->GetOrgPrefixData();
+//	AnsiString pack = curPack->GetOrgPrefixData();
+	AnsiString pack = curPack->GetOrgData();
 
 //    if(m_ProxyType != PROXY_TYPE_REALM)
 //    {
@@ -361,6 +372,177 @@ bool            WOWProxy::StartUDP(SOCKET client, String ip, int port)
 	return true;
 }
 
+int             WOWProxy::HostRecvENetThread(SingleThread * self)
+{
+	if(m_enet_server_peer == NULL)
+		return 10;
+	enet_uint8 channel_id = 0;
+	ENetPacket *    receive_pack = enet_peer_receive(m_enet_server_peer, &channel_id);
+	if (receive_pack == NULL)
+		return 1;
+
+	RecvENetPacket(receive_pack, RECV_MARK);
+	return 0;
+}
+
+int             WOWProxy::HostSendENetThread(SingleThread * self)
+{
+	if(m_enet_server_peer == NULL)
+		return 10;
+
+	shared_ptr<WOWPackage> curPack;
+	if(!m_ClientToServerQueue.Pop(&curPack))
+	{
+		return  2;
+	}
+
+//	AnsiString pack = curPack->GetOrgPrefixData();
+	AnsiString send_pack = curPack->GetOrgData();
+	send_pack = send_pack.Unique();
+
+	ENetPacket * packet = enet_packet_create (send_pack.c_str(),
+		send_pack.Length(), ENET_PACKET_FLAG_RELIABLE);
+
+	GetLog()->Warn("=================Send:%d. %s", send_pack.Length(), BinToStr(send_pack.c_str(),
+		send_pack.Length()));
+	enet_peer_send(m_enet_server_peer, 0, packet);
+	enet_host_flush(m_enet_client);
+	return 0;
+}
+
+int             WOWProxy::ClientRecvENetThread(SingleThread * self)
+{
+	if(m_enet_server == NULL)
+		return 10;
+	ENetEvent event;
+
+	while(enet_host_service(m_enet_server, & event, 10) > 0) // > 0 we dispatch all received packets
+	{
+		switch (event.type)
+		{
+			case ENET_EVENT_TYPE_CONNECT:
+			{
+				/* Set some defaults */
+				event.peer->mtu = PEER_MTU;
+				// 新客户端登陆
+				m_enet_client_peer = event.peer;
+				break;
+			}
+			case ENET_EVENT_TYPE_RECEIVE:
+			{
+				// 收到封包
+				/* Clean up the packet now that we're done using it. */
+				RecvENetPacket(event.packet, SEND_MARK);
+				enet_packet_destroy (event.packet);
+				break;
+			}
+			case ENET_EVENT_TYPE_DISCONNECT:
+			{
+				/* Cleanup */
+				delete event.peer->data;
+				break;
+			}
+		}
+	}
+	return 1;
+}
+
+int             WOWProxy::ClientSendENetThread(SingleThread * self)
+{
+	if(m_enet_server == NULL)
+		return 10;
+
+	shared_ptr<WOWPackage> curPack;
+	if(!m_ServerToClientQueue.Pop(&curPack))
+	{
+		return  2;
+	}
+
+//	AnsiString pack = curPack->GetOrgPrefixData();
+	AnsiString send_pack = curPack->GetOrgData();
+	send_pack = send_pack.Unique();
+
+	ENetPacket * packet = enet_packet_create (send_pack.c_str(),
+		send_pack.Length(), ENET_PACKET_FLAG_RELIABLE);
+	enet_peer_send(m_enet_client_peer, 0, packet);
+	return 0;
+}
+
+bool            WOWProxy::StartUDPENet(String ip, int port, int listen_port)
+{
+	m_DesIP = ip;
+	m_DesPort = port;
+	ENetAddress address;
+	address.host = ENET_HOST_ANY;
+	address.port = listen_port;
+	m_enet_server = enet_host_create(&address, 32, 0, 0);
+	if (m_enet_server == NULL)
+	{
+		return false;
+	}
+
+	m_enet_client = enet_host_create(NULL, 1, 0, 0);
+	if (m_enet_client == NULL)
+	{
+		return false;
+	}
+	GetLog()->Warn("m_enet_client, socket = %d", m_enet_client->socket);
+
+
+	ENetAddress server_address;
+	ENetEvent event;
+	/* Connect to some.server.net:1234. */
+	AnsiString destIP = m_DesIP;
+	enet_address_set_host (& server_address, destIP.c_str());
+	server_address.port = m_DesPort;
+	/* Initiate the connection, allocating the two channels 0 and 1. */
+	m_enet_server_peer = enet_host_connect (m_enet_client, & server_address, 7);
+	if (m_enet_server_peer == NULL)
+	{
+		return false;
+	}
+	if (!(enet_host_service (m_enet_client, & event, 5000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT))
+	{
+		// 创建失败
+		return false;
+	}
+
+	GetLog()->Warn("ENet Connect OK!");
+	//创建收发处理线程
+	UserThread *curThread = GetThreadManager()->ManagerCreateThread("HostRecvENetThread", HostRecvENetThread, false);
+	curThread->GetThread()->fpInitFunc = ThreadInitFunc;
+	curThread->GetThread()->fpUnInitFunc = ThreadUnInitFunc;
+	curThread = GetThreadManager()->ManagerCreateThread("HostSendENetThread", HostSendENetThread, false);
+	curThread->GetThread()->fpInitFunc = ThreadInitFunc;
+	curThread->GetThread()->fpUnInitFunc = ThreadUnInitFunc;
+	curThread = GetThreadManager()->ManagerCreateThread("ClientRecvENetThread", ClientRecvENetThread, false);
+	curThread->GetThread()->fpInitFunc = ThreadInitFunc;
+	curThread->GetThread()->fpUnInitFunc = ThreadUnInitFunc;
+	curThread = GetThreadManager()->ManagerCreateThread("ClientSendENetThread", ClientSendENetThread, false);
+	curThread->GetThread()->fpInitFunc = ThreadInitFunc;
+	curThread->GetThread()->fpUnInitFunc = ThreadUnInitFunc;
+	GetLog()->Warn("Finish Starting WorkerProxy ENET Threads");
+	return true;
+}
+
+void			WOWProxy::RecvENetPacket(ENetPacket *packet, String mark)
+{
+	int recvLen = packet->dataLength;
+	AnsiString pack = AnsiString((char *)packet->data, recvLen);
+	shared_ptr<WOWPackage> allReq(new WOWPackage(pack, gPackIndex));
+	allReq->SetPacketProxyType(PROXY_TYPE_WORLD);
+
+	allReq->SetMark(mark);
+	GetWOWProxyManager()->AddTotalSendBytes(recvLen);
+
+
+    allReq->SetDestIP(m_DesIP);
+    allReq->SetDestPort(m_DesPort);
+	allReq->SetPacketProxyIndex(0);
+	GetWOWProxyManager()->GetAllQueue()->Push(allReq);
+    gPackIndex++;
+}
+
 bool            WOWProxy::Start(SOCKET client, SOCKADDR_IN clientAddr, String ip, int port)
 {
     m_DesIP = ip;
@@ -469,6 +651,9 @@ WOWProxyManager::WOWProxyManager()
 	m_TotalSendBytes = 0;
 	m_TotalRecvBytes = 0;
 	InitializeCriticalSection(&m_csLock);
+
+	enet_initialize();
+	atexit(enet_deinitialize);
 }
 
 WOWProxyManager::~WOWProxyManager()
@@ -563,7 +748,12 @@ void            WOWProxyManager::SetDestAddress(String addr)
 		m_GateIndex++;
 		curProxy->SetRealmIndex(m_RealmIndex);
 		curProxy->SetProxyType(PROXY_TYPE_WORLD);
+
+		#ifdef USE_ENET_CONNECT
+		curProxy->StartUDPENet(m_UDPDestIP, m_UDPDestPort, m_ListenPort + UDP_PORT_START);
+		#else
 		curProxy->StartUDP(m_ListenSocketUDP, m_UDPDestIP, m_UDPDestPort);
+		#endif
 		return;
 	}
 	m_DestIP = splitStr->Strings[1];
@@ -672,10 +862,13 @@ bool            WOWProxyManager::Start(int listenPort, int listenThreadCount)
 		return false;
 	}
 	// UDP
+	#ifdef USE_ENET_CONNECT
+	#else
 	if (!StartListenPortUDP(listenPort + UDP_PORT_START))
 	{
 		return false;
 	}
+	#endif
 	return true;
 }
 

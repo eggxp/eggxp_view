@@ -10,7 +10,7 @@
 #include "AList.h"
 #include "AMap.h"
 #include "PackageCommon.h"
-
+#include <enet_enet.h>
 
 
 class WOWProxy;
@@ -35,7 +35,11 @@ private:
     SOCKADDR_IN     m_ClientAddr;
 
     SOCKET          m_ClientSocket;
-    SOCKET          m_HostSocket;
+	SOCKET          m_HostSocket;
+	ENetHost*       m_enet_server;
+	ENetPeer *		m_enet_client_peer;
+	ENetPeer *		m_enet_server_peer;
+	ENetHost* 		m_enet_client;
 
     int             m_DestIndex;
     int             m_RealmIndex;       // 20110328 ¶àrealm»úÖÆ
@@ -62,8 +66,15 @@ private:
 	int             ClientRecvFromThread(SingleThread * self);
 	int             ClientSendToThread(SingleThread * self);
 
+	int             HostRecvENetThread(SingleThread * self);
+	int             HostSendENetThread(SingleThread * self);
+	int             ClientRecvENetThread(SingleThread * self);
+	int             ClientSendENetThread(SingleThread * self);
+
 	int				ThreadInitFunc(SingleThread * self);
 	int				ThreadUnInitFunc(SingleThread * self);
+
+	void			RecvENetPacket(ENetPacket *packet, String mark);
     
 public:
     WOWProxy();
@@ -71,6 +82,7 @@ public:
    	TOnUserAuthPacket	fpOnUserAuthPacket;
 	bool            Start(SOCKET client, SOCKADDR_IN clientAddr, String ip, int port);
 	bool            StartUDP(SOCKET client, String ip, int port);
+	bool            StartUDPENet(String ip, int port, int listen_port);
     void            Close();
 
 	ASharedPtrQueue<WOWPackage>   * GetClientToServerQueue(){return  &m_ClientToServerQueue;}

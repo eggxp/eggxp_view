@@ -114,6 +114,24 @@ object frmBlock: TfrmBlock
       TabOrder = 3
       OnClick = btResetBlockOnlyClick
     end
+    object edtNextCount: TCSpinEdit
+      Left = 24
+      Top = 92
+      Width = 121
+      Height = 22
+      MaxValue = 9999
+      MinValue = 1
+      TabOrder = 4
+      Value = 1
+    end
+    object StaticText1: TStaticText
+      Left = 24
+      Top = 71
+      Width = 59
+      Height = 17
+      Caption = 'Next Count'
+      TabOrder = 5
+    end
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer

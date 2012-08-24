@@ -13,6 +13,7 @@
 #include "AList.h"
 #include "PackageCommon.h"
 #include <Dialogs.hpp>
+#include "cspin.h"
 class WOWPackage;
 //---------------------------------------------------------------------------
 void                CopyListViewSelectText(TListView * lv, AList<WOWPackage> * listData, TGetInfoType getInfoType);
@@ -40,6 +41,8 @@ __published:	// IDE-managed Components
 	TMenuItem *CopyDetail1;
 	TMenuItem *CopyLine1;
 	TMenuItem *CopyCVS1;
+	TCSpinEdit *edtNextCount;
+	TStaticText *StaticText1;
     void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
     void __fastcall Timer1Timer(TObject *Sender);
     void __fastcall lvAllData(TObject *Sender, TListItem *Item);

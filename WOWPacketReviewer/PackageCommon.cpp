@@ -121,7 +121,7 @@ void            WOWPackage::ClientToServerDecrypt()
         return;
     m_Data = m_OrgData;
     m_Data = m_Data.Unique();
-    DecryptClientToServer(this->GetPacketProxyIndex(), m_Data.c_str(), sizeof(ClientPktHeader));
+    DecryptClientToServer(this->GetPacketProxyIndex(), m_Data.c_str(), this->GetHeadSize());
     m_Decrypted = 1;
 }
 
@@ -154,7 +154,7 @@ void            WOWPackage::ClientToServerEncrypt()
 {
 	m_OrgPrefixData = m_Data;
     m_OrgPrefixData = m_OrgPrefixData.Unique();
-    EncryptClientToServer(this->GetPacketProxyIndex(), m_OrgPrefixData.c_str(), sizeof(ClientPktHeader));
+    EncryptClientToServer(this->GetPacketProxyIndex(), m_OrgPrefixData.c_str(), this->GetHeadSize());
 }
 
 void            WOWPackage::ServerToClientEncrypt()
@@ -234,19 +234,20 @@ void            WOWPackage::WritePackGUID(int &pos, uint64 guid)
 
 int             WOWPackage::GetHeadSize()
 {
-	if(m_PackType == 1)
-		return 0;
-    if(this->GetMark() == SEND_MARK)
-    {
-		return      4;
-	}
-	else
-	{
-        return      4;
-    }
+//	if(m_PackType == 1)
+//		return 0;
+//    if(this->GetMark() == SEND_MARK)
+//    {
+//		return      8;
+//	}
+//	else
+//	{
+//        return      8;
+//    }
+	return 8;
 }
 
-void            WOWPackage::GetInfo(TGetInfoType getInfoType, bool showPackHead, TStrings * output)
+void            WOWPackage::GetInfo(TGetInfoType getInfoType, bool showPackHead, bool showOrgPack, TStrings * output)
 {
     ASSERT(output)
     output->BeginUpdate();
@@ -257,8 +258,17 @@ void            WOWPackage::GetInfo(TGetInfoType getInfoType, bool showPackHead,
     if(showPackHead == false)
     {
         headsize = GetHeadSize();
-    }
-    AnsiString bindata = AnsiString(this->GetData().c_str()+headsize, this->GetData().Length()-headsize);
+	}
+	AnsiString getData;
+	if (showOrgPack)
+	{
+		getData = this->GetOrgData();
+	}
+	else
+	{
+		getData = this->GetData();
+	}
+    AnsiString bindata = AnsiString(getData.c_str()+headsize, getData.Length()-headsize);
 	if(getInfoType == GIT_LINE)
 	{
 		output->Add(BinToStr(bindata.c_str(), bindata.Length()));
@@ -269,7 +279,7 @@ void            WOWPackage::GetInfo(TGetInfoType getInfoType, bool showPackHead,
 	{
 		output->Add(this->GetTime());
 		output->Add(FormatString("DIR   : %s", this->GetMark()));
-		output->Add(FormatString("LENGTH: %d", this->GetData().Length()));
+		output->Add(FormatString("LENGTH: %d", getData.Length()));
 		output->Add(FormatString("OPCODE: %s (0x%X)", this->GetOpCodeMsg(), this->GetOpCode()));
 		output->Add("DATA:");
 		BeautifulHex(bindata, output);
@@ -293,7 +303,7 @@ void            WOWPackage::GetInfo(TGetInfoType getInfoType, bool showPackHead,
 		result = IntToStr(this->GetIndex()) + "\t";
 		result += this->GetTime() + "\t";
 		result += this->GetMark() + "\t";
-		result += IntToStr(this->GetData().Length()) + "\t";
+		result += IntToStr(getData.Length()) + "\t";
 		result += this->GetOpCodeMsg() + "\t";
 		result += BinToStr(bindata.c_str(), bindata.Length());
 		output->Add(result);
