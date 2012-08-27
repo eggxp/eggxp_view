@@ -64,10 +64,10 @@ private:
     String          m_Mark;
 	int             m_Decrypted;
 	int             m_BigPacketDecrypted;
-    int             m_Processed;
-    String          m_Time;
-    int             m_OpCode;
-    AnsiString          m_Decompress;
+	int             m_Processed;
+	String          m_Time;
+	int             m_OpCode;
+	AnsiString          m_Decompress;
 	auto_ptr<TStringList>     m_Comment;
 	int				m_PackType;			//1. Auth 0.World
 	void			OnInit();
@@ -75,10 +75,12 @@ private:
 	uint64			m_Guid;
 	int				m_ForceSend;
 	int				m_PacketProxyType;
-    int				m_PacketProxyIndex;
+	int				m_PacketProxyIndex;
 
-    String          m_DestIP;
-    int             m_DestPort;
+	String          m_DestIP;
+	int             m_DestPort;
+	bool			m_NotShowInGui;		//是否显示出来
+	int				m_HeadSize;
 
 public:
     WOWPackage();
@@ -116,7 +118,9 @@ public:
     GEN_GET_SET(int, PacketProxyIndex);
     GEN_GET_SET(String, DestIP);
     GEN_GET_SET(int, DestPort);
-    GEN_GET_SET(int, BigPacketDecrypted);
+	GEN_GET_SET(int, BigPacketDecrypted);
+	GEN_GET_SET(bool, NotShowInGui);
+	GEN_GET_SET(int, HeadSize);
     TStringList *   GetComment() {return    m_Comment.get();}
     void            AddComment(String key, String value);
 
@@ -127,7 +131,6 @@ public:
     void            WritePackGUID(int &pos, uint64 guid);
     AnsiString          ReadString(int &pos);
 
-	int             GetHeadSize();
 	char    *       GetHead();
 	void            GetInfo(TGetInfoType getInfoType, bool showPackHead, bool showOrgPack, TStrings * output);
 	void			ChangeOPCode(int opcode);

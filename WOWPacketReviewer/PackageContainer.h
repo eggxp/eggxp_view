@@ -61,6 +61,7 @@ public:
 	void					LoadFilter();
 	String					GetSaveFilterName();
 	bool					HideFilterOpcode(int opcode, uint64 guid);
+	bool					NeedHidePackage(WOWPackage *	packet);
 
     void                    OnGetSendWOWPack(WOWPackage *	packet);
     void                    OnGetRecvWOWPack(WOWPackage *	packet);

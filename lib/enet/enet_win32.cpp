@@ -28,7 +28,7 @@ enet_initialize (void)
        return -1;
     }
 
-    timeBeginPeriod (1);
+	timeBeginPeriod (1);
 
     return 0;
 }
@@ -291,10 +291,10 @@ enet_socket_receive (ENetSocket socket,
        return -1;
     }
 
-	GetLog()->Warn("----------------------------recv socket:%d. bufferCount = %d", socket, bufferCount);
+	GetLog()->Warn("----------------------------recv socket:%d. bufferCount = %d. recvLength = %d", socket, bufferCount, recvLength);
 	for (DWORD i=0; i<bufferCount; i++)
 	{
-		GetLog()->Warn("[%d]%s", buffers[i].dataLength, BinToStr((char *)buffers[i].data, buffers[i].dataLength));
+		GetLog()->Warn("[%d]%s", recvLength, BinToStr((char *)buffers[i].data, recvLength));
 	}
 
     if (flags & MSG_PARTIAL)

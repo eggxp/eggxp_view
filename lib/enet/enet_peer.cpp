@@ -508,8 +508,12 @@ enet_peer_queue_acknowledgement (ENetPeer * peer, const ENetProtocol * command, 
     peer -> outgoingDataTotal += sizeof (ENetProtocolAcknowledge);
 
     acknowledgement -> sentTime = sentTime;
-    acknowledgement -> command = * command;
-    
+	acknowledgement -> command = * command;
+	if (acknowledgement -> command.header.channelID == 0xFF)
+	{
+		acknowledgement -> command.header.channelID = 1;
+	}
+
     enet_list_insert (enet_list_end (& peer -> acknowledgements), acknowledgement);
     
     return acknowledgement;

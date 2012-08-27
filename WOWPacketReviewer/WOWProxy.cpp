@@ -13,7 +13,7 @@
 
 #pragma package(smart_init)
 
-#define		USE_ENET_CONNECT
+//#define		USE_ENET_CONNECT
 
 #define     MAX_BUF_SIZE    5120
 
@@ -134,7 +134,8 @@ int             WOWProxy::SendToProxy(SOCKET  to, ASharedPtrQueue<WOWPackage>  *
 	AnsiString pack = curPack->GetOrgData();
 
 	pack = pack.Unique();
-
+	GetLog()->Warn("socket:%d", to);
+	GetLog()->Warn("Send To: %s", BinToStr(pack.c_str(), pack.Length()));
     if(!SendToBuf_O(to, pack.c_str(), pack.Length(), addrto, tolen))
     {
         GetLog()->Warn("WOWProxy::HostRecvThread socket send error");
@@ -352,7 +353,9 @@ bool            WOWProxy::StartUDP(SOCKET client, String ip, int port)
 	m_HostSocket = socket(AF_INET,SOCK_DGRAM,0);
 	m_ClientSocket = client;
 	m_DesIP = ip;
-    m_DesPort = port;
+	m_DesPort = port;
+
+	GetLog()->Warn("m_HostSocket = %d", m_HostSocket);
 
 	UserThread *curThread = NULL;
 	curThread = GetThreadManager()->ManagerCreateThread("ClientRecvFromThread", ClientRecvFromThread, false);
@@ -393,6 +396,7 @@ int             WOWProxy::HostSendENetThread(SingleThread * self)
 	shared_ptr<WOWPackage> curPack;
 	if(!m_ClientToServerQueue.Pop(&curPack))
 	{
+		enet_host_flush(m_enet_client);
 		return  2;
 	}
 
@@ -470,11 +474,13 @@ int             WOWProxy::ClientSendENetThread(SingleThread * self)
 
 bool            WOWProxy::StartUDPENet(String ip, int port, int listen_port)
 {
+	enet_time_set(0);
 	m_DesIP = ip;
 	m_DesPort = port;
 	ENetAddress address;
 	address.host = ENET_HOST_ANY;
-	address.port = listen_port;
+//	address.port = listen_port;
+	address.port = listen_port+1;
 	m_enet_server = enet_host_create(&address, 32, 0, 0);
 	if (m_enet_server == NULL)
 	{

@@ -1,4 +1,4 @@
-/** 
+/**
  @file  protocol.c
  @brief ENet protocol functions
 */
@@ -718,9 +718,9 @@ enet_protocol_handle_acknowledge (ENetHost * host, ENetEvent * event, ENetPeer *
         peer -> packetThrottleEpoch = host -> serviceTime;
     }
 
-    receivedReliableSequenceNumber = ENET_NET_TO_HOST_16 (command -> acknowledge.receivedReliableSequenceNumber);
-
-    commandNumber = enet_protocol_remove_sent_reliable_command (peer, receivedReliableSequenceNumber, command -> header.channelID);
+//    receivedReliableSequenceNumber = ENET_NET_TO_HOST_16 (command -> acknowledge.receivedReliableSequenceNumber);
+	receivedReliableSequenceNumber = ENET_NET_TO_HOST_16 (command -> header.reliableSequenceNumber);
+	commandNumber = enet_protocol_remove_sent_reliable_command (peer, receivedReliableSequenceNumber, command -> header.channelID);
 
     switch (peer -> state)
     {
@@ -771,8 +771,8 @@ enet_protocol_handle_verify_connect (ENetHost * host, ENetEvent * event, ENetPee
         return -1;
     }
 
-    enet_protocol_remove_sent_reliable_command (peer, 1, 0xFF);
-    
+	enet_protocol_remove_sent_reliable_command (peer, 1, 0xFF);
+
     if (channelCount < peer -> channelCount)
       peer -> channelCount = channelCount;
 
@@ -976,7 +976,7 @@ enet_protocol_handle_incoming_commands (ENetHost * host, ENetEvent * event)
               break;
 
            default:   
-              enet_peer_queue_acknowledgement (peer, command, sentTime);        
+              enet_peer_queue_acknowledgement (peer, command, sentTime);
               break;
            }
        }
@@ -1064,8 +1064,8 @@ enet_protocol_send_acknowledgements (ENetHost * host, ENetPeer * peer)
  
        command -> header.command = ENET_PROTOCOL_COMMAND_ACKNOWLEDGE;
        command -> header.channelID = acknowledgement -> command.header.channelID;
-       command -> acknowledge.receivedReliableSequenceNumber = ENET_HOST_TO_NET_16 (acknowledgement -> command.header.reliableSequenceNumber);
-       command -> acknowledge.receivedSentTime = ENET_HOST_TO_NET_16 (acknowledgement -> sentTime);
+//       command -> acknowledge.receivedReliableSequenceNumber = ENET_HOST_TO_NET_16 (acknowledgement -> command.header.reliableSequenceNumber);
+	   command -> acknowledge.receivedSentTime = ENET_HOST_TO_NET_16 (acknowledgement -> sentTime);
   
        if ((acknowledgement -> command.header.command & ENET_PROTOCOL_COMMAND_MASK) == ENET_PROTOCOL_COMMAND_DISCONNECT)
          enet_protocol_dispatch_state (host, peer, ENET_PEER_STATE_ZOMBIE);
@@ -1350,8 +1350,12 @@ enet_protocol_send_outgoing_commands (ENetHost * host, ENetEvent * event, int ch
         host -> bufferCount = 1;
         host -> packetSize = sizeof (ENetProtocolHeader);
 
-        if (! enet_list_empty (& currentPeer -> acknowledgements))
-          enet_protocol_send_acknowledgements (host, currentPeer);
+		bool sent_acknowledgements = false;
+		if (! enet_list_empty (& currentPeer -> acknowledgements))
+		{
+		  sent_acknowledgements = true;
+		  enet_protocol_send_acknowledgements (host, currentPeer);
+		}
 
         if (checkForTimeouts != 0 &&
             ! enet_list_empty (& currentPeer -> sentReliableCommands) &&
@@ -1361,14 +1365,16 @@ enet_protocol_send_outgoing_commands (ENetHost * host, ENetEvent * event, int ch
 
         if (! enet_list_empty (& currentPeer -> outgoingReliableCommands))
           enet_protocol_send_reliable_outgoing_commands (host, currentPeer);
-        else
-        if (enet_list_empty (& currentPeer -> sentReliableCommands) &&
-            ENET_TIME_DIFFERENCE (host -> serviceTime, currentPeer -> lastReceiveTime) >= ENET_PEER_PING_INTERVAL &&
-            currentPeer -> mtu - host -> packetSize >= sizeof (ENetProtocolPing))
-        { 
-            enet_peer_ping (currentPeer);
-            enet_protocol_send_reliable_outgoing_commands (host, currentPeer);
-        }
+		else
+		{
+		if (enet_list_empty (& currentPeer -> sentReliableCommands) && !sent_acknowledgements &&
+			ENET_TIME_DIFFERENCE (host -> serviceTime, currentPeer -> lastReceiveTime) >= ENET_PEER_PING_INTERVAL &&
+			currentPeer -> mtu - host -> packetSize >= sizeof (ENetProtocolPing))
+		{
+			enet_peer_ping (currentPeer);
+			enet_protocol_send_reliable_outgoing_commands (host, currentPeer);
+		}
+		}
                       
         if (! enet_list_empty (& currentPeer -> outgoingUnreliableCommands))
           enet_protocol_send_unreliable_outgoing_commands (host, currentPeer);
@@ -1418,7 +1424,6 @@ enet_protocol_send_outgoing_commands (ENetHost * host, ENetEvent * event, int ch
         if (host -> headerFlags & ENET_PROTOCOL_HEADER_FLAG_SENT_TIME)
         {
             header.sentTime = ENET_HOST_TO_NET_16 (host -> serviceTime & 0xFFFF);
-
             host -> buffers -> dataLength = sizeof (ENetProtocolHeader);
         }
         else

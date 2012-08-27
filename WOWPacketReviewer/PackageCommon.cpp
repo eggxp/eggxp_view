@@ -81,13 +81,17 @@ void            WOWPackage::Assign(WOWPackage * package)
 	m_PacketProxyType = package->m_PacketProxyType;
     m_PacketProxyIndex = package->m_PacketProxyIndex;
     m_DestIP = package->m_DestIP;
-    m_DestPort = package->m_DestPort;
+	m_DestPort = package->m_DestPort;
+	m_NotShowInGui = package->m_NotShowInGui;
+	m_HeadSize = package->m_HeadSize;
 }
 
 void            WOWPackage::Clear()
 {
+	m_NotShowInGui = false;
     m_Data = "";
 	m_OrgData = "";
+	m_HeadSize = 8;
 	m_OrgPrefixData = "";
     m_OpCodeMsg = "";
     m_Index = 0;
@@ -230,21 +234,6 @@ void            WOWPackage::WritePackGUID(int &pos, uint64 guid)
 
         guid >>= 8;
     }
-}
-
-int             WOWPackage::GetHeadSize()
-{
-//	if(m_PackType == 1)
-//		return 0;
-//    if(this->GetMark() == SEND_MARK)
-//    {
-//		return      8;
-//	}
-//	else
-//	{
-//        return      8;
-//    }
-	return 8;
 }
 
 void            WOWPackage::GetInfo(TGetInfoType getInfoType, bool showPackHead, bool showOrgPack, TStrings * output)

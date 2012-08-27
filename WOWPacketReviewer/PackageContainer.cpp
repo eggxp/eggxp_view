@@ -138,6 +138,15 @@ void                    PackageContainer::AddFilterOpcode(int opcode, uint64 gui
 	SaveFilter();
 }
 
+bool					PackageContainer::NeedHidePackage(WOWPackage *	packet)
+{
+	if(packet->GetNotShowInGui())
+	{
+		return true;
+	}
+	return HideFilterOpcode(packet->GetOpCode(), packet->GetGuid());
+}
+
 bool					PackageContainer::HideFilterOpcode(int opcode, uint64 guid)
 {
 	if(!m_EnableFilter)
@@ -166,7 +175,7 @@ void                    PackageContainer::AddPackToFilter(AList<WOWPackage> * so
 	dest->Clear();
 	for(int i=0; i<source->Count(); i++)
 	{
-		if(HideFilterOpcode(source->At(i)->GetOpCode(), source->At(i)->GetGuid()))
+		if(NeedHidePackage(source->At(i)))
 		{
 			continue;
 		}
@@ -325,7 +334,7 @@ void                        PackageContainerManager::ProcessClientMessage(int fo
 		if(curWOWPackage->GetPacketProxyType() == PROXY_TYPE_WORLD)
 		{
 			PackageContainer * worldPackageContainer = GetPackageContainerManager()->GetWorldPackageContainer(curWOWPackage->GetPacketProxyIndex());
-			if(!worldPackageContainer->HideFilterOpcode(curWOWPackage->GetOpCode(), curWOWPackage->GetGuid()))
+			if(!worldPackageContainer->NeedHidePackage(curWOWPackage))
 			{
 				// Can Process
 				if(forcemove == 0 && GetGameWorld()->GetBlockMode())
@@ -426,7 +435,7 @@ bool                        PackageContainerManager::ProcessOneClientMessage(WOW
 	}
 
 	GetGameWorld()->SetCurrentProcessIndex(curWOWPackage->GetIndex());
-	if(worldPackageContainer->HideFilterOpcode(curWOWPackage->GetOpCode(), curWOWPackage->GetGuid()))
+	if(worldPackageContainer->NeedHidePackage(curWOWPackage))
 	{
 		return false;
 	}
