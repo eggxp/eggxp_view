@@ -223,16 +223,20 @@ void				LOLPackageDispatcher::DecryptData(WOWPackage* pack)
 	pack->SetHeadSize(0);
 	if (decrypt_length < 8)
 	{
-		if (decrypt_length > 0)
+		if (decrypt_length > 4)
 		{
-			pack->SetOpCode(decrypt_start[0]);
+			int read_pos = 0;
+			int read_opcode = ReadDWORD(decrypt_start, read_pos);
+			pack->SetOpCode(read_opcode);
 		}
 		pack->SetData(AnsiString((char *)decrypt_start, decrypt_length));
 		return;
 	}
 	GetLOLBlowFish()->GetBlowFish()->Decrypt(decrypt_start, decrypt_length - decrypt_length % 8);
 	pack->SetNotShowInGui(false);
-	pack->SetOpCode(decrypt_start[0]);
+	int read_pos = 0;
+	int read_opcode = ReadDWORD(decrypt_start, read_pos);
+	pack->SetOpCode(read_opcode);
 	pack->SetData(AnsiString((char *)decrypt_start, decrypt_length));
 	return;
 }
