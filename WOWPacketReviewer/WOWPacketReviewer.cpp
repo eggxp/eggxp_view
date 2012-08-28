@@ -846,20 +846,20 @@ void __fastcall TWOWReviewerMainFrm::btAddFilterClick(TObject *Sender)
 
 	uint64 guid = StrToUint64Def(edtFilterGuid->Text, 0);
 
-	if(head == 0)
-	{
-		for(int i=0; i<NUM_MSG_TYPES; i++)
-		{
-			String name = cbAddFilter->Text.Trim().UpperCase();
-			if(String(opcodeTable[i].name).Pos(name) != 0)
-			{
-				head = i;
-				curPackageContainer->AddFilterOpcode(head, guid);
-			}
-		}
-		this->Refresh(1);
-		return;
-	}
+//	if(head == 0)
+//	{
+//		for(int i=0; i<NUM_MSG_TYPES; i++)
+//		{
+//			String name = cbAddFilter->Text.Trim().UpperCase();
+//			if(String(opcodeTable[i].name).Pos(name) != 0)
+//			{
+//				head = i;
+//				curPackageContainer->AddFilterOpcode(head, guid);
+//			}
+//		}
+//		this->Refresh(1);
+//		return;
+//	}
 
 	curPackageContainer->AddFilterOpcode(head, guid);
     this->Refresh(1);

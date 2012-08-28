@@ -6,6 +6,7 @@
 #define ENET_PROTOCOLH
 
 #include "enet_types.h"
+#define _MSC_VER_
 
 enum
 {
@@ -22,7 +23,7 @@ enum
 typedef enum _ENetProtocolCommand
 {
    ENET_PROTOCOL_COMMAND_NONE               = 0,
-   ENET_PROTOCOL_COMMAND_ACKNOWLEDGE        = 0,
+   ENET_PROTOCOL_COMMAND_ACKNOWLEDGE        = 1,
    ENET_PROTOCOL_COMMAND_CONNECT            = 2,
    ENET_PROTOCOL_COMMAND_VERIFY_CONNECT     = 3,
    ENET_PROTOCOL_COMMAND_DISCONNECT         = 4,

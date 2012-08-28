@@ -119,65 +119,121 @@ void				LOLPackageDispatcher::DecryptData(WOWPackage* pack)
 	AnsiString orgData = pack->GetOrgData();
 	if(orgData.Length() < 10)
 	{
-		pack->SetNotShowInGui(true);
 		pack->SetData(orgData);
 		return;
 	}
 	BYTE command = orgData.c_str()[8] & ENET_PROTOCOL_COMMAND_MASK;
-	if ((command == ENET_PROTOCOL_COMMAND_PING) ||
-		(command == ENET_PROTOCOL_COMMAND_ACKNOWLEDGE))
+	BYTE command2 = orgData.c_str()[8] & 0xF0;
+	if (command == ENET_PROTOCOL_COMMAND_PING)
 	{
 		pack->SetNotShowInGui(true);
 		pack->SetData(orgData);
 		return;
 	}
-	int header_len = 8;
-	switch (command)
+	int header_len = 0;
+	DWORD packet_size = 99999999;
+	if (command == ENET_PROTOCOL_COMMAND_NONE)
 	{
-		case ENET_PROTOCOL_COMMAND_SEND_RELIABLE:
+//		pack->SetNotShowInGui(true);
+		pack->SetOpCodeMsg("ACK");
+		header_len = 14;
+		packet_size = orgData.c_str()[13];
+	}
+	else
+	{
+		String header_str1;
+		String header_str2;
+		String header_str3;
+		BYTE channel = orgData.c_str()[9];
+		header_str3 = channel;
+		header_len = 8;
+		switch (command2)
 		{
-			pack->SetOpCodeMsg("RELIABLE");
-			header_len += sizeof(ENetProtocolSendReliable);
-			break;
+			case ENET_PROTOCOL_COMMAND_FLAG_ACKNOWLEDGE:
+				header_str1 = "ACKNOWLEDGE";
+				break;
+			case ENET_PROTOCOL_COMMAND_FLAG_UNSEQUENCED:
+				header_str1 = "UNSEQUENCED";
+				break;
 		}
-		case ENET_PROTOCOL_COMMAND_SEND_UNRELIABLE:
+		switch (command)
 		{
-			pack->SetOpCodeMsg("UNRELIABLE");
-			header_len += sizeof(ENetProtocolSendUnreliable);
-			break;
+			case ENET_PROTOCOL_COMMAND_SEND_RELIABLE:
+			{
+				header_str2 = "RELIABLE";
+				header_len += sizeof(ENetProtocolSendReliable);
+				int pos = header_len - 2;
+				if (orgData.Length() < pos + 2)
+				{
+					packet_size = ReadWORD(orgData.c_str(), pos);
+				}
+				break;
+			}
+			case ENET_PROTOCOL_COMMAND_SEND_UNRELIABLE:
+			{
+				header_str2 = "UNRELIABLE";
+				header_len += sizeof(ENetProtocolSendUnreliable);
+				int pos = header_len - 2;
+				if (orgData.Length() < pos + 2)
+				{
+					packet_size = ReadWORD(orgData.c_str(), pos);
+				}
+				break;
+			}
+			case ENET_PROTOCOL_COMMAND_SEND_FRAGMENT:
+			{
+				header_str2 = "FRAGMENT";
+				header_len += sizeof(ENetProtocolSendFragment);
+				int pos = header_len - 4 * 4 - 2;
+				if (orgData.Length() < pos + 2)
+				{
+					packet_size = ReadWORD(orgData.c_str(), pos);
+				}
+				break;
+			}
+			case ENET_PROTOCOL_COMMAND_SEND_UNSEQUENCED:
+			{
+				header_str2 = "UNSEQUENCED";
+				header_len += sizeof(ENetProtocolSendUnsequenced);
+				int pos = header_len - 2;
+				if (orgData.Length() < pos + 2)
+				{
+					packet_size = ReadWORD(orgData.c_str(), pos);
+				}
+				break;
+			}
+			default:
+				break;
 		}
-		case ENET_PROTOCOL_COMMAND_SEND_FRAGMENT:
-		{
-			pack->SetOpCodeMsg("FRAGMENT");
-			header_len += sizeof(ENetProtocolSendFragment);
-			break;
-		}
-		case ENET_PROTOCOL_COMMAND_SEND_UNSEQUENCED:
-		{
-			pack->SetOpCodeMsg("UNSEQUENCED");
-			header_len += sizeof(ENetProtocolSendUnsequenced);
-			break;
-		}
-		default:
-			break;
+		pack->SetOpCodeMsg(FormatStr("%s_%s_%s", header_str1, header_str2, header_str3));
 	}
 	if (orgData.Length() < header_len)
 	{
+		pack->SetData(orgData);
 		return;
 	}
 	AnsiString decryptData = orgData;
 	decryptData = decryptData.Unique();
 	unsigned char *decrypt_start = (unsigned char *)(decryptData.c_str() + header_len);
 	int decrypt_length = decryptData.Length() - header_len;
+	if ((DWORD)decrypt_length > packet_size)
+	{
+		decrypt_length = packet_size;
+	}
+	pack->SetHeadSize(0);
 	if (decrypt_length < 8)
 	{
-		pack->SetData(orgData);
+		if (decrypt_length > 0)
+		{
+			pack->SetOpCode(decrypt_start[0]);
+		}
+		pack->SetData(AnsiString((char *)decrypt_start, decrypt_length));
 		return;
 	}
 	GetLOLBlowFish()->GetBlowFish()->Decrypt(decrypt_start, decrypt_length - decrypt_length % 8);
 	pack->SetNotShowInGui(false);
+	pack->SetOpCode(decrypt_start[0]);
 	pack->SetData(AnsiString((char *)decrypt_start, decrypt_length));
-	pack->SetHeadSize(header_len);
 	return;
 }
 
