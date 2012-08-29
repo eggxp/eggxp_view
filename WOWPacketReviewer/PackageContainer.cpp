@@ -509,14 +509,15 @@ void						PackageContainerManager::AddAllWOWPackage(WOWPackage *packet)
 
 	m_AllPackage.Add(packet);
 
-	if(packet->GetPacketProxyType() == PROXY_TYPE_REALM)
-	{
-		GetGameWorld()->HandlerAuthPacket(packet);
-	}
-	else if(packet->GetPacketProxyType() == PROXY_TYPE_WORLD)
-	{
-		GetGameWorld()->HandlerPacket(packet);
-	}
+	// 不再处理封包了
+//	if(packet->GetPacketProxyType() == PROXY_TYPE_REALM)
+//	{
+//		GetGameWorld()->HandlerAuthPacket(packet);
+//	}
+//	else if(packet->GetPacketProxyType() == PROXY_TYPE_WORLD)
+//	{
+//		GetGameWorld()->HandlerPacket(packet);
+//	}
 }
 
 void						PackageContainerManager::ClearAllPackage()
