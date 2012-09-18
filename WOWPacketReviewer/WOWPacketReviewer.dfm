@@ -46,6 +46,10 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     TabOrder = 0
     object tsSend: TTabSheet
       Caption = 'Send'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object lvSend: TListView
         Left = 0
         Top = 0
@@ -87,6 +91,10 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     object tsRecv: TTabSheet
       Caption = 'Recv'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object lvRecv: TListView
         Left = 0
         Top = 0
@@ -128,6 +136,10 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     object tsAll: TTabSheet
       Caption = 'All'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object lvAll: TListView
         Left = 0
         Top = 0
@@ -172,6 +184,10 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     object TabSheet3: TTabSheet
       Caption = 'Msg'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object memOutput: TMemo
         Left = 0
         Top = 0
@@ -186,6 +202,10 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     object TabSheet14: TTabSheet
       Caption = 'Func'
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object labCnt: TLabel
         Left = 19
         Top = 176
@@ -412,6 +432,10 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     object TabSheet6: TTabSheet
       Caption = 'DataInfo'
       ImageIndex = 5
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object memPosInfo: TMemo
         Left = 0
         Top = 0
@@ -432,6 +456,10 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     object TabSheet7: TTabSheet
       Caption = 'MemView'
       ImageIndex = 6
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object lvMemView: TListView
         Left = 0
         Top = 0
@@ -487,6 +515,10 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     object TabSheet9: TTabSheet
       Caption = 'Cheat'
       ImageIndex = 8
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object btFlySet: TButton
         Left = 202
         Top = 70
@@ -536,6 +568,10 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     object TabSheet11: TTabSheet
       Caption = 'Threat'
       ImageIndex = 9
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object memThreat: TMemo
         Left = 0
         Top = 0
@@ -555,6 +591,10 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     object TabSheet12: TTabSheet
       Caption = 'msTimeInfo'
       ImageIndex = 10
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object memMSTimeInfo: TMemo
         Left = 0
         Top = 0
@@ -575,6 +615,10 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     object TabSheet13: TTabSheet
       Caption = 'DebugTest'
       ImageIndex = 11
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object labProxyCount: TLabel
         Left = 32
         Top = 25
@@ -604,6 +648,10 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     object TabSheet8: TTabSheet
       Caption = 'Thread'
       ImageIndex = 7
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object lvThread: TListView
         Left = 0
         Top = 0
@@ -753,6 +801,10 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     TabPosition = tpBottom
     object TabSheet4: TTabSheet
       Caption = #23553#21253#20998#26512
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupBox2: TGroupBox
         Left = 0
         Top = 0
@@ -873,6 +925,10 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     object TabSheet5: TTabSheet
       Caption = #23553#21253#22836#36807#28388
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel2: TPanel
         Left = 0
         Top = 137
@@ -1047,7 +1103,7 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     Left = 168
     Top = 200
     Bitmap = {
-      494C010119001B00E00020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010119001B00E40020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       010000000000000000000000000000000000000000000000000000000000BDBD
       BD00CECECE00525252008C8C8C008484840073737300737373006B6B6B006B6B

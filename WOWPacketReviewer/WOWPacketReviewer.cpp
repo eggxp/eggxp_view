@@ -358,6 +358,10 @@ void __fastcall TWOWReviewerMainFrm::WndProcs(Messages::TMessage &Message)
 					return;
 				}
 				String lol_key_base64 = split_strs->Strings[split_strs->Count - 2];
+				if (lol_key_base64 == "")
+				{
+					return;
+				}
 				GetLOLBlowFish()->Init(lol_key_base64);
 				this->LogMsg(FormatStr("LOL Key = %s",lol_key_base64));
 			}

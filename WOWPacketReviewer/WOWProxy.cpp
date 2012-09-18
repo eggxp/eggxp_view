@@ -134,8 +134,8 @@ int             WOWProxy::SendToProxy(SOCKET  to, ASharedPtrQueue<WOWPackage>  *
 	AnsiString pack = curPack->GetOrgData();
 
 	pack = pack.Unique();
-	GetLog()->Warn("socket:%d", to);
-	GetLog()->Warn("Send To: %s", BinToStr(pack.c_str(), pack.Length()));
+//	GetLog()->Warn("socket:%d", to);
+//	GetLog()->Warn("Send To: %s", BinToStr(pack.c_str(), pack.Length()));
     if(!SendToBuf_O(to, pack.c_str(), pack.Length(), addrto, tolen))
     {
         GetLog()->Warn("WOWProxy::HostRecvThread socket send error");

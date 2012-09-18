@@ -93,8 +93,10 @@ class WOWProxy;
 class PackageContainerManager
 {
 private:
-	LOLPackageDispatcher       m_SendAuthPackageDispatcher;
-    LOLPackageDispatcher       m_RecvAuthPackageDispatcher;
+//	LOLPackageDispatcher       m_SendAuthPackageDispatcher;
+//	LOLPackageDispatcher       m_RecvAuthPackageDispatcher;
+	DefaultPackageDispatcher   m_SendAuthPackageDispatcher;
+	DefaultPackageDispatcher   m_RecvAuthPackageDispatcher;
     PackageContainer            m_AuthPackageContainer;
 
 	AList<PackageDispatcher>      m_SendWorldPackageDispatcher;
