@@ -50,6 +50,10 @@ void	LOLBlowFish::Init(AnsiString key)
 		delete m_BlowFish;
 	}
 	std::string orgkey = base64_decode(key.c_str());
+	if (orgkey == "")
+	{
+		return;
+	}
 	m_BlowFish = new BlowFish((unsigned char*)orgkey.c_str(), orgkey.length());
 }
 
