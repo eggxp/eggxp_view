@@ -657,27 +657,27 @@ int			GameWorld::GetWOWBuild()
 		return 0;
 	return	output->Strings[output->Count-1].Trim().ToIntDef(0);
 }
-
-BOOL   CALLBACK   EnumFindWOWWindowsProc(HWND   hwnd,   LPARAM   lParam)
-{
-	GameWorld *self = (GameWorld *)lParam;
-	TCHAR	pclassName[100];
-	GetClassName(hwnd, pclassName, sizeof(pclassName) / sizeof(TCHAR));
-	String className = pclassName;
-
-	if(!IsTagFormClassName(className))
-	{
-		return true;
-	}
-
-	DWORD       dwRemoteProcessId = 0;
-	GetWindowThreadProcessId(hwnd, &dwRemoteProcessId);
-	if(GetProcessId(self->GetWOWProcessHandle()) != dwRemoteProcessId)
-	{
-		return true;
-	}
-    return false;
-}
+//
+//BOOL   CALLBACK   EnumFindWOWWindowsProc(HWND   hwnd,   LPARAM   lParam)
+//{
+//	GameWorld *self = (GameWorld *)lParam;
+//	TCHAR	pclassName[100];
+//	GetClassName(hwnd, pclassName, sizeof(pclassName) / sizeof(TCHAR));
+//	String className = pclassName;
+//
+//	if(!IsTagFormClassName(className))
+//	{
+//		return true;
+//	}
+//
+//	DWORD       dwRemoteProcessId = 0;
+//	GetWindowThreadProcessId(hwnd, &dwRemoteProcessId);
+//	if(GetProcessId(self->GetWOWProcessHandle()) != dwRemoteProcessId)
+//	{
+//		return true;
+//	}
+//    return false;
+//}
 
 void		GameWorld::SetClientSessionKey(String key)
 {
@@ -718,12 +718,18 @@ void        GameWorld::InjectDll(String DllFullPath, String frmClassName)
 	lstrcpy(GetSharedMemInfo()->FindSelf()->MainWindowClassName, frmClassName.c_str());
 }
 
+static TStringList * gSaveAllWindowString = new TStringList;
+
 BOOL   CALLBACK   EnumWindowsProc(HWND   hwnd,   LPARAM   lParam)
 {
-    TCHAR className[30] = {'\0'};
-    GetClassName(hwnd, className, sizeof(className) / sizeof(TCHAR));
-    String clsName = className;
-    if(IsTagFormClassName(clsName))
+	TCHAR className[30] = {'\0'};
+	TCHAR captionName[100] = {'\0'};
+	GetClassName(hwnd, className, sizeof(className) / sizeof(TCHAR));
+	GetWindowText(hwnd, captionName, sizeof(captionName) / sizeof(TCHAR));
+	String clsName = className;
+	String capName = captionName;
+	gSaveAllWindowString->Add(FormatStr("%s | %s", clsName, capName));
+    if(IsTagFormClassName(clsName, capName))
     {
 		DWORD       dwRemoteProcessId = 0;
         GetWindowThreadProcessId(hwnd, &dwRemoteProcessId);
@@ -744,7 +750,9 @@ BOOL   CALLBACK   EnumWindowsProc(HWND   hwnd,   LPARAM   lParam)
 HANDLE      GameWorld::FindWindowFunc()
 {
 	MutexLock   h(GetSharedMemInfo()->GetMutexHandle());
+	gSaveAllWindowString->Clear();
 	EnumWindows((WNDENUMPROC)EnumWindowsProc, (long)this);
+	gSaveAllWindowString->SaveToFile(ExtractFilePath(Application->ExeName)+"AllWindows.txt");
 	return  GetGameWorld()->GetWOWWindowHandle();
 }
 

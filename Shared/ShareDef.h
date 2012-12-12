@@ -25,8 +25,8 @@ enum    WOW_VERSION
 	VERSION_TW
 };
 
-void  SetTagFormClassName(String clsName);
-bool	IsTagFormClassName(String clsName);
+void  SetTagFormClassName(String clsName, String capName);
+bool	IsTagFormClassName(String clsName, String capName);
 
 #define     SOCK_DLL				"ws2_32.dll"
 

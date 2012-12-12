@@ -14,13 +14,15 @@ using namespace std;
 
 #define		TAG_FORM_CLASSNAME		"GxWindowClassD3d"
 static	String	gTagFormClassName;
+static	String  gTagFormCaptionName;
 
-void  SetTagFormClassName(String clsName)
+void  SetTagFormClassName(String clsName, String capName)
 {
 	gTagFormClassName = clsName;
+	gTagFormCaptionName = capName;
 }
 
-bool	IsTagFormClassName(String clsName)
+bool	IsTagFormClassName(String clsName, String capName)
 {
 	if(clsName == TAG_FORM_CLASSNAME)
 	{
@@ -30,11 +32,19 @@ bool	IsTagFormClassName(String clsName)
 	{
 		return false;
 	}
-	if(clsName == gTagFormClassName)
+	if(clsName != gTagFormClassName)
+	{
+		return false;
+	}
+	if (gTagFormCaptionName == "")
 	{
 		return true;
 	}
-	return false;
+	if (gTagFormCaptionName != capName)
+	{
+		return false;
+	}
+	return true;
 }
 
 #if defined(WOW_FISHER) && !defined(_DEBUG)

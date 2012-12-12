@@ -18,6 +18,7 @@ struct WOWHookViewInfo
     DWORD   ForbiddenAnyMortConnection;
     int     ClientConnectIndex;
 	TCHAR 	MainWindowClassName[50];
+	int		IsHookHTTP;
     void    Clear()
     {
         memset(this, 0, sizeof(*this));

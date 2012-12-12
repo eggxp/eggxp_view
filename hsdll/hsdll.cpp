@@ -255,7 +255,7 @@ WINSOCK_API_LINKAGE
     HookOffOne(&gConnectHookData);
 
 //    int needRedirect = 0;
-	if(port == 80 || ip == "127.0.0.1")
+	if((!(gWOWHookViewInfo->IsHookHTTP) && port == 80) || ip == "127.0.0.1")
     {
         LogMsg("no redirect");
 		nReturn = connect(s, name, namelen);

@@ -221,6 +221,8 @@ void __fastcall TWOWReviewerMainFrm::FormCreate(TObject *Sender)
 
 	int baseaddr = m_MemIniFile->ReadString("SET", "BaseAddr", "").ToIntDef(0);
 	int baseaddroffset = m_MemIniFile->ReadString("SET", "BaseAddrOffset", "").ToIntDef(0);
+	int isHookHTTP = m_MemIniFile->ReadString("SET", "IsHookHTTP", "").ToIntDef(0);
+	GetSharedMemInfo()->FindSelf()->IsHookHTTP = isHookHTTP;
 	if(baseaddr)
 	{
 		GetSharedMemInfo()->FindSelf()->BaseAddr = baseaddr;
@@ -243,7 +245,8 @@ void __fastcall TWOWReviewerMainFrm::FormCreate(TObject *Sender)
 	#endif
 
 	String userDefineClassName = m_MemIniFile->ReadString("SET", "UserDefineClassName", "");
-	SetTagFormClassName(userDefineClassName);
+	String userDefineCaptionName = m_MemIniFile->ReadString("SET", "UserDefineCaptionName", "");
+	SetTagFormClassName(userDefineClassName, userDefineCaptionName);
 
 	GetGameWorld()->LoadGameData(m_MemIniFile->ReadString("SET", "DataPath", ""));
 	GetPackageContainerManager()->GetWorldPackageContainer(cbWatchType->ItemIndex - 1)->LoadFilter();
