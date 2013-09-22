@@ -14,7 +14,6 @@ USEFORM("ValuesUpdateFrm.cpp", FrmValuesUpdate);
 USEFORM("MapFrm.cpp", FrmMap);
 USEFORM("DrawMapFrm.cpp", FrmDrawMap);
 USEFORM("DockFrm.cpp", frmDock);
-//---------------------------------------------------------------------------
 WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
 	try

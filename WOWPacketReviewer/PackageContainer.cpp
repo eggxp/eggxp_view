@@ -210,11 +210,6 @@ void                    PackageContainer::OnGetRecvWOWPack(WOWPackage *	packet)
 	curPack->SetIndex(gLogicPackIndex);
 	gLogicPackIndex++;
 	GetPackageContainerManager()->AddAllWOWPackage(curPack);
-
-	if(curPack->GetPacketProxyType() == PROXY_TYPE_REALM)
-	{
-		int a=0;
-	}
 }
 
 void                    PackageContainer::ClearPackageContainer()
@@ -264,10 +259,8 @@ PackageContainerManager::~PackageContainerManager()
 
 void                        PackageContainerManager::AddWorldPackageContainer()
 {
-//	LOLPackageDispatcher *send = new LOLPackageDispatcher;
-//    LOLPackageDispatcher *recv = new LOLPackageDispatcher;
-	DefaultPackageDispatcher *send = new DefaultPackageDispatcher;
-	DefaultPackageDispatcher *recv = new DefaultPackageDispatcher;
+	USE_PACKAGE_DISPATCHER *send = new USE_PACKAGE_DISPATCHER;
+	USE_PACKAGE_DISPATCHER *recv = new USE_PACKAGE_DISPATCHER;
     PackageContainer *c = new PackageContainer(send, recv, m_WorldPackageContainer.Count());
     c->SetName(FormatStr("World%d", m_WorldPackageContainer.Count()));
     m_WorldPackageContainer.Add(c);

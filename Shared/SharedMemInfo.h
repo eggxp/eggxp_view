@@ -19,6 +19,8 @@ struct WOWHookViewInfo
     int     ClientConnectIndex;
 	TCHAR 	MainWindowClassName[50];
 	int		IsHookHTTP;
+	int		WatchPort;
+	int		OnlyHookTCP;
     void    Clear()
     {
         memset(this, 0, sizeof(*this));

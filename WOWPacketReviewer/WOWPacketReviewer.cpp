@@ -222,7 +222,11 @@ void __fastcall TWOWReviewerMainFrm::FormCreate(TObject *Sender)
 	int baseaddr = m_MemIniFile->ReadString("SET", "BaseAddr", "").ToIntDef(0);
 	int baseaddroffset = m_MemIniFile->ReadString("SET", "BaseAddrOffset", "").ToIntDef(0);
 	int isHookHTTP = m_MemIniFile->ReadString("SET", "IsHookHTTP", "").ToIntDef(0);
+	int WatchPort = m_MemIniFile->ReadString("SET", "WatchPort", "").ToIntDef(0);
+	int OnlyHookTCP = m_MemIniFile->ReadString("SET", "OnlyHookTCP", "").ToIntDef(0);
 	GetSharedMemInfo()->FindSelf()->IsHookHTTP = isHookHTTP;
+	GetSharedMemInfo()->FindSelf()->OnlyHookTCP = OnlyHookTCP;
+	GetSharedMemInfo()->FindSelf()->WatchPort = WatchPort;
 	if(baseaddr)
 	{
 		GetSharedMemInfo()->FindSelf()->BaseAddr = baseaddr;
@@ -1055,13 +1059,13 @@ void __fastcall TWOWReviewerMainFrm::lvMemViewData(TObject *Sender,
     WOWHookViewInfo * curItem = GetSharedMemInfo()->GetAt(Item->Index);
     Item->Caption = curItem->HostProcessID;
     Item->SubItems->Add(curItem->DestProcessID);
-    Item->SubItems->Add(curItem->HostPortNumber);
-	Item->SubItems->Add(curItem->Build);
+	Item->SubItems->Add(curItem->HostPortNumber);
+	Item->SubItems->Add(curItem->WatchPort);
 	Item->SubItems->Add(FormatStr("0x%x", curItem->BaseAddr));
 	Item->SubItems->Add(FormatStr("0x%x", curItem->BaseAddrOffset));
 	Item->SubItems->Add(curItem->MainWindowClassName);
     Item->SubItems->Add(curItem->ForbiddenAnyMortConnection);
-    Item->SubItems->Add(curItem->ClientConnectIndex);
+	Item->SubItems->Add(curItem->ClientConnectIndex);
 }
 
 void __fastcall TWOWReviewerMainFrm::btStartAIClick(TObject *Sender)

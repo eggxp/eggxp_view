@@ -375,6 +375,7 @@ String      GameWorld::GetCreatureNameByID(int id)
 
 void        GameWorld::LoadGameData(String path)
 {
+	return;
 	LoadFishData();
 	LoadItemNameData();
 	LoadGameObjectData();

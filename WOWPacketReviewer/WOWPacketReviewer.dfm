@@ -476,7 +476,7 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
             Width = 100
           end
           item
-            Caption = 'Build'
+            Caption = 'WatchPort'
             Width = 100
           end
           item
@@ -693,8 +693,6 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
       Width = 97
       Height = 17
       Caption = #19981#26174#31034#23553#21253#22836
-      Checked = True
-      State = cbChecked
       TabOrder = 0
       OnClick = cbShowHeadClick
     end
@@ -1095,7 +1093,7 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     Left = 168
     Top = 200
     Bitmap = {
-      494C010119001B00EC0020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010119001B00040120002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       010000000000000000000000000000000000000000000000000000000000BDBD
       BD00CECECE00525252008C8C8C008484840073737300737373006B6B6B006B6B

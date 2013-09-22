@@ -11,8 +11,11 @@
 #include "MSanguoPackageDispatcher.h"
 #include "DefaultPackageDispatcher.h"
 #include "DiabloIIIPackageDispatcher.h"
+#include "War3PackageDispatcher.h"
 #include "LOLPackageDispatcher.h"
 #include "AQueue.h"
+
+#define USE_PACKAGE_DISPATCHER War3PackageDispatcher
 
 int GetLogicPackIndex();
 void SetLogicPackIndex(int index);
@@ -95,8 +98,8 @@ class PackageContainerManager
 private:
 //	LOLPackageDispatcher       m_SendAuthPackageDispatcher;
 //	LOLPackageDispatcher       m_RecvAuthPackageDispatcher;
-	DefaultPackageDispatcher   m_SendAuthPackageDispatcher;
-	DefaultPackageDispatcher   m_RecvAuthPackageDispatcher;
+	USE_PACKAGE_DISPATCHER   m_SendAuthPackageDispatcher;
+	USE_PACKAGE_DISPATCHER   m_RecvAuthPackageDispatcher;
     PackageContainer            m_AuthPackageContainer;
 
 	AList<PackageDispatcher>      m_SendWorldPackageDispatcher;
