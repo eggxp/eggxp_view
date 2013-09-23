@@ -67,8 +67,8 @@ int                 War3PackageDispatcher::DigestSendPacket()
 void				War3PackageDispatcher::GetOrignSendPacket(WOWPackage *  packet)
 {
     m_SendBufferPacket.SetOrgData(m_SendBufferPacket.GetOrgData() + packet->GetOrgData());
-    m_SendBufferPacket.SetData(m_SendBufferPacket.GetData() + packet->GetOrgData());
-    m_SendBufferPacket.SetPacketProxyIndex(GetPackageContainerIndex());
+	m_SendBufferPacket.SetData(m_SendBufferPacket.GetData() + packet->GetOrgData());
+    m_SendBufferPacket.SetPacketProxyIndex(packet->GetPacketProxyIndex());
 
 //	GetLog()->Info("WorldOrgSend:(%d):%s", packet->GetOrgData().Length(), BinToStr(packet->GetOrgData().c_str(), packet->GetOrgData().Length()));
 
@@ -88,7 +88,7 @@ void				War3PackageDispatcher::GetOrignSendPacket(WOWPackage *  packet)
         retPacket.SetData(AnsiString(m_SendBufferPacket.GetOrgData().c_str(), result));
         retPacket.SetOrgData(AnsiString(m_SendBufferPacket.GetOrgData().c_str(), result));
         retPacket.SetMark(SEND_MARK);
-		retPacket.SetPacketProxyIndex(GetPackageContainerIndex());
+		retPacket.SetPacketProxyIndex(packet->GetPacketProxyIndex());
 		retPacket.SetOrgPrefixData(retPacket.GetData());
         MoveBuffer(&m_SendBufferPacket, result);
 		retPacket.SetPacketProxyType(packet->GetPacketProxyType());
@@ -124,7 +124,7 @@ void				War3PackageDispatcher::GetOrignRecvPacket(WOWPackage *  packet)
 //    GetLog()->Info("WorldRecv:(%d):%s", packet->GetOrgData().Length(), BinToStr(packet->GetOrgData().c_str(), packet->GetOrgData().Length()));
     m_RecvBufferPacket.SetOrgData(m_RecvBufferPacket.GetOrgData() + packet->GetOrgData());
     m_RecvBufferPacket.SetData(m_RecvBufferPacket.GetData() + packet->GetOrgData());
-    m_RecvBufferPacket.SetPacketProxyIndex(GetPackageContainerIndex());
+    m_RecvBufferPacket.SetPacketProxyIndex(packet->GetPacketProxyIndex());
 
 
     int result = 0;
@@ -143,7 +143,7 @@ void				War3PackageDispatcher::GetOrignRecvPacket(WOWPackage *  packet)
         retPacket.SetData(AnsiString(m_RecvBufferPacket.GetOrgData().c_str(), result));
         retPacket.SetOrgData(AnsiString(m_RecvBufferPacket.GetOrgData().c_str(), result));
 		retPacket.SetMark(RECV_MARK);
-		retPacket.SetPacketProxyIndex(GetPackageContainerIndex());
+		retPacket.SetPacketProxyIndex(packet->GetPacketProxyIndex());
 		retPacket.SetOrgPrefixData(retPacket.GetData());
 		MoveBuffer(&m_RecvBufferPacket, result);
 		retPacket.SetPacketProxyType(packet->GetPacketProxyType());

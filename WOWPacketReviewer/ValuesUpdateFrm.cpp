@@ -65,34 +65,34 @@ void			TFrmValuesUpdate::Parse()
 
 void			TFrmValuesUpdate::BuidlValues(tagUpdateObjectValuesResult *input)
 {
-	if(input->MaskSize == 0)
-		return;
-
-	if(input->MaskPos > m_WOWPackage.GetContentLen())
-	{
-		ShowMessage(FormatStr("Î´Öª´íÎó?input->MaskPos(%d) > m_WOWPackage.GetContentLen(%d)", input->MaskPos, m_WOWPackage.GetContentLen()));
-		return;
-	}
-	ByteBuffer  buf;
-	buf.append((BYTE *)m_WOWPackage.GetHead(), m_WOWPackage.GetHeadSize());
-	buf.append((BYTE *)m_WOWPackage.GetContent(), input->MaskPos);
-	vector<BYTE> mask;
-	mask.resize(input->MaskSize);
-	for(DWORD i=0; i<input->Values.size(); i++)
-	{
-		WriteBit(&mask[0], mask.size(), input->Values[i].Type, 1);
-	}
-	buf.append(&mask[0], mask.size());
-	sort(input->Values.begin(), input->Values.end());
-	for(DWORD i=0; i<input->Values.size(); i++)
-	{
-		buf << (uint32)input->Values[i].Value;
-	}
-	buf.append((BYTE *)m_WOWPackage.GetContent() + input->ValuePosEnd, m_WOWPackage.GetContentLen() - input->ValuePosEnd);
-	m_WOWPackage.SetData(AnsiString((char *)buf.contents(), buf.size()));
-	m_WOWPackage.SetOpCode(SMSG_UPDATE_OBJECT);
-	m_WOWPackage.SetOpCodeMsg("SMSG_UPDATE_OBJECT");
-	m_WOWPackage.SetDecompress("");
+//	if(input->MaskSize == 0)
+//		return;
+//
+//	if(input->MaskPos > m_WOWPackage.GetContentLen())
+//	{
+//		ShowMessage(FormatStr("Î´Öª´íÎó?input->MaskPos(%d) > m_WOWPackage.GetContentLen(%d)", input->MaskPos, m_WOWPackage.GetContentLen()));
+//		return;
+//	}
+//	ByteBuffer  buf;
+//	buf.append((BYTE *)m_WOWPackage.GetHead(), m_WOWPackage.GetHeadSize());
+//	buf.append((BYTE *)m_WOWPackage.GetContent(), input->MaskPos);
+//	vector<BYTE> mask;
+//	mask.resize(input->MaskSize);
+//	for(DWORD i=0; i<input->Values.size(); i++)
+//	{
+//		WriteBit(&mask[0], mask.size(), input->Values[i].Type, 1);
+//	}
+//	buf.append(&mask[0], mask.size());
+//	sort(input->Values.begin(), input->Values.end());
+//	for(DWORD i=0; i<input->Values.size(); i++)
+//	{
+//		buf << (uint32)input->Values[i].Value;
+//	}
+//	buf.append((BYTE *)m_WOWPackage.GetContent() + input->ValuePosEnd, m_WOWPackage.GetContentLen() - input->ValuePosEnd);
+//	m_WOWPackage.SetData(AnsiString((char *)buf.contents(), buf.size()));
+//	m_WOWPackage.SetOpCode(SMSG_UPDATE_OBJECT);
+//	m_WOWPackage.SetOpCodeMsg("SMSG_UPDATE_OBJECT");
+//	m_WOWPackage.SetDecompress("");
 }
 
 void __fastcall TFrmValuesUpdate::btPackOutputClick(TObject *Sender)

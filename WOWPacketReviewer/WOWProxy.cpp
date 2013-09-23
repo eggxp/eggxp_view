@@ -802,15 +802,15 @@ WOWProxy    *   WOWProxyManager::GetActiveWorld(int worldIndex)
 {
     WOWProxy    *    curProxy = NULL;
 //    GetLog()->Warn("this->GetWOWProxyCount() = %d", this->GetWOWProxyCount());
-    for(int i=0; i<this->GetWOWProxyCount(); i++)
-    {
-        curProxy = this->GetWOWProxy(i);
-        if(curProxy->GetProxyType() == PROXY_TYPE_WORLD && curProxy->GetDestIndex() == worldIndex)
+	for(int i=0; i<this->GetWOWProxyCount(); i++)
+	{
+		curProxy = this->GetWOWProxy(i);
+		if(curProxy->GetProxyType() == PROXY_TYPE_WORLD && curProxy->GetDestIndex() == worldIndex)
         {
             return curProxy;
         }
     }
-    return          NULL;
+	return          NULL;
 }
 
 bool 			WOWProxyManager::StartListenPort(int listenPort, int listenThreadCount)

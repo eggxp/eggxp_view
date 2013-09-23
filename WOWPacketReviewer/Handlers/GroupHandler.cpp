@@ -15,9 +15,9 @@
 GroupHandler::GroupHandler(GameWorld * gameWorld)
 {
     m_GameWorld = gameWorld;
-    REG_HANDLER(SMSG_GROUP_LIST)
-    REG_HANDLER(SMSG_PARTY_MEMBER_STATS)
-    REG_HANDLER(SMSG_PARTY_MEMBER_STATS_FULL)
+//    REG_HANDLER(SMSG_GROUP_LIST)
+//    REG_HANDLER(SMSG_PARTY_MEMBER_STATS)
+//    REG_HANDLER(SMSG_PARTY_MEMBER_STATS_FULL)
 }
 
 GroupHandler::~GroupHandler()

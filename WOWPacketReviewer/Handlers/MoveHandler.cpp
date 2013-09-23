@@ -22,52 +22,52 @@ MoveHandler::MoveHandler(GameWorld * gameWorld)
 	m_LastMovementPackOptype = 0;
     m_GameWorld = gameWorld;
 
-	REG_HANDLER(MSG_MOVE_START_FORWARD)
-	REG_HANDLER(MSG_MOVE_START_BACKWARD)
-	REG_HANDLER(MSG_MOVE_STOP)
-    REG_HANDLER(MSG_MOVE_START_STRAFE_LEFT)
-    REG_HANDLER(MSG_MOVE_START_STRAFE_RIGHT)       
-    REG_HANDLER(MSG_MOVE_STOP_STRAFE)              
-    REG_HANDLER(MSG_MOVE_JUMP)                     
-    REG_HANDLER(MSG_MOVE_START_TURN_LEFT)          
-    REG_HANDLER(MSG_MOVE_START_TURN_RIGHT)         
-    REG_HANDLER(MSG_MOVE_STOP_TURN)                
-    REG_HANDLER(MSG_MOVE_START_PITCH_UP)           
-    REG_HANDLER(MSG_MOVE_START_PITCH_DOWN)
-	REG_HANDLER(MSG_MOVE_STOP_PITCH)
-    REG_HANDLER(MSG_MOVE_SET_RUN_MODE)
-    REG_HANDLER(MSG_MOVE_SET_WALK_MODE)
-    REG_HANDLER(MSG_MOVE_START_SWIM)
-    REG_HANDLER(MSG_MOVE_STOP_SWIM)    
-    REG_HANDLER(MSG_MOVE_FALL_LAND)
-    REG_HANDLER(MSG_MOVE_HEARTBEAT)
-    REG_HANDLER(MSG_MOVE_SET_FACING)
-    REG_HANDLER(MSG_MOVE_SET_PITCH)
-    REG_HANDLER(CMSG_MOVE_FALL_RESET)
-    REG_HANDLER(CMSG_MOVE_SET_FLY)
-    REG_HANDLER(MSG_MOVE_START_ASCEND)
-    REG_HANDLER(MSG_MOVE_STOP_ASCEND)
-    REG_HANDLER(CMSG_MOVE_CHNG_TRANSPORT)
-    REG_HANDLER(MSG_MOVE_START_DESCEND)
-
-	REG_HANDLER(SMSG_ENVIRONMENTALDAMAGELOG)
-
-	REG_HANDLER(SMSG_FORCE_RUN_SPEED_CHANGE)
-	REG_HANDLER(SMSG_FORCE_SWIM_SPEED_CHANGE)
-	REG_HANDLER(CMSG_FORCE_RUN_SPEED_CHANGE_ACK)
-	REG_HANDLER(SMSG_FORCE_FLIGHT_SPEED_CHANGE)
-
-	REG_HANDLER(MSG_MOVE_SET_WALK_SPEED)
-	REG_HANDLER(MSG_MOVE_SET_RUN_SPEED)
-	REG_HANDLER(MSG_MOVE_SET_RUN_BACK_SPEED)
-	REG_HANDLER(MSG_MOVE_SET_SWIM_SPEED)
-	REG_HANDLER(MSG_MOVE_SET_SWIM_BACK_SPEED)
-	REG_HANDLER(MSG_MOVE_SET_TURN_RATE)
-	REG_HANDLER(MSG_MOVE_SET_FLIGHT_SPEED)
-	REG_HANDLER(MSG_MOVE_SET_FLIGHT_BACK_SPEED)
-	REG_HANDLER(MSG_MOVE_SET_PITCH_RATE)
-    REG_HANDLER(SMSG_MOVE_KNOCK_BACK)
-    REG_HANDLER(MSG_MOVE_KNOCK_BACK)
+//	REG_HANDLER(MSG_MOVE_START_FORWARD)
+//	REG_HANDLER(MSG_MOVE_START_BACKWARD)
+//	REG_HANDLER(MSG_MOVE_STOP)
+//    REG_HANDLER(MSG_MOVE_START_STRAFE_LEFT)
+//    REG_HANDLER(MSG_MOVE_START_STRAFE_RIGHT)
+//    REG_HANDLER(MSG_MOVE_STOP_STRAFE)
+//    REG_HANDLER(MSG_MOVE_JUMP)
+//    REG_HANDLER(MSG_MOVE_START_TURN_LEFT)
+//    REG_HANDLER(MSG_MOVE_START_TURN_RIGHT)
+//    REG_HANDLER(MSG_MOVE_STOP_TURN)
+//    REG_HANDLER(MSG_MOVE_START_PITCH_UP)
+//    REG_HANDLER(MSG_MOVE_START_PITCH_DOWN)
+//	REG_HANDLER(MSG_MOVE_STOP_PITCH)
+//    REG_HANDLER(MSG_MOVE_SET_RUN_MODE)
+//    REG_HANDLER(MSG_MOVE_SET_WALK_MODE)
+//    REG_HANDLER(MSG_MOVE_START_SWIM)
+//    REG_HANDLER(MSG_MOVE_STOP_SWIM)
+//    REG_HANDLER(MSG_MOVE_FALL_LAND)
+//    REG_HANDLER(MSG_MOVE_HEARTBEAT)
+//    REG_HANDLER(MSG_MOVE_SET_FACING)
+//    REG_HANDLER(MSG_MOVE_SET_PITCH)
+//    REG_HANDLER(CMSG_MOVE_FALL_RESET)
+//    REG_HANDLER(CMSG_MOVE_SET_FLY)
+//    REG_HANDLER(MSG_MOVE_START_ASCEND)
+//    REG_HANDLER(MSG_MOVE_STOP_ASCEND)
+//    REG_HANDLER(CMSG_MOVE_CHNG_TRANSPORT)
+//    REG_HANDLER(MSG_MOVE_START_DESCEND)
+//
+//	REG_HANDLER(SMSG_ENVIRONMENTALDAMAGELOG)
+//
+//	REG_HANDLER(SMSG_FORCE_RUN_SPEED_CHANGE)
+//	REG_HANDLER(SMSG_FORCE_SWIM_SPEED_CHANGE)
+//	REG_HANDLER(CMSG_FORCE_RUN_SPEED_CHANGE_ACK)
+//	REG_HANDLER(SMSG_FORCE_FLIGHT_SPEED_CHANGE)
+//
+//	REG_HANDLER(MSG_MOVE_SET_WALK_SPEED)
+//	REG_HANDLER(MSG_MOVE_SET_RUN_SPEED)
+//	REG_HANDLER(MSG_MOVE_SET_RUN_BACK_SPEED)
+//	REG_HANDLER(MSG_MOVE_SET_SWIM_SPEED)
+//	REG_HANDLER(MSG_MOVE_SET_SWIM_BACK_SPEED)
+//	REG_HANDLER(MSG_MOVE_SET_TURN_RATE)
+//	REG_HANDLER(MSG_MOVE_SET_FLIGHT_SPEED)
+//	REG_HANDLER(MSG_MOVE_SET_FLIGHT_BACK_SPEED)
+//	REG_HANDLER(MSG_MOVE_SET_PITCH_RATE)
+//    REG_HANDLER(SMSG_MOVE_KNOCK_BACK)
+//    REG_HANDLER(MSG_MOVE_KNOCK_BACK)
 }
 
 MoveHandler::~MoveHandler()
@@ -120,44 +120,44 @@ void	MoveHandler::SetPos(uint64 guid, float x, float y, float z, float o)
 
 void    MoveHandler::HandlerMovementOpcodes(WOWPackage * packet)
 {
-	int pos = 0;
-
-	uint64 read_guid = 0;
-	if(GetSharedMemInfo()->FindSelf()->Build != 10146)
-	{
-		READ_GUID(guid)
-		read_guid = guid;
-	}
-	else
-	{
-		if(packet->GetMark() != SEND_MARK)
-		{
-			READ_GUID(guid);
-			read_guid = guid;
-		}
-	}
-
-	if(read_guid == 0)
-	{
-		read_guid = m_GameWorld->GetSelfGUID();
-	}
-
-//	#ifdef	WOW_FISHER
-	{
-		FishAI *fishAI = m_GameWorld->GetFishAI();
-		if(fishAI->GetActive() && packet->GetMark() == SEND_MARK && (m_GameWorld->GetSelfGUID() == read_guid || read_guid == 0))
-		{
-			if(packet->GetOpCode() == MSG_MOVE_START_FORWARD || packet->GetOpCode() == MSG_MOVE_START_BACKWARD ||
-				packet->GetOpCode() == MSG_MOVE_START_STRAFE_LEFT || packet->GetOpCode() == MSG_MOVE_START_STRAFE_RIGHT)
-			{
-				fishAI->PauseAI();
-			}
-		}
-	}
-//	#endif
-	ReadMovementInfo(read_guid, packet, pos, NULL);
-	m_LastMovementPackOptype = packet->GetOpCode();
-	READ_FINISH
+//	int pos = 0;
+//
+//	uint64 read_guid = 0;
+//	if(GetSharedMemInfo()->FindSelf()->Build != 10146)
+//	{
+//		READ_GUID(guid)
+//		read_guid = guid;
+//	}
+//	else
+//	{
+//		if(packet->GetMark() != SEND_MARK)
+//		{
+//			READ_GUID(guid);
+//			read_guid = guid;
+//		}
+//	}
+//
+//	if(read_guid == 0)
+//	{
+//		read_guid = m_GameWorld->GetSelfGUID();
+//	}
+//
+////	#ifdef	WOW_FISHER
+//	{
+//		FishAI *fishAI = m_GameWorld->GetFishAI();
+//		if(fishAI->GetActive() && packet->GetMark() == SEND_MARK && (m_GameWorld->GetSelfGUID() == read_guid || read_guid == 0))
+//		{
+//			if(packet->GetOpCode() == MSG_MOVE_START_FORWARD || packet->GetOpCode() == MSG_MOVE_START_BACKWARD ||
+//				packet->GetOpCode() == MSG_MOVE_START_STRAFE_LEFT || packet->GetOpCode() == MSG_MOVE_START_STRAFE_RIGHT)
+//			{
+//				fishAI->PauseAI();
+//			}
+//		}
+//	}
+////	#endif
+//	ReadMovementInfo(read_guid, packet, pos, NULL);
+//	m_LastMovementPackOptype = packet->GetOpCode();
+//	READ_FINISH
 }
 
 
@@ -172,49 +172,49 @@ void    MoveHandler::HandlerMovementOpcodes(WOWPackage * packet)
 
 void    MoveHandler::RemakeMovementInfo(uint64 guid, WOWPackage * packet, int pos, DWORD move_flags)
 {
-	if(packet->GetMark() != SEND_MARK)
-	{
-		return;
-	}
-	if(!GetGameWorld()->GetFlyAI()->GetActiveSetting())
-	{
-		return;
-	}
-	if(guid != GetGameWorld()->GetSelfGUID())
-	{
-		return;
-	}
-	DWORD org_move_flags = move_flags;
-	MAKE_MOVEMENTINFO_OPCODE(WaterWalkingAI, MOVEFLAG_WATERWALKING)
-	MAKE_MOVEMENTINFO_OPCODE(FlyAI, MOVEFLAG_CAN_FLY)
-	MAKE_MOVEMENTINFO_OPCODE(FlyAI, MOVEFLAG_FLYING)
-	MAKE_MOVEMENTINFO_OPCODE(FlyAI, MOVEFLAG_ASCENDING)
-
-	if(packet->GetOpCode() == CMSG_MOVE_SET_FLY)
-	{
-		packet->SetProcessed(-1);
-	}
-
-	if(packet->GetOpCode() == MSG_MOVE_START_ASCEND)
-	{
-		packet->ChangeOPCode(MSG_MOVE_START_FORWARD);
-		if(move_flags == 0)
-		{
-			int writePos = pos;
-			move_flags = MOVEFLAG_FORWARD;
-			WriteDWORD(packet->GetContent(), writePos, move_flags);
-			packet->AddComment("Add Flag :", GetMoveFlagComment(move_flags));
-		}
-	}
-	if(packet->GetOpCode() == MSG_MOVE_STOP_ASCEND)
-	{
-		packet->ChangeOPCode(MSG_MOVE_STOP);
-	}
-
-	if(org_move_flags & MOVEFLAG_FLYING)
-	{
-		packet->RemoveContent(packet->GetContentLen()-8, 4);
-	}
+//	if(packet->GetMark() != SEND_MARK)
+//	{
+//		return;
+//	}
+//	if(!GetGameWorld()->GetFlyAI()->GetActiveSetting())
+//	{
+//		return;
+//	}
+//	if(guid != GetGameWorld()->GetSelfGUID())
+//	{
+//		return;
+//	}
+//	DWORD org_move_flags = move_flags;
+//	MAKE_MOVEMENTINFO_OPCODE(WaterWalkingAI, MOVEFLAG_WATERWALKING)
+//	MAKE_MOVEMENTINFO_OPCODE(FlyAI, MOVEFLAG_CAN_FLY)
+//	MAKE_MOVEMENTINFO_OPCODE(FlyAI, MOVEFLAG_FLYING)
+//	MAKE_MOVEMENTINFO_OPCODE(FlyAI, MOVEFLAG_ASCENDING)
+//
+//	if(packet->GetOpCode() == CMSG_MOVE_SET_FLY)
+//	{
+//		packet->SetProcessed(-1);
+//	}
+//
+//	if(packet->GetOpCode() == MSG_MOVE_START_ASCEND)
+//	{
+//		packet->ChangeOPCode(MSG_MOVE_START_FORWARD);
+//		if(move_flags == 0)
+//		{
+//			int writePos = pos;
+//			move_flags = MOVEFLAG_FORWARD;
+//			WriteDWORD(packet->GetContent(), writePos, move_flags);
+//			packet->AddComment("Add Flag :", GetMoveFlagComment(move_flags));
+//		}
+//	}
+//	if(packet->GetOpCode() == MSG_MOVE_STOP_ASCEND)
+//	{
+//		packet->ChangeOPCode(MSG_MOVE_STOP);
+//	}
+//
+//	if(org_move_flags & MOVEFLAG_FLYING)
+//	{
+//		packet->RemoveContent(packet->GetContentLen()-8, 4);
+//	}
 }
 
 void    MoveHandler::ReadMovementInfo(uint64 guid, WOWPackage * packet, int &pos, DWORD * move_flags_output)

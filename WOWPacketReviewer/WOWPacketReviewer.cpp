@@ -169,6 +169,7 @@ void __fastcall TWOWReviewerMainFrm::FormDestroy(TObject *Sender)
 
 void __fastcall TWOWReviewerMainFrm::FormCreate(TObject *Sender)
 {
+	InitOpcode();
 	m_ConnectIPList = new TStringList;
 	if(!IsWin2k())
 	{
@@ -177,7 +178,7 @@ void __fastcall TWOWReviewerMainFrm::FormCreate(TObject *Sender)
 		return;
 	}
     pcMainControl->ActivePageIndex = 3;
-	PageControl2->ActivePageIndex = 0;
+	PageControl2->ActivePageIndex = 1;
 	#ifndef WOW_FISHER
 	GetSharedMemInfo()->CreateMapping();
 	String filePath = ExtractFilePath(Application->ExeName) + "Log\\";
@@ -191,11 +192,11 @@ void __fastcall TWOWReviewerMainFrm::FormCreate(TObject *Sender)
 	SetUpdateFieldBuild(11723);
 	InitTableColumns();
 
-//	for(int i=0; i<NUM_MSG_TYPES; i++)
-//	{
-//		cbPackHead->Items->Add(opcodeTable[i].name);
-//		cbAddFilter->Items->Add(opcodeTable[i].name);
-//	}
+	for(int i=0; i<GetAllOpcodeNameList()->Count; i++)
+	{
+		cbPackHead->Items->Add(GetAllOpcodeNameList()->Strings[i]);
+		cbAddFilter->Items->Add(GetAllOpcodeNameList()->Strings[i]);
+	}
 
 	GetLog()->SetGUIWindow(this->Handle);
 
@@ -224,9 +225,15 @@ void __fastcall TWOWReviewerMainFrm::FormCreate(TObject *Sender)
 	int isHookHTTP = m_MemIniFile->ReadString("SET", "IsHookHTTP", "").ToIntDef(0);
 	int WatchPort = m_MemIniFile->ReadString("SET", "WatchPort", "").ToIntDef(0);
 	int OnlyHookTCP = m_MemIniFile->ReadString("SET", "OnlyHookTCP", "").ToIntDef(0);
+	int ForceUseOneConnection = m_MemIniFile->ReadString("SET", "ForceUseOneConnection", "").ToIntDef(0);
 	GetSharedMemInfo()->FindSelf()->IsHookHTTP = isHookHTTP;
 	GetSharedMemInfo()->FindSelf()->OnlyHookTCP = OnlyHookTCP;
 	GetSharedMemInfo()->FindSelf()->WatchPort = WatchPort;
+	GetSharedMemInfo()->FindSelf()->ForceUseOneConnection = ForceUseOneConnection;
+	if (ForceUseOneConnection)
+	{
+		GetPackageContainerManager()->SetForceOneContainer(1);
+	}
 	if(baseaddr)
 	{
 		GetSharedMemInfo()->FindSelf()->BaseAddr = baseaddr;
@@ -857,20 +864,6 @@ void __fastcall TWOWReviewerMainFrm::btAddFilterClick(TObject *Sender)
 
 	uint64 guid = StrToUint64Def(edtFilterGuid->Text, 0);
 
-//	if(head == 0)
-//	{
-//		for(int i=0; i<NUM_MSG_TYPES; i++)
-//		{
-//			String name = cbAddFilter->Text.Trim().UpperCase();
-//			if(String(opcodeTable[i].name).Pos(name) != 0)
-//			{
-//				head = i;
-//				curPackageContainer->AddFilterOpcode(head, guid);
-//			}
-//		}
-//		this->Refresh(1);
-//		return;
-//	}
 
 	curPackageContainer->AddFilterOpcode(head, guid);
     this->Refresh(1);

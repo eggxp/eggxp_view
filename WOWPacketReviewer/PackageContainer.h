@@ -106,6 +106,8 @@ private:
 	AList<PackageDispatcher>      m_RecvWorldPackageDispatcher;
 	AList<PackageContainer>     m_WorldPackageContainer;
 
+	int							m_ForceOneContainer;
+
 	AList<WOWPackage>			m_AllPackage;
 public:
 	PackageContainerManager();
@@ -122,7 +124,8 @@ public:
 	void						AddAllWOWPackage(WOWPackage *package);
 	AList<WOWPackage>		   *GetAllPackage(){return &m_AllPackage;}
 	void						ClearAllPackage();
-    void                        FreeWorldPackageContainer();
+	void                        FreeWorldPackageContainer();
+	GEN_GET_SET(int, ForceOneContainer)
 };
 
 

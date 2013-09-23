@@ -14,8 +14,8 @@
 ChatHandler::ChatHandler(GameWorld * gameWorld)
 {
     m_GameWorld = gameWorld;
-	REG_HANDLER(CMSG_MESSAGECHAT)
-	REG_HANDLER(SMSG_MESSAGECHAT)
+//	REG_HANDLER(CMSG_MESSAGECHAT)
+//	REG_HANDLER(SMSG_MESSAGECHAT)
 }
 
 ChatHandler::~ChatHandler()

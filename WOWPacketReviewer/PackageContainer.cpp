@@ -195,7 +195,7 @@ void                    PackageContainer::OnGetSendWOWPack(WOWPackage *	packet)
 {
     WOWPackage *	curPack = new WOWPackage;
     curPack->Assign(packet);
-    curPack->SetPacketProxyIndex(this->GetPackageContainerIndex());
+	//curPack->SetPacketProxyIndex(this->GetPackageContainerIndex());
 	curPack->SetIndex(gLogicPackIndex);
 	gLogicPackIndex++;
 
@@ -206,7 +206,7 @@ void                    PackageContainer::OnGetRecvWOWPack(WOWPackage *	packet)
 {
 	WOWPackage *	curPack = new WOWPackage;
 	curPack->Assign(packet);
-    curPack->SetPacketProxyIndex(this->GetPackageContainerIndex());
+	//curPack->SetPacketProxyIndex(this->GetPackageContainerIndex());
 	curPack->SetIndex(gLogicPackIndex);
 	gLogicPackIndex++;
 	GetPackageContainerManager()->AddAllWOWPackage(curPack);
@@ -527,6 +527,10 @@ void						PackageContainerManager::ClearAllPackage()
 
 PackageContainer    *       PackageContainerManager::GetWorldPackageContainer(int index)
 {
+	if (m_ForceOneContainer)
+	{
+		return m_WorldPackageContainer[0];
+	}
     while(index >= m_WorldPackageContainer.Count())
     {
         AddWorldPackageContainer();
@@ -541,6 +545,10 @@ int                         PackageContainerManager::GetWorldPackageContainerCou
 
 PackageContainer    *       PackageContainerManager::GetDefaultWorldPackageContainer()
 {
+	if (m_ForceOneContainer)
+	{
+		return m_WorldPackageContainer[0];
+	}
     return m_WorldPackageContainer[m_WorldPackageContainer.Count() - 1];
 }
 

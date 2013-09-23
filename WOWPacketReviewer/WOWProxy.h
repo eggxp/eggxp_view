@@ -173,7 +173,7 @@ public:
 class WOWProxyPool
 {
 private:
-    AList<WOWProxyManager>      m_WOWProxyManagers;
+	AList<WOWProxyManager>      m_WOWProxyManagers;
 public:
     WOWProxyPool();
     ~WOWProxyPool();

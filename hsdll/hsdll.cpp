@@ -303,7 +303,7 @@ WINSOCK_API_LINKAGE
 	//注意: 不要摄入封包流逻辑, 不要在这里主动发包..
 	HookOnOne(&gConnectHookData);
 
-    index++;
+	index++;
 	return nReturn;
 }
 
