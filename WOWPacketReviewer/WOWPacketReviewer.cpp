@@ -178,7 +178,7 @@ void __fastcall TWOWReviewerMainFrm::FormCreate(TObject *Sender)
 		return;
 	}
     pcMainControl->ActivePageIndex = 3;
-	PageControl2->ActivePageIndex = 1;
+	PageControl2->ActivePageIndex = 0;
 	#ifndef WOW_FISHER
 	GetSharedMemInfo()->CreateMapping();
 	String filePath = ExtractFilePath(Application->ExeName) + "Log\\";

@@ -61,6 +61,7 @@ int                 War3PackageDispatcher::DigestSendPacket()
 	}
 
 	m_SendBufferPacket.SetOpCode(opcode);
+	int aa = m_SendBufferPacket.GetHeadSize();
     return  readLen;
 }
 

@@ -5,15 +5,16 @@
 #include <tchar.h>
 
 //---------------------------------------------------------------------------
-USEFORM("CommentFrm.cpp", FrmComment);
-USEFORM("DataViewerFrm.cpp", FrmDBCViewer);
-USEFORM("BlockWindowFrm.cpp", frmBlock);
-USEFORM("GameDataViewerFrm.cpp", FrmGameDataViewer);
-USEFORM("WOWPacketReviewer.cpp", WOWReviewerMainFrm);
-USEFORM("ValuesUpdateFrm.cpp", FrmValuesUpdate);
 USEFORM("MapFrm.cpp", FrmMap);
-USEFORM("DrawMapFrm.cpp", FrmDrawMap);
+USEFORM("ValuesUpdateFrm.cpp", FrmValuesUpdate);
 USEFORM("DockFrm.cpp", frmDock);
+USEFORM("DrawMapFrm.cpp", FrmDrawMap);
+USEFORM("WOWPacketReviewer.cpp", WOWReviewerMainFrm);
+USEFORM("GameDataViewerFrm.cpp", FrmGameDataViewer);
+USEFORM("CommentFrm.cpp", FrmComment);
+USEFORM("BlockWindowFrm.cpp", frmBlock);
+USEFORM("DataViewerFrm.cpp", FrmDBCViewer);
+//---------------------------------------------------------------------------
 WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
 	try

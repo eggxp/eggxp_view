@@ -477,7 +477,7 @@ WSASendHook(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //  UDP Hook
-void CheckConnectUDPToTCP(const struct sockaddr FAR * dest)
+void CheckConnectUDPToTCP(const struct sockaddr FAR * dest, String info)
 {
 	AnsiString ansiIP = HOST_IP;
 	WORD hport = (BYTE)dest->sa_data[0];
@@ -494,7 +494,10 @@ void CheckConnectUDPToTCP(const struct sockaddr FAR * dest)
 	}
 	String  sendtoKey=FormatStr("%s:%d", sendtoIP, sendtoPort);
 	if (gUDPConnectList.find(sendtoKey) != gUDPConnectList.end())
+	{
 		return;
+	}
+	LogMsg(info);
 	LogMsg(FormatStr("udp|%s|%d|%d", sendtoIP, sendtoPort, gWOWHookViewInfo->ClientConnectIndex), MSG_CONNECT);
 	
 	gUDPConnectList[sendtoKey] = 0;
@@ -529,7 +532,7 @@ SendToHook(
 //	}
 	HookOffOne(&gSendToHookData);
 //	int nReturn = sendto(s, buf, len, flags, to, tolen);
-	CheckConnectUDPToTCP(to);
+	CheckConnectUDPToTCP(to, "SendToHook");
 	AnsiString ansiIP = HOST_IP;
 	sockaddr_in * their_addr = (sockaddr_in *)to;
 	sendto_sin_port = their_addr->sin_port;
@@ -539,10 +542,7 @@ SendToHook(
 	int nReturn = sendto(s, buf, len, flags, to, tolen);
 	HookOnOne(&gSendToHookData);
 
-//	if(nReturn >= 0)
-//	{
-//		LogMsg(FormatStr("sendto| |0|%s", BinToStr((char FAR * )buf, len)), MSG_ADD_PACKAGE);
-//	}
+//	LogMsg(FormatStr("%s", BinToStr((char FAR * )buf, len)));
 	return(nReturn);
 
 
@@ -628,7 +628,7 @@ WSASendToHook(
 //		return nReturn;
 //	}
 
-	CheckConnectUDPToTCP(lpTo);
+	CheckConnectUDPToTCP(lpTo, "WSASendToHook");
 	AnsiString ansiIP = HOST_IP;
 	sockaddr_in * their_addr = (sockaddr_in *)lpTo;
 	wsasendto_sin_port = their_addr->sin_port;

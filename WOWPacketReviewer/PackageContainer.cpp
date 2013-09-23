@@ -504,6 +504,7 @@ void						PackageContainerManager::AddAllWOWPackage(WOWPackage *packet)
 
 	m_AllPackage.Add(packet);
 
+	GetGameWorld()->HandlerPacket(packet);
 	// 不再处理封包了
 //	if(packet->GetPacketProxyType() == PROXY_TYPE_REALM)
 //	{

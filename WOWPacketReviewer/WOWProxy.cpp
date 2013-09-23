@@ -139,14 +139,19 @@ int             WOWProxy::SendToProxy(SOCKET  to, ASharedPtrQueue<WOWPackage>  *
     if(!SendToBuf_O(to, pack.c_str(), pack.Length(), addrto, tolen))
     {
         GetLog()->Warn("WOWProxy::HostRecvThread socket send error");
-        Close();
-        return  -1;
+//        Close();
+//        return  -1;
+		return 0;
     }
     return      0;
 }
 
 int             WOWProxy::RecvNormalProxy(SOCKET  from, char *recvBuf, int recvLen)
 {
+	if (from == m_HostSocket)
+	{
+		int ai=0;
+	}
 	if(recvLen <= 0)
 	{
         GetLog()->Warn("WOWProxy::RecvProxy socket error. m_DesIP = %s, msg = %s", m_DesIP, SysErrorMessage(GetLastError()));

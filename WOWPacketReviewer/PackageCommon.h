@@ -4,8 +4,10 @@
 #define PackageCommonH
 //---------------------------------------------------------------------------
 #include    <VCL.h>
+#include 	<vector>
 #include    "CommFunc.h"
 #include    "ReviewerCommon.h"
+using namespace std;
 
 enum TProxyType
 {
@@ -27,8 +29,8 @@ enum TGetInfoType
 #pragma pack(push,1)
 struct ClientPktHeader
 {
-    uint16 size;
-    uint32 cmd;
+	uint16 cmd;
+	uint16 size;
 };
 
 #pragma pack(pop)
@@ -129,7 +131,8 @@ public:
 
     uint64          ReadPackGUID(int &pos);
     void            WritePackGUID(int &pos, uint64 guid);
-    AnsiString          ReadString(int &pos);
+	AnsiString          ReadString(int &pos);
+	vector<unsigned char> ReadZData(int &pos);
 
 	char    *       GetHead();
 	void            GetInfo(TGetInfoType getInfoType, bool showPackHead, bool showOrgPack, TStrings * output);

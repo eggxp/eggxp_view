@@ -707,7 +707,9 @@ void    PlayerHandler::Handler_SMSG_MOVE_LAND_WALK(WOWPackage * packet)
 
 void    PlayerHandler::Handler_CMSG_LOGOUT_REQUEST(WOWPackage * packet)
 {
-    int pos = 0;
-    GetSharedMemInfo()->FindSelf()->ForbiddenAnyMortConnection = 0;
-    READ_FINISH
+	int pos = 0;
+	GetSharedMemInfo()->FindSelf()->ForbiddenAnyMortConnection = 0;
+	READ_FINISH
 }
+
+

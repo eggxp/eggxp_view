@@ -16,6 +16,7 @@
 #include "AQueue.h"
 
 #define USE_PACKAGE_DISPATCHER War3PackageDispatcher
+//#define USE_PACKAGE_DISPATCHER DefaultPackageDispatcher
 
 int GetLogicPackIndex();
 void SetLogicPackIndex(int index);

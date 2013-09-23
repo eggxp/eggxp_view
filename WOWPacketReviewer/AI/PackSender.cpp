@@ -24,72 +24,28 @@ using namespace std;
 void            GetPackageFromDataPack(WOWPackage  *   pack, String packHead, String mark, AnsiString packContent)
 {
 	//Ä£Äâ·¢ËÍ·â°ü
+	pack->SetPacketProxyType(PROXY_TYPE_WORLD);
+    packHead = packHead.Trim();
+	int head = LookupOpcodeID(packHead);
 
-//	pack->SetPacketProxyType(PROXY_TYPE_WORLD);
-//    packHead = packHead.Trim();
-//    int head = 0;
-//    for(int i=0; i<NUM_MSG_TYPES; i++)
-//    {
-//        if(LookupOpcodeName(i) == packHead)
-//        {
-//            head = i;
-//            break;
-//        }
-//	}
-//
-//	bool isLargePacket = false;
-//	int recvHeadLen = 2;
-//    AnsiString result;
-//    if(mark == SEND_MARK)
-//    {
-//        result.SetLength(sizeof(ClientPktHeader)+packContent.Length());
-//    }
-//    else
-//	{
-//		int totalSize = packContent.Length()+2;
-//		if(totalSize > 0x7FFF)
-//		{
-//			isLargePacket = true;
-//			recvHeadLen = 3;
-//		}
-//		else
-//		{
-//			recvHeadLen = 2;
-//		}
-//		result.SetLength(recvHeadLen+totalSize);
-//    }
-//
-//    WORD length = 0;
-//    if(mark == SEND_MARK)
-//    {
-//        length = sizeof(ClientPktHeader)-2+packContent.Length();
-//    }
-//    else
-//    {
-//        length = recvHeadLen+packContent.Length();
-//    }
-//	int pos = 0;
-//	if(isLargePacket)
-//	{
-//		WriteBYTE(result.c_str(), pos, 0x80|(0xFF &(length>>16)));
-//	}
-//    WriteBYTE(result.c_str(), pos, 0xFF &(length>>8));
-//    WriteBYTE(result.c_str(), pos, 0xFF & length);
-//    if(mark == SEND_MARK)
-//    {
-//        WriteDWORD(result.c_str(), pos, head);
-//    }
-//    else
-//    {
-//        WriteWORD(result.c_str(), pos, head);
-//    }
-//    WriteBuf(result.c_str(), pos, packContent.c_str(), packContent.Length());
-//
-//    pack->SetData(result);
-//    pack->SetIndex(GetLogicPackIndex());
-//    pack->SetMark(mark);
-//    pack->SetOpCodeMsg(packHead);
-//    pack->SetOpCode(head);
+	AnsiString result;
+	result.SetLength(sizeof(ClientPktHeader)+packContent.Length());
+
+	WORD length = sizeof(ClientPktHeader)+packContent.Length();
+
+	int pos = 0;
+
+	WriteWORD(result.c_str(), pos, head);
+	WriteBYTE(result.c_str(), pos, 0xFF00 & length);
+	WriteBYTE(result.c_str(), pos, 0xFF & length);
+
+    WriteBuf(result.c_str(), pos, packContent.c_str(), packContent.Length());
+
+    pack->SetData(result);
+    pack->SetIndex(GetLogicPackIndex());
+    pack->SetMark(mark);
+    pack->SetOpCodeMsg(packHead);
+    pack->SetOpCode(head);
 }
 
 
@@ -130,27 +86,27 @@ void    PackSender::SendPacket(String markDir, int opcode, const unsigned char *
 
 void    PackSender::ForceSendPacket(String markDir, int opcode, AnsiString data, int connectionIndex)
 {
-//	PackageContainer * worldPackageContainer = NULL;
-//	worldPackageContainer = GetPackageContainerManager()->GetWorldPackageContainer(connectionIndex);
-//	if(!worldPackageContainer)
-//		return;
-//
-//	WOWPackage   curPack;
-//	int head = opcode;
-//	AnsiString packContent = data;
-//
-//	GetPackageFromDataPack(&curPack, LookupOpcodeName(opcode), markDir, data);
-//	SetLogicPackIndex(GetLogicPackIndex() + 1);
-//
-//	curPack.SetForceSend(1);
-//	if(markDir == SEND_MARK)
-//	{
-//		worldPackageContainer->OnGetSendWOWPack(&curPack);
-//	}
-//	else
-//	{
-//		worldPackageContainer->OnGetRecvWOWPack(&curPack);
-//	}
+	PackageContainer * worldPackageContainer = NULL;
+	worldPackageContainer = GetPackageContainerManager()->GetWorldPackageContainer(connectionIndex);
+	if(!worldPackageContainer)
+		return;
+
+	WOWPackage   curPack;
+	int head = opcode;
+	AnsiString packContent = data;
+
+	GetPackageFromDataPack(&curPack, LookupOpcodeName(opcode), markDir, data);
+	SetLogicPackIndex(GetLogicPackIndex() + 1);
+
+	curPack.SetForceSend(1);
+	if(markDir == SEND_MARK)
+	{
+		worldPackageContainer->OnGetSendWOWPack(&curPack);
+	}
+	else
+	{
+		worldPackageContainer->OnGetRecvWOWPack(&curPack);
+	}
 }
 
 void    PackSender::SendPacket(String mark, int opcode, AnsiString data)
