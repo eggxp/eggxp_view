@@ -167,7 +167,7 @@ void InitOpcode()
 	map<int, String>::iterator it;
 	for (it = gOpcodeDict.begin(); it != gOpcodeDict.end(); ++it)
 	{
-		gOpcodeDictRevert[it->second] = it->first;
+		gOpcodeDictRevert[it->second.Trim().LowerCase()] = it->first;
 		gAllOpcodeNameList->Add(it->second);
 	}
 }
@@ -183,6 +183,7 @@ String LookupOpcodeName(uint16 id)
 
 int LookupOpcodeID(String headStr)
 {
+	headStr = headStr.Trim().LowerCase();
 	if (gOpcodeDictRevert.find(headStr) != gOpcodeDictRevert.end())
 	{
 		return gOpcodeDictRevert[headStr];

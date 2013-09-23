@@ -860,7 +860,15 @@ void __fastcall TWOWReviewerMainFrm::btAddFilterClick(TObject *Sender)
     if(!curPackageContainer)
         return;
 
-	int head = StrToInt("$"+cbAddFilter->Text);
+	int head = 0;
+	try
+	{
+		head = StrToInt("$"+cbAddFilter->Text);
+	}
+	catch (Exception &e)
+	{
+		head = LookupOpcodeID(cbAddFilter->Text);
+	}
 
 	uint64 guid = StrToUint64Def(edtFilterGuid->Text, 0);
 
