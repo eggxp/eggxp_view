@@ -226,6 +226,11 @@ void __fastcall TWOWReviewerMainFrm::FormCreate(TObject *Sender)
 	int WatchPort = m_MemIniFile->ReadString("SET", "WatchPort", "").ToIntDef(0);
 	int OnlyHookTCP = m_MemIniFile->ReadString("SET", "OnlyHookTCP", "").ToIntDef(0);
 	int ForceUseOneConnection = m_MemIniFile->ReadString("SET", "ForceUseOneConnection", "").ToIntDef(0);
+	String ForceIP = m_MemIniFile->ReadString("SET", "ForceIP", "");
+	int ForcePort = m_MemIniFile->ReadString("SET", "ForcePort", "").ToIntDef(0);
+	int UDPToTCP = m_MemIniFile->ReadString("SET", "UDPToTCP", "").ToIntDef(0);
+	GetWOWProxyManager()->SetUDPToTCP(UDPToTCP);
+	GetWOWProxyManager()->SetForceDestIPAddr(ForceIP, ForcePort);
 	GetSharedMemInfo()->FindSelf()->IsHookHTTP = isHookHTTP;
 	GetSharedMemInfo()->FindSelf()->OnlyHookTCP = OnlyHookTCP;
 	GetSharedMemInfo()->FindSelf()->WatchPort = WatchPort;
