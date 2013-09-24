@@ -137,6 +137,9 @@ __published:	// IDE-managed Components
     TButton *Button1;
     TMenuItem *miCopyToFile;
 	TButton *btSaveSpellData;
+	TCheckBox *cbFilterPacketSize;
+	TCSpinEdit *edtFilterPacketSize;
+	TLabel *Label2;
     void __fastcall FormCreate(TObject *Sender);
     void __fastcall FormDestroy(TObject *Sender);
     void __fastcall Timer1Timer(TObject *Sender);
@@ -196,6 +199,7 @@ __published:	// IDE-managed Components
     void __fastcall Button1Click(TObject *Sender);
     void __fastcall miCopyToFileClick(TObject *Sender);
 	void __fastcall btSaveSpellDataClick(TObject *Sender);
+	void __fastcall cbFilterPacketSizeClick(TObject *Sender);
 private:	// User declarations 
 
     void            AddParseStr(String mark);

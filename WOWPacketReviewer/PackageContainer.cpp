@@ -57,6 +57,7 @@ PackageContainer::PackageContainer(PackageDispatcher   * sendDispatcher, Package
 	m_ReverseFilter = false;
 	m_CreatureFilter = false;
 	m_ForbiddenSend = false;
+	m_FilterPacketSize = 0;
 }
 
 PackageContainer::~PackageContainer()
@@ -144,6 +145,14 @@ bool					PackageContainer::NeedHidePackage(WOWPackage *	packet)
 	{
 		return true;
 	}
+	if (m_FilterPacketSize != 0)
+	{
+		if (packet->GetContentLen() <= m_FilterPacketSize)
+		{
+			return true;
+		}
+
+	}
 	return HideFilterOpcode(packet->GetOpCode(), packet->GetGuid());
 }
 
@@ -194,8 +203,11 @@ void                    PackageContainer::RefreshFilter()
 void                    PackageContainer::OnGetSendWOWPack(WOWPackage *	packet)
 {
     WOWPackage *	curPack = new WOWPackage;
-    curPack->Assign(packet);
-	//curPack->SetPacketProxyIndex(this->GetPackageContainerIndex());
+	curPack->Assign(packet);
+	if (!GetPackageContainerManager()->GetForceOneContainer())
+	{
+		curPack->SetPacketProxyIndex(this->GetPackageContainerIndex());
+	}
 	curPack->SetIndex(gLogicPackIndex);
 	gLogicPackIndex++;
 
@@ -206,7 +218,10 @@ void                    PackageContainer::OnGetRecvWOWPack(WOWPackage *	packet)
 {
 	WOWPackage *	curPack = new WOWPackage;
 	curPack->Assign(packet);
-	//curPack->SetPacketProxyIndex(this->GetPackageContainerIndex());
+	if (!GetPackageContainerManager()->GetForceOneContainer())
+	{
+		curPack->SetPacketProxyIndex(this->GetPackageContainerIndex());
+	}
 	curPack->SetIndex(gLogicPackIndex);
 	gLogicPackIndex++;
 	GetPackageContainerManager()->AddAllWOWPackage(curPack);

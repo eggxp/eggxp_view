@@ -35,13 +35,14 @@ void            GetPackageFromDataPack(WOWPackage  *   pack, String packHead, St
 
 	int pos = 0;
 
-	WriteWORD(result.c_str(), pos, head);
-	WriteBYTE(result.c_str(), pos, 0xFF00 & length);
-	WriteBYTE(result.c_str(), pos, 0xFF & length);
+	WriteBYTE(result.c_str(), pos, (0xFF00 & head) >> 8);
+	WriteBYTE(result.c_str(), pos, 0xFF & head);
+	WriteWORD(result.c_str(), pos, length);
 
     WriteBuf(result.c_str(), pos, packContent.c_str(), packContent.Length());
 
-    pack->SetData(result);
+	pack->SetData(result);
+	pack->SetOrgData(result);
     pack->SetIndex(GetLogicPackIndex());
     pack->SetMark(mark);
     pack->SetOpCodeMsg(packHead);

@@ -842,9 +842,9 @@ void __fastcall TWOWReviewerMainFrm::lvPackFilterData(TObject *Sender,
 
 void __fastcall TWOWReviewerMainFrm::cbFilterClick(TObject *Sender)
 {
-    PackageContainer * curPackageContainer = GetWatchProxy();
-    if(!curPackageContainer)
-        return;
+	PackageContainer * curPackageContainer = GetWatchProxy();
+	if(!curPackageContainer)
+		return;
 
     curPackageContainer->SetEnableFilter(cbFilter->Checked);
 	curPackageContainer->SetReverseFilter(cbReverseFilter->Checked);
@@ -1600,6 +1600,22 @@ void __fastcall TWOWReviewerMainFrm::btSaveSpellDataClick(TObject *Sender)
 		}
 		SaveCell(fileDir, cell);
 		return;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TWOWReviewerMainFrm::cbFilterPacketSizeClick(TObject *Sender)
+{
+	PackageContainer * curPackageContainer = GetWatchProxy();
+	if(!curPackageContainer)
+		return;
+	if (cbFilterPacketSize->Checked)
+	{
+		curPackageContainer->SetFilterPacketSize(edtFilterPacketSize->Value);
+	}
+	else
+	{
+		curPackageContainer->SetFilterPacketSize(0);
 	}
 }
 //---------------------------------------------------------------------------

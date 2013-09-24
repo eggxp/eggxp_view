@@ -60,10 +60,69 @@ BYTEARRAY UTIL_DecodeStatString( BYTEARRAY &data )
   return Result;
 }
 
+static map<int, String> gActionMap;
+static void InitActionMap()
+{
+	gActionMap[0x01] = "Pause game";
+	gActionMap[0x02] = "Resume game";
+	gActionMap[0x03] = "Set game speed in single player game (options menu)";
+	gActionMap[0x04] = "Increase game speed in single player game (Num+)";
+	gActionMap[0x05] = "Decrease game speed in single player game (Num=)";
+	gActionMap[0x06] = "Save game";
+	gActionMap[0x07] = "Save game finished";
+	gActionMap[0x10] = "Unit/building ability (no additional parameters)";
+	gActionMap[0x11] = "Unit/building ability";
+	gActionMap[0x12] = "Unit/building ability";
+	gActionMap[0x13] = "Give item to Unit / Drop item on ground";
+	gActionMap[0x14] = "Unit/building ability";
+	gActionMap[0x16] = "Change Selection (Unit, Building, Area)";
+	gActionMap[0x17] = "Assign Group Hotkey";
+	gActionMap[0x18] = "Select Group Hotkey";
+	gActionMap[0x19] = "Select Subgroup (patch version >= 1.14b)";
+	gActionMap[0x19] = "Select Subgroup (patch version < 1.14b)";
+	gActionMap[0x1A] = "Pre Subselection";
+	gActionMap[0x1B] = "Unknown";
+	gActionMap[0x1C] = "Select Ground Item";
+	gActionMap[0x1D] = "Cancel hero revival";
+	gActionMap[0x1E] = "Remove unit from building queue";
+	gActionMap[0x21] = "unknown";
+	gActionMap[0x50] = "Change ally options";
+	gActionMap[0x51] = "Transfer resources";
+	gActionMap[0x60] = "Map trigger chat command (?)";
+	gActionMap[0x61] = "ESC pressed";
+	gActionMap[0x62] = "Scenario Trigger";
+	gActionMap[0x66] = "Enter choose hero skill submenu";
+	gActionMap[0x67] = "Enter choose building submenu";
+	gActionMap[0x68] = "Minimap signal (ping)";
+	gActionMap[0x69] = "Continue Game (BlockB)";
+	gActionMap[0x6A] = "Continue Game (BlockA)";
+	gActionMap[0x75] = "Unknown";
+
+	String cheatStr = "Single Player Cheats";
+	gActionMap[0x20] = cheatStr;
+	for (int i=0x22; i<=0x32; ++i)
+	{
+		gActionMap[i] = cheatStr;
+	}
+}
+
+static String GetActiveName(int code)
+{
+	if (gActionMap.find(code) != gActionMap.end())
+	{
+		return gActionMap[code];
+	}
+	return "";
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+
 
 War3RoomHandler::War3RoomHandler(GameWorld * gameworld)
 {
 	m_GameWorld = gameworld;
+	InitActionMap();
+
 	REG_HANDLER(W3GS_GAMEINFO)
 	REG_HANDLER(W3GS_SEARCHGAME)
 	REG_HANDLER(W3GS_REQJOIN)
@@ -258,7 +317,7 @@ void    War3RoomHandler::Handler_W3GS_CHAT_FROM_HOST(WOWPackage * packet)
 	}
 	READ_BYTE(SendPlayerID)
 	READ_BYTE(Flags)
-	READ_DWORD(ExtraFlags)
+//	READ_DWORD(ExtraFlags)
 	READ_STRING(Message)
 	READ_FINISH
 }
@@ -273,6 +332,7 @@ void    War3RoomHandler::Handler_W3GS_INCOMING_ACTION(WOWPackage * packet)
 		READ_BYTE(PlayerNumber)
 		READ_WORD(ActionLength)
 		READ_BUFF(Action, ActionLength)
+		packet->AddComment(GetActiveName(Action.c_str()[0]), "Action");
 	}
 	READ_FINISH
 }
@@ -282,5 +342,6 @@ void    War3RoomHandler::Handler_W3GS_OUTGOING_ACTION(WOWPackage * packet)
 	int pos = 0;
 	READ_DWORD(CRC32)
 	READ_BUFF(Action, packet->GetContentLen() - pos)
+	packet->AddComment(GetActiveName(Action.c_str()[0]), "Action");
 	READ_FINISH
 }

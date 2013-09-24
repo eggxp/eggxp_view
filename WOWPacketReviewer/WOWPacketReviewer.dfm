@@ -747,7 +747,7 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     Top = 264
     Width = 789
     Height = 227
-    ActivePage = TabSheet4
+    ActivePage = TabSheet5
     Align = alBottom
     TabOrder = 2
     TabPosition = tpBottom
@@ -880,6 +880,14 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
         Height = 64
         Align = alBottom
         TabOrder = 0
+        ExplicitTop = 143
+        object Label2: TLabel
+          Left = 229
+          Top = 40
+          Width = 36
+          Height = 13
+          Caption = #30340#23553#21253
+        end
         object cbFilter: TCheckBox
           Left = 0
           Top = 16
@@ -938,6 +946,23 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
           Caption = #36807#28388#25152#26377'Creature'
           TabOrder = 6
           OnClick = cbFilterClick
+        end
+        object cbFilterPacketSize: TCheckBox
+          Left = 112
+          Top = 39
+          Width = 65
+          Height = 17
+          Caption = #36807#28388#23567#20110
+          TabOrder = 7
+          OnClick = cbFilterPacketSizeClick
+        end
+        object edtFilterPacketSize: TCSpinEdit
+          Left = 183
+          Top = 39
+          Width = 40
+          Height = 22
+          TabOrder = 8
+          Value = 2
         end
       end
       object lvPackFilter: TListView
@@ -1047,7 +1072,7 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     Left = 168
     Top = 200
     Bitmap = {
-      494C010119001B001C0120002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010119001B00200120002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       010000000000000000000000000000000000000000000000000000000000BDBD
       BD00CECECE00525252008C8C8C008484840073737300737373006B6B6B006B6B

@@ -51,6 +51,7 @@ private:
 	bool                    m_ReverseFilter;
 	bool					m_CreatureFilter;
 	bool					m_ForbiddenSend;
+	int						m_FilterPacketSize;
 
 	void                    AddPackToFilter(AList<WOWPackage> * source, AList<WOWPackage> * dest);
 
@@ -66,6 +67,7 @@ public:
 	String					GetSaveFilterName();
 	bool					HideFilterOpcode(int opcode, uint64 guid);
 	bool					NeedHidePackage(WOWPackage *	packet);
+	GEN_GET_SET(int, FilterPacketSize)
 
     void                    OnGetSendWOWPack(WOWPackage *	packet);
     void                    OnGetRecvWOWPack(WOWPackage *	packet);
