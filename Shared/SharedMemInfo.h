@@ -22,6 +22,7 @@ struct WOWHookViewInfo
 	int		WatchPort;					//强制设定观测的端口<由11平台断线重连引入的>
 	int		OnlyHookTCP;				//只hooktcp<由11平台断线重连引入的>
 	int		ForceUseOneConnection;		//强制使用一个连接<由11平台断线重连引入的>
+	int		GameType;					// 1. war3 2. war3自制
     void    Clear()
     {
         memset(this, 0, sizeof(*this));

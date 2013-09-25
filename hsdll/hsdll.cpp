@@ -477,7 +477,7 @@ WSASendHook(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //  UDP Hook
-void CheckConnectUDPToTCP(const struct sockaddr FAR * dest, String info)
+bool CheckConnectUDPToTCP(const struct sockaddr FAR * dest, String info)
 {
 	AnsiString ansiIP = HOST_IP;
 	WORD hport = (BYTE)dest->sa_data[0];
@@ -490,18 +490,23 @@ void CheckConnectUDPToTCP(const struct sockaddr FAR * dest, String info)
 										(BYTE)dest->sa_data[5]);
 	if(sendtoIP == "1.0.0.0")
 	{
-		return;
+		return false;
 	}
+//	if(sendtoIP == "255.255.255.255")
+//	{
+//		LogMsg("Not Use Broadcast");
+//		return false;
+//	}
 	String  sendtoKey=FormatStr("%s:%d", sendtoIP, sendtoPort);
 	if (gUDPConnectList.find(sendtoKey) != gUDPConnectList.end())
 	{
-		return;
+		return true;
 	}
 	LogMsg(info);
 	LogMsg(FormatStr("udp|%s|%d|%d", sendtoIP, sendtoPort, gWOWHookViewInfo->ClientConnectIndex), MSG_CONNECT);
 	
 	gUDPConnectList[sendtoKey] = 0;
-	return;
+	return true;
 }
 
 WINSOCK_API_LINKAGE
@@ -532,7 +537,12 @@ SendToHook(
 //	}
 	HookOffOne(&gSendToHookData);
 //	int nReturn = sendto(s, buf, len, flags, to, tolen);
-	CheckConnectUDPToTCP(to, "SendToHook");
+	if (!CheckConnectUDPToTCP(to, "SendToHook"))
+	{
+		int nReturn = sendto(s, buf, len, flags, to, tolen);
+		HookOnOne(&gSendToHookData);
+		return(nReturn);
+	}
 	AnsiString ansiIP = HOST_IP;
 	sockaddr_in * their_addr = (sockaddr_in *)to;
 	sendto_sin_port = their_addr->sin_port;
@@ -628,7 +638,13 @@ WSASendToHook(
 //		return nReturn;
 //	}
 
-	CheckConnectUDPToTCP(lpTo, "WSASendToHook");
+	if (!CheckConnectUDPToTCP(lpTo, "WSASendToHook"))
+	{
+		int nReturn = WSASendTo(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent,
+							dwFlags, lpTo, iTolen, lpOverlapped, lpCompletionRoutine);
+		HookOnOne(&gWSASendToHookData);
+		return nReturn;
+	}
 	AnsiString ansiIP = HOST_IP;
 	sockaddr_in * their_addr = (sockaddr_in *)lpTo;
 	wsasendto_sin_port = their_addr->sin_port;
@@ -693,8 +709,22 @@ WSARecvFromHook(
 	if(their_addr->sin_port == htons(gConnectPort + UDP_PORT_START) && their_addr->sin_addr.s_addr == 0x0100007F)
 	{
 		their_addr->sin_port = wsasendto_sin_port;
-		their_addr->sin_addr.s_addr = wsasendto_sin_addr;
 	}
+
+
+	if (gWOWHookViewInfo->GameType == 2)
+	{
+		DWORD changeAddr = their_addr->sin_port;
+		if (0 == wsasendto_sin_addr)
+		{
+			// War3转变, 如果地址是广播的话, 就随便给一个ip让它连过去
+			LogMsg("Broadcast Pack, change address");
+			AnsiString changeIP = "123.125.34.30";
+			changeAddr = inet_addr(changeIP.c_str());
+		}
+		their_addr->sin_addr.s_addr = changeAddr;
+	}
+	LogMsg(FormatStr("---------------->%d", their_addr->sin_addr.s_addr));
 //	if(nReturn == 0)
 //	{
 //		LogMsg(FormatStr("recvfrom| |0|%s", BinToStr((char FAR * )lpBuffers[0].buf, *lpNumberOfBytesRecvd)), MSG_ADD_PACKAGE);

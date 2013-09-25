@@ -225,6 +225,7 @@ void __fastcall TWOWReviewerMainFrm::FormCreate(TObject *Sender)
 	int isHookHTTP = m_MemIniFile->ReadString("SET", "IsHookHTTP", "").ToIntDef(0);
 	int WatchPort = m_MemIniFile->ReadString("SET", "WatchPort", "").ToIntDef(0);
 	int OnlyHookTCP = m_MemIniFile->ReadString("SET", "OnlyHookTCP", "").ToIntDef(0);
+	int GameType = m_MemIniFile->ReadString("SET", "GameType", "").ToIntDef(0);
 	int ForceUseOneConnection = m_MemIniFile->ReadString("SET", "ForceUseOneConnection", "").ToIntDef(0);
 	String ForceIP = m_MemIniFile->ReadString("SET", "ForceIP", "");
 	int ForcePort = m_MemIniFile->ReadString("SET", "ForcePort", "").ToIntDef(0);
@@ -234,6 +235,7 @@ void __fastcall TWOWReviewerMainFrm::FormCreate(TObject *Sender)
 	GetSharedMemInfo()->FindSelf()->IsHookHTTP = isHookHTTP;
 	GetSharedMemInfo()->FindSelf()->OnlyHookTCP = OnlyHookTCP;
 	GetSharedMemInfo()->FindSelf()->WatchPort = WatchPort;
+	GetSharedMemInfo()->FindSelf()->GameType = GameType;
 	GetSharedMemInfo()->FindSelf()->ForceUseOneConnection = ForceUseOneConnection;
 	if (ForceUseOneConnection)
 	{

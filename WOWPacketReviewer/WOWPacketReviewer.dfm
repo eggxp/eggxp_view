@@ -41,11 +41,15 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     Top = 41
     Width = 789
     Height = 220
-    ActivePage = tsSend
+    ActivePage = tsAll
     Align = alClient
     TabOrder = 0
     object tsSend: TTabSheet
       Caption = 'Send'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object lvSend: TListView
         Left = 0
         Top = 0
@@ -132,10 +136,6 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     object tsAll: TTabSheet
       Caption = 'All'
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lvAll: TListView
         Left = 0
         Top = 0
@@ -1119,7 +1119,7 @@ object WOWReviewerMainFrm: TWOWReviewerMainFrm
     Left = 168
     Top = 200
     Bitmap = {
-      494C010119001B00240120002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010119001B002C0120002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000080000000E0000000010020000000000000C0
       010000000000000000000000000000000000000000000000000000000000BDBD
       BD00CECECE00525252008C8C8C008484840073737300737373006B6B6B006B6B

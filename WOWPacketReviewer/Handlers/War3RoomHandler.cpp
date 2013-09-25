@@ -163,6 +163,7 @@ void    War3RoomHandler::Handler_W3GS_GAMEINFO(WOWPackage * packet)
 	READ_STRING(GameName)
 	READ_BYTE(UZero)
 	BYTEARRAY statString = packet->ReadZData(pos);
+	packet->AddComment(BinToStr((char *)&statString[0], statString.size()), "----------------StatString");
 	BYTEARRAY decode = UTIL_DecodeStatString(statString);
 	AnsiString desocdString = AnsiString((char *)&decode[0], decode.size());
 	WOWPackage decodePacket;
@@ -170,7 +171,7 @@ void    War3RoomHandler::Handler_W3GS_GAMEINFO(WOWPackage * packet)
 	decodePacket.SetOrgData(desocdString);
 	decodePacket.SetDecompress(desocdString);
 	DecodeStatPacket(&decodePacket);
-	packet->AddComment(decodePacket.GetComment()->Text, "StatString");
+	packet->AddComment(decodePacket.GetComment()->Text, "--------------------------Spliter");
 	READ_DWORD(SlotsTotal)
 	READ_DWORD(MapGameType)
 	READ_DWORD(Unknown2)
