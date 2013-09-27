@@ -5518,7 +5518,17 @@ String              GetActiveStatesName(int input);
 #define MAPFILTER_OBS_NONE        4
 
 #define MAPGAMETYPE_UNKNOWN0      1     // always set except for saved games?
-String              GetWar3MapFlags(int input);
+
+#define 				   PLAYERLEAVE_DISCONNECT 0x01
+#define 				   PLAYERLEAVE_LOST 0x07
+#define 				   PLAYERLEAVE_LOSTBUILDINGS 0x08
+#define 				   PLAYERLEAVE_WON 0x09
+#define 				   PLAYERLEAVE_DRAW 0x0A
+#define 				   PLAYERLEAVE_OBSERVER 0x0B
+#define 				   PLAYERLEAVE_LOBBY 0x0D
+
+String              GetWar3MapFlags(int input_flag);
+String              GetWar3LeaveReason(int input);
 //////////////////////////////////////////////////////////////////////////////////
 
 #endif

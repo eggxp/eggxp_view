@@ -55,7 +55,7 @@ struct tagConnectInfo
         Port = port;
         IP = ip;
     }
-    bool Equal(String ip, int port)
+	bool Equal(String ip, int port)
     {
         return IP == ip && Port == port;
     }
@@ -216,10 +216,10 @@ RecvHook(
     HookOffOne(&gRecvHookData); //先关闭HOOK，因为已经进入我们的函数了
     int nReturn = recv(s, buf, len, flags);  //先运行原来的RECV，否则我们不能得到或不能得到全部被复制的内容
 
-    if(s == gLogSocket && nReturn > 0)
-    {
-        LogMsg(FormatStr("Recv: %s", BinToStr(buf, nReturn)));
-    }
+//	if(nReturn > 0)
+//	{
+//        LogMsg(FormatStr("TCP Recv: %s", BinToStr(buf, nReturn)));
+//    }
     HookOnOne(&gRecvHookData); //继续HOOK
     //sndmsg((DWORD)len,(DWORD)nReturn);
     return(nReturn);
@@ -275,7 +275,7 @@ WINSOCK_API_LINKAGE
 
 	LogMsg(FormatStr("Connect, IP=%s, Port=%d, nonBlocking = %d", ip, port, nonBlocking));
 //    int needRedirect = 0;
-	if((!(gWOWHookViewInfo->IsHookHTTP) && port == 80) || ip == "127.0.0.1")
+	if((!(gWOWHookViewInfo->IsHookHTTP) && port == 80) || (ip == "127.0.0.1" && gWOWHookViewInfo->GameType == 0))
     {
         LogMsg("no redirect");
 		nReturn = connect(s, name, namelen);
@@ -295,7 +295,7 @@ WINSOCK_API_LINKAGE
     sockaddr_in * their_addr = (sockaddr_in *)name;
 	their_addr->sin_port = htons(gConnectPort);
 	AnsiString ansiIP = HOST_IP;
-    their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
+	their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
 
 
 	nReturn = connect(s, name, namelen);
@@ -492,11 +492,11 @@ bool CheckConnectUDPToTCP(const struct sockaddr FAR * dest, String info)
 	{
 		return false;
 	}
-//	if(sendtoIP == "255.255.255.255")
-//	{
-//		LogMsg("Not Use Broadcast");
-//		return false;
-//	}
+	if(gWOWHookViewInfo->GameType == 1 && sendtoIP == "255.255.255.255")
+	{
+		LogMsg("Not Use Broadcast");
+		return false;
+	}
 	String  sendtoKey=FormatStr("%s:%d", sendtoIP, sendtoPort);
 	if (gUDPConnectList.find(sendtoKey) != gUDPConnectList.end())
 	{
@@ -719,12 +719,20 @@ WSARecvFromHook(
 		{
 			// War3转变, 如果地址是广播的话, 就随便给一个ip让它连过去
 			LogMsg("Broadcast Pack, change address");
-			AnsiString changeIP = "123.125.34.30";
+			AnsiString changeIP = "192.168.11.29";
 			changeAddr = inet_addr(changeIP.c_str());
+			their_addr->sin_port = 6112;
 		}
 		their_addr->sin_addr.s_addr = changeAddr;
+
+//		String  fromIP = FormatStr("%d.%d.%d.%d", (BYTE)lpFrom->sa_data[2],
+//											(BYTE)lpFrom->sa_data[3],
+//											(BYTE)lpFrom->sa_data[4],
+//											(BYTE)lpFrom->sa_data[5]);
+//		LogMsg(FormatStr("Recv %s:%d", fromIP, their_addr->sin_port));
+//		LogMsg(FormatStr("%s", BinToStr((char FAR * )lpBuffers[0].buf, *lpNumberOfBytesRecvd)));
 	}
-	LogMsg(FormatStr("---------------->%d", their_addr->sin_addr.s_addr));
+	// LogMsg(FormatStr("---------------->%d", their_addr->sin_addr.s_addr));
 //	if(nReturn == 0)
 //	{
 //		LogMsg(FormatStr("recvfrom| |0|%s", BinToStr((char FAR * )lpBuffers[0].buf, *lpNumberOfBytesRecvd)), MSG_ADD_PACKAGE);

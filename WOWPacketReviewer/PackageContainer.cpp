@@ -404,9 +404,9 @@ bool                        PackageContainerManager::ProcessOneClientMessage(WOW
 		return true;
 	}
 	curWOWProxyWorld = GetWOWProxyManager()->GetActiveWorld(curWOWPackage->GetPacketProxyIndex());
-    if(!curWOWProxyWorld)
-    {
-        GetLog()->Warn("No world:%d", curWOWPackage->GetPacketProxyIndex());
+	if(!curWOWProxyWorld)
+	{
+		GetLog()->Warn("No world:%d", curWOWPackage->GetPacketProxyIndex());
 		return false;
     }
 

@@ -134,6 +134,7 @@ War3RoomHandler::War3RoomHandler(GameWorld * gameworld)
 	REG_HANDLER(W3GS_CHAT_FROM_HOST)
 	REG_HANDLER(W3GS_INCOMING_ACTION)
 	REG_HANDLER(W3GS_OUTGOING_ACTION)
+	REG_HANDLER(W3GS_PLAYERLEFT)
 }
 
 War3RoomHandler::~War3RoomHandler()
@@ -231,7 +232,8 @@ void    War3RoomHandler::Handler_W3GS_SLOTINFOJOIN(WOWPackage * packet)
 	READ_BYTE(GameType)
 	READ_BYTE(NumberOfPlayerSlotsWithoutObservers)
 	READ_BYTE(PlayerNumber)
-	READ_DWORD(Port)
+	READ_WORD(Unk02)
+	READ_WORD(Port)
 	READ_DWORD(ExternalIP)
 	char * addr = inet_ntoa (* (struct in_addr *) & ExternalIP);
 	packet->AddComment(addr, "ExternalIP");
@@ -296,6 +298,9 @@ void    War3RoomHandler::Handler_W3GS_SLOTINFO(WOWPackage * packet)
 		READ_BYTE(Handicap)
 	}
 	packet->AddComment("---------------------------", "spliter");
+	READ_DWORD(RandomSeed)
+	READ_BYTE(GameType)
+	READ_BYTE(NumberOfPlayerSlotsWithoutObservers)
 	READ_FINISH
 }
 
@@ -344,5 +349,14 @@ void    War3RoomHandler::Handler_W3GS_OUTGOING_ACTION(WOWPackage * packet)
 	READ_DWORD(CRC32)
 	READ_BUFF(Action, packet->GetContentLen() - pos)
 	packet->AddComment(GetActiveName(Action.c_str()[0]), "Action");
+	READ_FINISH
+}
+
+void    War3RoomHandler::Handler_W3GS_PLAYERLEFT(WOWPackage * packet)
+{
+	int pos = 0;
+	READ_BYTE(player_number)
+	READ_DWORD(reason)
+	packet->AddComment(GetWar3LeaveReason(reason), "reason");
 	READ_FINISH
 }

@@ -32,6 +32,7 @@ public:
 	void    Handler_W3GS_CHAT_FROM_HOST(WOWPackage * packet);
 	void    Handler_W3GS_INCOMING_ACTION(WOWPackage * packet);
 	void    Handler_W3GS_OUTGOING_ACTION(WOWPackage * packet);
+	void    Handler_W3GS_PLAYERLEFT(WOWPackage * packet);
 };
 
 

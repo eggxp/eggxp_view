@@ -13,6 +13,7 @@
 #include "Opcodes.h"
 #include "SharedDefine.h"
 #include "SharedMemInfo.h"
+#include "WOWProxy.h"
 
 using namespace std;
 
@@ -46,7 +47,8 @@ void            GetPackageFromDataPack(WOWPackage  *   pack, String packHead, St
     pack->SetIndex(GetLogicPackIndex());
     pack->SetMark(mark);
     pack->SetOpCodeMsg(packHead);
-    pack->SetOpCode(head);
+	pack->SetOpCode(head);
+	//GetWOWProxyManager()->GetActiveWorld(curWOWPackage->GetPacketProxyIndex())
 }
 
 
