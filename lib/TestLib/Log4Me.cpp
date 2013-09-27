@@ -256,9 +256,9 @@ void Log4Me::Fatal(String log, ...)
         return;
 
     DO_LOG(FatalLog);
-    #ifdef      USE_EUREKA_DUMP
-    OUTPUT_STACK
-    #endif
+//    #ifdef      USE_EUREKA_DUMP
+//    OUTPUT_STACK
+//    #endif
 }
 
 void Log4Me::SetLogLev(TLogLvState  lvState)
