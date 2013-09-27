@@ -26,6 +26,7 @@
 #include 	"PlayerAuthHandler.h"
 #include 	"EventHandler.h"
 #include 	"AttackHandler.h"
+#include 	"War3RoomHandler.h"
 #include 	"AQueue.h"
 
 
@@ -125,6 +126,7 @@ private:
 	ChatHandler		m_ChatHandler;
 	MoveHandler     m_MoveHandler;
 	PlayerAuthHandler		m_PlayerAuthHandler;
+	War3RoomHandler	m_War3RoomHandler;
 	EventHandler   	m_EventHandler;
 	DWORD			m_EndCounter;
 
@@ -260,6 +262,6 @@ public:
 GameWorld       *       GetGameWorld();
 
 
-#define     REG_HANDLER(TYPE)   m_GameWorld->RegisterHandler(TYPE, Handler_##TYPE);
+#define     REG_HANDLER(TYPE)   m_GameWorld->RegisterHandler(LookupOpcodeID(#TYPE), Handler_##TYPE);
 #define     REG_AUTH_HANDLER(TYPE)   m_GameWorld->RegisterAuthHandler(TYPE, Handler_##TYPE);
 #endif

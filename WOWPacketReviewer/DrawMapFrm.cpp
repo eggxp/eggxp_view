@@ -256,22 +256,20 @@ void __fastcall TFrmDrawMap::miCopyClick(TObject *Sender)
 
 void __fastcall TFrmDrawMap::miMoveClick(TObject *Sender)
 {
-//	int outputX, outputY;
-//	DrawPosToWOWPos(m_CursorPosX, m_CursorPosY, outputX, outputY);
-	float x = GetGameWorld()->GetDataFloat("self/posx");
-	float y = GetGameWorld()->GetDataFloat("self/posy");
-	float z = GetGameWorld()->GetDataFloat("self/posz");
-	float o = GetGameWorld()->GetDataFloat("self/poso");
-
-	GetGameWorld()->GetPackSender()->SendMovementBoth(MSG_MOVE_START_FORWARD,
-		GetGameWorld()->GetSelfGUID(), MOVEFLAG_FORWARD, 0, GetWowTick(),
-		x, y, z, o, 0);
-
-	float outputX, outputY;
-	WOWForward(x, y, o, 2, outputX, outputY);
-	GetGameWorld()->GetPackSender()->SendMovementBoth(MSG_MOVE_STOP,
-		GetGameWorld()->GetSelfGUID(), 0, 0, GetWowTick() + 200,
-		outputX, outputY, z+20, o, 0);
+//	float x = GetGameWorld()->GetDataFloat("self/posx");
+//	float y = GetGameWorld()->GetDataFloat("self/posy");
+//	float z = GetGameWorld()->GetDataFloat("self/posz");
+//	float o = GetGameWorld()->GetDataFloat("self/poso");
+//
+//	GetGameWorld()->GetPackSender()->SendMovementBoth(MSG_MOVE_START_FORWARD,
+//		GetGameWorld()->GetSelfGUID(), MOVEFLAG_FORWARD, 0, GetWowTick(),
+//		x, y, z, o, 0);
+//
+//	float outputX, outputY;
+//	WOWForward(x, y, o, 2, outputX, outputY);
+//	GetGameWorld()->GetPackSender()->SendMovementBoth(MSG_MOVE_STOP,
+//		GetGameWorld()->GetSelfGUID(), 0, 0, GetWowTick() + 200,
+//		outputX, outputY, z+20, o, 0);
 }
 //---------------------------------------------------------------------------
 

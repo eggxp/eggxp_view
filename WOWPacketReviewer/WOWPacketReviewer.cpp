@@ -169,6 +169,7 @@ void __fastcall TWOWReviewerMainFrm::FormDestroy(TObject *Sender)
 
 void __fastcall TWOWReviewerMainFrm::FormCreate(TObject *Sender)
 {
+	InitOpcode();
 	m_ConnectIPList = new TStringList;
 	if(!IsWin2k())
 	{
@@ -191,11 +192,11 @@ void __fastcall TWOWReviewerMainFrm::FormCreate(TObject *Sender)
 	SetUpdateFieldBuild(11723);
 	InitTableColumns();
 
-//	for(int i=0; i<NUM_MSG_TYPES; i++)
-//	{
-//		cbPackHead->Items->Add(opcodeTable[i].name);
-//		cbAddFilter->Items->Add(opcodeTable[i].name);
-//	}
+	for(int i=0; i<GetAllOpcodeNameList()->Count; i++)
+	{
+		cbPackHead->Items->Add(GetAllOpcodeNameList()->Strings[i]);
+		cbAddFilter->Items->Add(GetAllOpcodeNameList()->Strings[i]);
+	}
 
 	GetLog()->SetGUIWindow(this->Handle);
 
@@ -222,7 +223,24 @@ void __fastcall TWOWReviewerMainFrm::FormCreate(TObject *Sender)
 	int baseaddr = m_MemIniFile->ReadString("SET", "BaseAddr", "").ToIntDef(0);
 	int baseaddroffset = m_MemIniFile->ReadString("SET", "BaseAddrOffset", "").ToIntDef(0);
 	int isHookHTTP = m_MemIniFile->ReadString("SET", "IsHookHTTP", "").ToIntDef(0);
+	int WatchPort = m_MemIniFile->ReadString("SET", "WatchPort", "").ToIntDef(0);
+	int OnlyHookTCP = m_MemIniFile->ReadString("SET", "OnlyHookTCP", "").ToIntDef(0);
+	int GameType = m_MemIniFile->ReadString("SET", "GameType", "").ToIntDef(0);
+	int ForceUseOneConnection = m_MemIniFile->ReadString("SET", "ForceUseOneConnection", "").ToIntDef(0);
+	String ForceIP = m_MemIniFile->ReadString("SET", "ForceIP", "");
+	int ForcePort = m_MemIniFile->ReadString("SET", "ForcePort", "").ToIntDef(0);
+	int UDPToTCP = m_MemIniFile->ReadString("SET", "UDPToTCP", "").ToIntDef(0);
+	GetWOWProxyManager()->SetUDPToTCP(UDPToTCP);
+	GetWOWProxyManager()->SetForceDestIPAddr(ForceIP, ForcePort);
 	GetSharedMemInfo()->FindSelf()->IsHookHTTP = isHookHTTP;
+	GetSharedMemInfo()->FindSelf()->OnlyHookTCP = OnlyHookTCP;
+	GetSharedMemInfo()->FindSelf()->WatchPort = WatchPort;
+	GetSharedMemInfo()->FindSelf()->GameType = GameType;
+	GetSharedMemInfo()->FindSelf()->ForceUseOneConnection = ForceUseOneConnection;
+	if (ForceUseOneConnection)
+	{
+		GetPackageContainerManager()->SetForceOneContainer(1);
+	}
 	if(baseaddr)
 	{
 		GetSharedMemInfo()->FindSelf()->BaseAddr = baseaddr;
@@ -831,9 +849,9 @@ void __fastcall TWOWReviewerMainFrm::lvPackFilterData(TObject *Sender,
 
 void __fastcall TWOWReviewerMainFrm::cbFilterClick(TObject *Sender)
 {
-    PackageContainer * curPackageContainer = GetWatchProxy();
-    if(!curPackageContainer)
-        return;
+	PackageContainer * curPackageContainer = GetWatchProxy();
+	if(!curPackageContainer)
+		return;
 
     curPackageContainer->SetEnableFilter(cbFilter->Checked);
 	curPackageContainer->SetReverseFilter(cbReverseFilter->Checked);
@@ -849,24 +867,18 @@ void __fastcall TWOWReviewerMainFrm::btAddFilterClick(TObject *Sender)
     if(!curPackageContainer)
         return;
 
-	int head = StrToInt("$"+cbAddFilter->Text);
+	int head = 0;
+	try
+	{
+		head = StrToInt("$"+cbAddFilter->Text);
+	}
+	catch (Exception &e)
+	{
+		head = LookupOpcodeID(cbAddFilter->Text);
+	}
 
 	uint64 guid = StrToUint64Def(edtFilterGuid->Text, 0);
 
-//	if(head == 0)
-//	{
-//		for(int i=0; i<NUM_MSG_TYPES; i++)
-//		{
-//			String name = cbAddFilter->Text.Trim().UpperCase();
-//			if(String(opcodeTable[i].name).Pos(name) != 0)
-//			{
-//				head = i;
-//				curPackageContainer->AddFilterOpcode(head, guid);
-//			}
-//		}
-//		this->Refresh(1);
-//		return;
-//	}
 
 	curPackageContainer->AddFilterOpcode(head, guid);
     this->Refresh(1);
@@ -1055,13 +1067,13 @@ void __fastcall TWOWReviewerMainFrm::lvMemViewData(TObject *Sender,
     WOWHookViewInfo * curItem = GetSharedMemInfo()->GetAt(Item->Index);
     Item->Caption = curItem->HostProcessID;
     Item->SubItems->Add(curItem->DestProcessID);
-    Item->SubItems->Add(curItem->HostPortNumber);
-	Item->SubItems->Add(curItem->Build);
+	Item->SubItems->Add(curItem->HostPortNumber);
+	Item->SubItems->Add(curItem->WatchPort);
 	Item->SubItems->Add(FormatStr("0x%x", curItem->BaseAddr));
 	Item->SubItems->Add(FormatStr("0x%x", curItem->BaseAddrOffset));
 	Item->SubItems->Add(curItem->MainWindowClassName);
     Item->SubItems->Add(curItem->ForbiddenAnyMortConnection);
-    Item->SubItems->Add(curItem->ClientConnectIndex);
+	Item->SubItems->Add(curItem->ClientConnectIndex);
 }
 
 void __fastcall TWOWReviewerMainFrm::btStartAIClick(TObject *Sender)
@@ -1595,6 +1607,22 @@ void __fastcall TWOWReviewerMainFrm::btSaveSpellDataClick(TObject *Sender)
 		}
 		SaveCell(fileDir, cell);
 		return;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TWOWReviewerMainFrm::cbFilterPacketSizeClick(TObject *Sender)
+{
+	PackageContainer * curPackageContainer = GetWatchProxy();
+	if(!curPackageContainer)
+		return;
+	if (cbFilterPacketSize->Checked)
+	{
+		curPackageContainer->SetFilterPacketSize(edtFilterPacketSize->Value);
+	}
+	else
+	{
+		curPackageContainer->SetFilterPacketSize(0);
 	}
 }
 //---------------------------------------------------------------------------

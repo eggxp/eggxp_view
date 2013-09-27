@@ -66,7 +66,8 @@ private:
 	void    Handler_CMSG_MOVE_WATER_WALK_ACK(WOWPackage * packet);
 	void    Handler_SMSG_MOVE_WATER_WALK(WOWPackage * packet);
 	void    Handler_SMSG_MOVE_LAND_WALK(WOWPackage * packet);
-    void    Handler_CMSG_LOGOUT_REQUEST(WOWPackage * packet);
+	void    Handler_CMSG_LOGOUT_REQUEST(WOWPackage * packet);
+	void    Handler_W3GS_GAMEINFO(WOWPackage * packet);
 
 	map<String, tagWhoPlayerInfo>	m_WhoInfo;
 public:

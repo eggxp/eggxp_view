@@ -57,6 +57,7 @@ PackageContainer::PackageContainer(PackageDispatcher   * sendDispatcher, Package
 	m_ReverseFilter = false;
 	m_CreatureFilter = false;
 	m_ForbiddenSend = false;
+	m_FilterPacketSize = 0;
 }
 
 PackageContainer::~PackageContainer()
@@ -144,6 +145,14 @@ bool					PackageContainer::NeedHidePackage(WOWPackage *	packet)
 	{
 		return true;
 	}
+	if (m_FilterPacketSize != 0)
+	{
+		if (packet->GetContentLen() <= m_FilterPacketSize)
+		{
+			return true;
+		}
+
+	}
 	return HideFilterOpcode(packet->GetOpCode(), packet->GetGuid());
 }
 
@@ -194,8 +203,11 @@ void                    PackageContainer::RefreshFilter()
 void                    PackageContainer::OnGetSendWOWPack(WOWPackage *	packet)
 {
     WOWPackage *	curPack = new WOWPackage;
-    curPack->Assign(packet);
-    curPack->SetPacketProxyIndex(this->GetPackageContainerIndex());
+	curPack->Assign(packet);
+	if (!GetPackageContainerManager()->GetForceOneContainer())
+	{
+		curPack->SetPacketProxyIndex(this->GetPackageContainerIndex());
+	}
 	curPack->SetIndex(gLogicPackIndex);
 	gLogicPackIndex++;
 
@@ -206,15 +218,13 @@ void                    PackageContainer::OnGetRecvWOWPack(WOWPackage *	packet)
 {
 	WOWPackage *	curPack = new WOWPackage;
 	curPack->Assign(packet);
-    curPack->SetPacketProxyIndex(this->GetPackageContainerIndex());
+	if (!GetPackageContainerManager()->GetForceOneContainer())
+	{
+		curPack->SetPacketProxyIndex(this->GetPackageContainerIndex());
+	}
 	curPack->SetIndex(gLogicPackIndex);
 	gLogicPackIndex++;
 	GetPackageContainerManager()->AddAllWOWPackage(curPack);
-
-	if(curPack->GetPacketProxyType() == PROXY_TYPE_REALM)
-	{
-		int a=0;
-	}
 }
 
 void                    PackageContainer::ClearPackageContainer()
@@ -264,10 +274,8 @@ PackageContainerManager::~PackageContainerManager()
 
 void                        PackageContainerManager::AddWorldPackageContainer()
 {
-//	LOLPackageDispatcher *send = new LOLPackageDispatcher;
-//    LOLPackageDispatcher *recv = new LOLPackageDispatcher;
-	DefaultPackageDispatcher *send = new DefaultPackageDispatcher;
-	DefaultPackageDispatcher *recv = new DefaultPackageDispatcher;
+	USE_PACKAGE_DISPATCHER *send = new USE_PACKAGE_DISPATCHER;
+	USE_PACKAGE_DISPATCHER *recv = new USE_PACKAGE_DISPATCHER;
     PackageContainer *c = new PackageContainer(send, recv, m_WorldPackageContainer.Count());
     c->SetName(FormatStr("World%d", m_WorldPackageContainer.Count()));
     m_WorldPackageContainer.Add(c);
@@ -396,9 +404,9 @@ bool                        PackageContainerManager::ProcessOneClientMessage(WOW
 		return true;
 	}
 	curWOWProxyWorld = GetWOWProxyManager()->GetActiveWorld(curWOWPackage->GetPacketProxyIndex());
-    if(!curWOWProxyWorld)
-    {
-        GetLog()->Warn("No world:%d", curWOWPackage->GetPacketProxyIndex());
+	if(!curWOWProxyWorld)
+	{
+		GetLog()->Warn("No world:%d", curWOWPackage->GetPacketProxyIndex());
 		return false;
     }
 
@@ -511,6 +519,7 @@ void						PackageContainerManager::AddAllWOWPackage(WOWPackage *packet)
 
 	m_AllPackage.Add(packet);
 
+	GetGameWorld()->HandlerPacket(packet);
 	// 不再处理封包了
 //	if(packet->GetPacketProxyType() == PROXY_TYPE_REALM)
 //	{
@@ -534,6 +543,10 @@ void						PackageContainerManager::ClearAllPackage()
 
 PackageContainer    *       PackageContainerManager::GetWorldPackageContainer(int index)
 {
+	if (m_ForceOneContainer)
+	{
+		return m_WorldPackageContainer[0];
+	}
     while(index >= m_WorldPackageContainer.Count())
     {
         AddWorldPackageContainer();
@@ -548,6 +561,10 @@ int                         PackageContainerManager::GetWorldPackageContainerCou
 
 PackageContainer    *       PackageContainerManager::GetDefaultWorldPackageContainer()
 {
+	if (m_ForceOneContainer)
+	{
+		return m_WorldPackageContainer[0];
+	}
     return m_WorldPackageContainer[m_WorldPackageContainer.Count() - 1];
 }
 

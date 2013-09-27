@@ -145,10 +145,15 @@ String  GetSpellNameBySpellID(int spellid)
 }
 
 
-static  GameWorld       gGameWorld;
+static  GameWorld       *gGameWorld = NULL;
 GameWorld       *       GetGameWorld()
 {
-    return      &gGameWorld;
+	if (gGameWorld)
+	{
+		return gGameWorld;
+	}
+	gGameWorld = new GameWorld;
+    return      gGameWorld;
 }
 
 void			ExtractDllFromExe()
@@ -192,6 +197,7 @@ GameWorld::GameWorld() :    m_FishHandler(this),
                             m_GameNPCHandler(this),
 							m_MoveHandler(this),
 							m_PlayerAuthHandler(this),
+							m_War3RoomHandler(this),
 							m_EventHandler(this),
 							m_AttackHandler(this),
 							m_ChatHandler(this)
@@ -375,6 +381,7 @@ String      GameWorld::GetCreatureNameByID(int id)
 
 void        GameWorld::LoadGameData(String path)
 {
+	return;
 	LoadFishData();
 	LoadItemNameData();
 	LoadGameObjectData();

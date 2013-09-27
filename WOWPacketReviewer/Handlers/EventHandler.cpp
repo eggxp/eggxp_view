@@ -14,9 +14,9 @@
 EventHandler::EventHandler(GameWorld * gameWorld)
 {
     m_GameWorld = gameWorld;
-	REG_HANDLER(SMSG_GOSSIP_MESSAGE)
-	REG_HANDLER(SMSG_NPC_TEXT_UPDATE)
-	REG_HANDLER(SMSG_GOSSIP_POI)
+//	REG_HANDLER(SMSG_GOSSIP_MESSAGE)
+//	REG_HANDLER(SMSG_NPC_TEXT_UPDATE)
+//	REG_HANDLER(SMSG_GOSSIP_POI)
 }
 
 EventHandler::~EventHandler()

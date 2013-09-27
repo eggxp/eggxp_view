@@ -81,8 +81,8 @@ public:
 	~WOWProxy();
    	TOnUserAuthPacket	fpOnUserAuthPacket;
 	bool            Start(SOCKET client, SOCKADDR_IN clientAddr, String ip, int port);
-	bool            StartUDP(SOCKET client, String ip, int port);
-	bool            StartUDPENet(String ip, int port, int listen_port);
+	bool            StartUDP(SOCKET client, String ip, int port, int sendUseTCP);
+	bool            StartUDPENet(String ip, int port, int listen_port, int sendUseTCP);
     void            Close();
 
 	ASharedPtrQueue<WOWPackage>   * GetClientToServerQueue(){return  &m_ClientToServerQueue;}
@@ -97,7 +97,7 @@ public:
 	int             GetProxyType(){return      (int)m_ProxyType;}
 
 	void			ServerAuthOKBeginProxy();
-	void			ServerAuthOKBeginProxyUDP();
+	void			ServerAuthOKBeginProxyUDP(int sendUseTcp);
 
     int             GetDesPort(){return m_DesPort;}
     String          GetDesIP(){return m_DesIP;}
@@ -131,12 +131,20 @@ private:
 	DWORD			m_TotalSendBytes;
 	DWORD			m_TotalRecvBytes;
 
+	String	m_ForceIP;
+	int		m_ForcePort;
+
+	int				m_UDPToTCP;
+
 	//简单代理直接模式， 转发任何封包, 不解密
 	bool			m_DirectModel;
 
 	int             ListenThread(SingleThread * self);
 	bool 			StartListenPort(int listenPort, int listenThreadCount = 100);
 	bool 			StartListenPortUDP(int listenPort);
+
+	void			SetDestIPPort(String destIP, int destPort);
+	void			SetUDPDestIPPort(String destIP, int destPort);
 public:
 	WOWProxyManager();
 	~WOWProxyManager();
@@ -147,6 +155,8 @@ public:
 	void            Close();
 	void			ResetConnections();
 	TOnUserAuthPacket	fpOnUserAuthPacket;
+
+	GEN_GET_SET(int, UDPToTCP)
 
 	WOWProxy    *   GetWOWProxy(int index);
 	int             GetWOWProxyCount();
@@ -168,20 +178,22 @@ public:
 	DWORD			GetTotalRecvBytes() {return m_TotalRecvBytes;}
 	void			AddTotalSendBytes(DWORD bytes);
 	void			AddTotalRecvBytes(DWORD bytes);
+
+	void					SetForceDestIPAddr(String ip, int port);
 };
 
 class WOWProxyPool
 {
 private:
-    AList<WOWProxyManager>      m_WOWProxyManagers;
+	AList<WOWProxyManager>      m_WOWProxyManagers;
+
 public:
     WOWProxyPool();
     ~WOWProxyPool();
 
     void                    AddProxy();
     WOWProxyManager *       GetProxy(int index);
-    int                     GetProxyCount();
-
+	int                     GetProxyCount();
 };
 
 WOWProxyManager  *       GetWOWProxyManager();

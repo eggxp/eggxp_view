@@ -27,6 +27,7 @@ using namespace std;
 #define     WATCH_PORT      0
 
 static      map<SOCKET, int> gNonBlockingSocket;
+static      map<int, int>    gPortNonBlocking;
 static      int                 gConnectPort = 0;
 //static      map<String, String> gRedirectIPList;
 static      map<String, SOCKET> gUDPConnectList;
@@ -54,7 +55,7 @@ struct tagConnectInfo
         Port = port;
         IP = ip;
     }
-    bool Equal(String ip, int port)
+	bool Equal(String ip, int port)
     {
         return IP == ip && Port == port;
     }
@@ -216,10 +217,10 @@ RecvHook(
     HookOffOne(&gRecvHookData); //先关闭HOOK，因为已经进入我们的函数了
     int nReturn = recv(s, buf, len, flags);  //先运行原来的RECV，否则我们不能得到或不能得到全部被复制的内容
 
-    if(s == gLogSocket && nReturn > 0)
-    {
-        LogMsg(FormatStr("Recv: %s", BinToStr(buf, nReturn)));
-    }
+//	if(nReturn > 0)
+//	{
+//        LogMsg(FormatStr("TCP Recv: %s", BinToStr(buf, nReturn)));
+//    }
     HookOnOne(&gRecvHookData); //继续HOOK
     //sndmsg((DWORD)len,(DWORD)nReturn);
     return(nReturn);
@@ -235,6 +236,7 @@ WINSOCK_API_LINKAGE
             IN int namelen
             )
 {
+	LogMsg("ConnectHook");
 	ASSERT(gWOWHookViewInfo)
     int nReturn = 0;
 	WORD hport = (BYTE)name->sa_data[0];
@@ -248,15 +250,33 @@ WINSOCK_API_LINKAGE
 										(BYTE)name->sa_data[5]);
 
 	int nonBlocking = 0;
-    if(gNonBlockingSocket.find(s) != gNonBlockingSocket.end())
+    if(gNonBlockingSocket.find(s) != gNonBlockingSocket.end() && gNonBlockingSocket[s] == 1)
     {
         nonBlocking = 1;
     }
-    LogMsg(FormatStr("Connect, IP=%s, Port=%d, nonBlocking = %d", ip, port, nonBlocking));
-    HookOffOne(&gConnectHookData);
 
+	HookOffOne(&gConnectHookData);
+
+	if (gWOWHookViewInfo->WatchPort != 0 && port != gWOWHookViewInfo->WatchPort) {
+		// LogMsg("no redirect");
+		{
+			// 修正:
+			// 当被注入程序bug, 做一个需要很久connect的时间的事情的时候, 由于
+			// 已经HookOffOne, 取消hook了, 所以后续的连接都无法生效
+			u_long non_blocking = 1;
+			ioctlsocket(s, FIONBIO, &non_blocking);
+			LogMsg(FormatStr("Change Port %d Non Blocking", port));
+		}
+		LogMsg(FormatStr("Try Connect s = %d. ip = %s, port = %d, nonBlocking = %d", s, ip, port, nonBlocking));
+		nReturn = connect(s, name, namelen);
+		LogMsg(FormatStr("END Connect. port = %d, nReturn = %d, LastError = %d", port, nReturn, WSAGetLastError()));
+		HookOnOne(&gConnectHookData);
+		return nReturn;
+	}
+
+	LogMsg(FormatStr("Connect, IP=%s, Port=%d, nonBlocking = %d", ip, port, nonBlocking));
 //    int needRedirect = 0;
-	if((!(gWOWHookViewInfo->IsHookHTTP) && port == 80) || ip == "127.0.0.1")
+	if((!(gWOWHookViewInfo->IsHookHTTP) && port == 80) || (ip == "127.0.0.1" && gWOWHookViewInfo->GameType == 0))
     {
         LogMsg("no redirect");
 		nReturn = connect(s, name, namelen);
@@ -269,14 +289,14 @@ WINSOCK_API_LINKAGE
 	if(port == WATCH_PORT)
 		gLogSocket = s;
 
-	static int index = 0;
+	static int index = 1;
 
 	gWOWHookViewInfo->ClientConnectIndex = index;
 	LogMsg(FormatStr("tcp|%s|%d|%d", ip, port, gWOWHookViewInfo->ClientConnectIndex), MSG_CONNECT);
     sockaddr_in * their_addr = (sockaddr_in *)name;
 	their_addr->sin_port = htons(gConnectPort);
 	AnsiString ansiIP = HOST_IP;
-    their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
+	their_addr->sin_addr.s_addr=inet_addr(ansiIP.c_str());
 
 
 	nReturn = connect(s, name, namelen);
@@ -284,7 +304,7 @@ WINSOCK_API_LINKAGE
 	//注意: 不要摄入封包流逻辑, 不要在这里主动发包..
 	HookOnOne(&gConnectHookData);
 
-    index++;
+	index++;
 	return nReturn;
 }
 
@@ -321,13 +341,21 @@ IoctlsocketHook(
 {
     HookOffOne(&gIoctlsocketHookData);
 
-    if((DWORD)cmd == FIONBIO)
-    {
-        LogMsg(FormatStr("socket(%d) non-blocking : %d", s, *argp));
-        gNonBlockingSocket[s] = 1;
-    }
+	if((DWORD)cmd == FIONBIO)
+	{
+		// LogMsg(FormatStr("socket(%d) non-blocking : %d", s, *argp));
+		if (*argp)
+		{
+			gNonBlockingSocket[s] = 1;
+		}
+		else
+		{
+			gNonBlockingSocket[s] = 0;
+		}
+	}
 
 	int nReturn = ioctlsocket(s, cmd, argp);
+
     HookOnOne(&gIoctlsocketHookData);
     return(nReturn);
 }
@@ -400,6 +428,7 @@ WSAConnectHook(
     __in_opt LPQOS lpGQOS
     )
 {
+	LogMsg("WSAConnectHook");
 	ASSERT(gWOWHookViewInfo)
     int nReturn = 0;
 	WORD hport = (BYTE)name->sa_data[0];
@@ -419,7 +448,14 @@ WSAConnectHook(
     }
     LogMsg(FormatStr("Connect, IP=%s, Port=%d, nonBlocking = %d", ip, port, nonBlocking));
 	HookOffOne(&gWSAConnectHookData);
+	if (gWOWHookViewInfo->WatchPort != 0 && port != gWOWHookViewInfo->WatchPort) {
+		// LogMsg("no redirect");
+		nReturn = WSAConnect(s, name, namelen, lpCallerData, lpCalleeData, lpSQOS, lpGQOS);
+		HookOnOne(&gWSAConnectHookData);
 
+		LogMsg(FormatStr("no use. port = %d, nReturn = %d, LastError = %d", port, nReturn, WSAGetLastError()));
+        return nReturn;
+	}
 //    int needRedirect = 0;
 	if(port == 80 || ip == "127.0.0.1")
     {
@@ -474,7 +510,7 @@ WSASendHook(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //  UDP Hook
-void CheckConnectUDPToTCP(const struct sockaddr FAR * dest)
+bool CheckConnectUDPToTCP(const struct sockaddr FAR * dest, String info)
 {
 	AnsiString ansiIP = HOST_IP;
 	WORD hport = (BYTE)dest->sa_data[0];
@@ -487,15 +523,23 @@ void CheckConnectUDPToTCP(const struct sockaddr FAR * dest)
 										(BYTE)dest->sa_data[5]);
 	if(sendtoIP == "1.0.0.0")
 	{
-		return;
+		return false;
+	}
+	if(gWOWHookViewInfo->GameType == 1 && sendtoIP == "255.255.255.255")
+	{
+		LogMsg("Not Use Broadcast");
+		return false;
 	}
 	String  sendtoKey=FormatStr("%s:%d", sendtoIP, sendtoPort);
 	if (gUDPConnectList.find(sendtoKey) != gUDPConnectList.end())
-		return;
+	{
+		return true;
+	}
+	LogMsg(info);
 	LogMsg(FormatStr("udp|%s|%d|%d", sendtoIP, sendtoPort, gWOWHookViewInfo->ClientConnectIndex), MSG_CONNECT);
 	
 	gUDPConnectList[sendtoKey] = 0;
-	return;
+	return true;
 }
 
 WINSOCK_API_LINKAGE
@@ -526,7 +570,12 @@ SendToHook(
 //	}
 	HookOffOne(&gSendToHookData);
 //	int nReturn = sendto(s, buf, len, flags, to, tolen);
-	CheckConnectUDPToTCP(to);
+	if (!CheckConnectUDPToTCP(to, "SendToHook"))
+	{
+		int nReturn = sendto(s, buf, len, flags, to, tolen);
+		HookOnOne(&gSendToHookData);
+		return(nReturn);
+	}
 	AnsiString ansiIP = HOST_IP;
 	sockaddr_in * their_addr = (sockaddr_in *)to;
 	sendto_sin_port = their_addr->sin_port;
@@ -536,10 +585,7 @@ SendToHook(
 	int nReturn = sendto(s, buf, len, flags, to, tolen);
 	HookOnOne(&gSendToHookData);
 
-//	if(nReturn >= 0)
-//	{
-//		LogMsg(FormatStr("sendto| |0|%s", BinToStr((char FAR * )buf, len)), MSG_ADD_PACKAGE);
-//	}
+//	LogMsg(FormatStr("%s", BinToStr((char FAR * )buf, len)));
 	return(nReturn);
 
 
@@ -625,7 +671,13 @@ WSASendToHook(
 //		return nReturn;
 //	}
 
-	CheckConnectUDPToTCP(lpTo);
+	if (!CheckConnectUDPToTCP(lpTo, "WSASendToHook"))
+	{
+		int nReturn = WSASendTo(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent,
+							dwFlags, lpTo, iTolen, lpOverlapped, lpCompletionRoutine);
+		HookOnOne(&gWSASendToHookData);
+		return nReturn;
+	}
 	AnsiString ansiIP = HOST_IP;
 	sockaddr_in * their_addr = (sockaddr_in *)lpTo;
 	wsasendto_sin_port = their_addr->sin_port;
@@ -690,8 +742,30 @@ WSARecvFromHook(
 	if(their_addr->sin_port == htons(gConnectPort + UDP_PORT_START) && their_addr->sin_addr.s_addr == 0x0100007F)
 	{
 		their_addr->sin_port = wsasendto_sin_port;
-		their_addr->sin_addr.s_addr = wsasendto_sin_addr;
 	}
+
+
+	if (gWOWHookViewInfo->GameType == 2)
+	{
+		DWORD changeAddr = their_addr->sin_port;
+		if (0 == wsasendto_sin_addr)
+		{
+			// War3转变, 如果地址是广播的话, 就随便给一个ip让它连过去
+			LogMsg("Broadcast Pack, change address");
+			AnsiString changeIP = "192.168.11.29";
+			changeAddr = inet_addr(changeIP.c_str());
+			their_addr->sin_port = 6112;
+		}
+		their_addr->sin_addr.s_addr = changeAddr;
+
+//		String  fromIP = FormatStr("%d.%d.%d.%d", (BYTE)lpFrom->sa_data[2],
+//											(BYTE)lpFrom->sa_data[3],
+//											(BYTE)lpFrom->sa_data[4],
+//											(BYTE)lpFrom->sa_data[5]);
+//		LogMsg(FormatStr("Recv %s:%d", fromIP, their_addr->sin_port));
+//		LogMsg(FormatStr("%s", BinToStr((char FAR * )lpBuffers[0].buf, *lpNumberOfBytesRecvd)));
+	}
+	// LogMsg(FormatStr("---------------->%d", their_addr->sin_addr.s_addr));
 //	if(nReturn == 0)
 //	{
 //		LogMsg(FormatStr("recvfrom| |0|%s", BinToStr((char FAR * )lpBuffers[0].buf, *lpNumberOfBytesRecvd)), MSG_ADD_PACKAGE);
@@ -767,28 +841,30 @@ void        ProcessHook()
 	}
 
 	// UDP
-	{
-		DWORD sendToAddr = (DWORD)GetProcAddress(libHandle, "sendto");
-		LogMsg(FormatStr("Hook SendTo, Addr = 0x%x", sendToAddr));
-		HOOKAPI(sendToAddr,&gSendToHookData,(DWORD)SendToHook);
-	}
+	if (!gWOWHookViewInfo->OnlyHookTCP) {
+		{
+			DWORD sendToAddr = (DWORD)GetProcAddress(libHandle, "sendto");
+			LogMsg(FormatStr("Hook SendTo, Addr = 0x%x", sendToAddr));
+			HOOKAPI(sendToAddr,&gSendToHookData,(DWORD)SendToHook);
+		}
 
-	{
-		DWORD recvFromAddr = (DWORD)GetProcAddress(libHandle, "recvfrom");
-		LogMsg(FormatStr("Hook RecvFrom, Addr = 0x%x", recvFromAddr));
-		HOOKAPI(recvFromAddr,&gRecvFromHookData,(DWORD)RecvFromHook);
-	}
+		{
+			DWORD recvFromAddr = (DWORD)GetProcAddress(libHandle, "recvfrom");
+			LogMsg(FormatStr("Hook RecvFrom, Addr = 0x%x", recvFromAddr));
+			HOOKAPI(recvFromAddr,&gRecvFromHookData,(DWORD)RecvFromHook);
+		}
 
-	{
-		DWORD wsaSendToAddr = (DWORD)GetProcAddress(libHandle, "WSASendTo");
-		LogMsg(FormatStr("Hook WSASendTo, Addr = 0x%x", wsaSendToAddr));
-		HOOKAPI(wsaSendToAddr,&gWSASendToHookData,(DWORD)WSASendToHook);
-	}
+		{
+			DWORD wsaSendToAddr = (DWORD)GetProcAddress(libHandle, "WSASendTo");
+			LogMsg(FormatStr("Hook WSASendTo, Addr = 0x%x", wsaSendToAddr));
+			HOOKAPI(wsaSendToAddr,&gWSASendToHookData,(DWORD)WSASendToHook);
+		}
 
-	{
-		DWORD wsaRecvFromAddr = (DWORD)GetProcAddress(libHandle, "WSARecvFrom");
-		LogMsg(FormatStr("Hook WSARecvFrom, Addr = 0x%x", wsaRecvFromAddr));
-		HOOKAPI(wsaRecvFromAddr,&gWSARecvFromHookData,(DWORD)WSARecvFromHook);
+		{
+			DWORD wsaRecvFromAddr = (DWORD)GetProcAddress(libHandle, "WSARecvFrom");
+			LogMsg(FormatStr("Hook WSARecvFrom, Addr = 0x%x", wsaRecvFromAddr));
+			HOOKAPI(wsaRecvFromAddr,&gWSARecvFromHookData,(DWORD)WSARecvFromHook);
+		}
 	}
 
     LogMsg("HiJack OK!");

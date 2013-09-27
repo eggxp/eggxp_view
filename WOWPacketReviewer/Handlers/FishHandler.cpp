@@ -14,7 +14,7 @@
 FishHandler::FishHandler(GameWorld * gameWorld)
 {
     m_GameWorld = gameWorld;
-    REG_HANDLER(SMSG_FISH_NOT_HOOKED)
+//    REG_HANDLER(SMSG_FISH_NOT_HOOKED)
 }
 
 FishHandler::~FishHandler()

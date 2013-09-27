@@ -11,8 +11,12 @@
 #include "MSanguoPackageDispatcher.h"
 #include "DefaultPackageDispatcher.h"
 #include "DiabloIIIPackageDispatcher.h"
+#include "War3PackageDispatcher.h"
 #include "LOLPackageDispatcher.h"
 #include "AQueue.h"
+
+#define USE_PACKAGE_DISPATCHER War3PackageDispatcher
+//#define USE_PACKAGE_DISPATCHER DefaultPackageDispatcher
 
 int GetLogicPackIndex();
 void SetLogicPackIndex(int index);
@@ -47,6 +51,7 @@ private:
 	bool                    m_ReverseFilter;
 	bool					m_CreatureFilter;
 	bool					m_ForbiddenSend;
+	int						m_FilterPacketSize;
 
 	void                    AddPackToFilter(AList<WOWPackage> * source, AList<WOWPackage> * dest);
 
@@ -62,6 +67,7 @@ public:
 	String					GetSaveFilterName();
 	bool					HideFilterOpcode(int opcode, uint64 guid);
 	bool					NeedHidePackage(WOWPackage *	packet);
+	GEN_GET_SET(int, FilterPacketSize)
 
     void                    OnGetSendWOWPack(WOWPackage *	packet);
     void                    OnGetRecvWOWPack(WOWPackage *	packet);
@@ -95,13 +101,15 @@ class PackageContainerManager
 private:
 //	LOLPackageDispatcher       m_SendAuthPackageDispatcher;
 //	LOLPackageDispatcher       m_RecvAuthPackageDispatcher;
-	DefaultPackageDispatcher   m_SendAuthPackageDispatcher;
-	DefaultPackageDispatcher   m_RecvAuthPackageDispatcher;
+	USE_PACKAGE_DISPATCHER   m_SendAuthPackageDispatcher;
+	USE_PACKAGE_DISPATCHER   m_RecvAuthPackageDispatcher;
     PackageContainer            m_AuthPackageContainer;
 
 	AList<PackageDispatcher>      m_SendWorldPackageDispatcher;
 	AList<PackageDispatcher>      m_RecvWorldPackageDispatcher;
 	AList<PackageContainer>     m_WorldPackageContainer;
+
+	int							m_ForceOneContainer;
 
 	AList<WOWPackage>			m_AllPackage;
 public:
@@ -119,7 +127,8 @@ public:
 	void						AddAllWOWPackage(WOWPackage *package);
 	AList<WOWPackage>		   *GetAllPackage(){return &m_AllPackage;}
 	void						ClearAllPackage();
-    void                        FreeWorldPackageContainer();
+	void                        FreeWorldPackageContainer();
+	GEN_GET_SET(int, ForceOneContainer)
 };
 
 

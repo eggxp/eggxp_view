@@ -91,7 +91,7 @@ void            WOWPackage::Clear()
 	m_NotShowInGui = false;
     m_Data = "";
 	m_OrgData = "";
-	m_HeadSize = 8;
+	m_HeadSize = 4;
 	m_OrgPrefixData = "";
     m_OpCodeMsg = "";
     m_Index = 0;
@@ -208,6 +208,21 @@ uint64          WOWPackage::ReadPackGUID(int &pos)
     }
 
     return guid;
+}
+
+vector<unsigned char> WOWPackage::ReadZData(int &pos)
+{
+	char *lpData = this->GetContent() + pos;
+	int readLen = strlen(lpData);
+	pos += (readLen + 1);
+	vector<unsigned char> result;
+	if(readLen == 0)
+		return  result;
+	for (int i=0; i<readLen; ++i)
+	{
+		result.push_back(lpData[i]);
+	}
+	return result;
 }
 
 AnsiString          WOWPackage::ReadString(int &pos)

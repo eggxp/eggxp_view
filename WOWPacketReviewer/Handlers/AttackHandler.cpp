@@ -18,7 +18,7 @@
 AttackHandler::AttackHandler(GameWorld * gameworld)
 {
     m_GameWorld = gameworld;
-    REG_HANDLER(SMSG_ATTACKERSTATEUPDATE)
+//    REG_HANDLER(SMSG_ATTACKERSTATEUPDATE)
 }
 
 AttackHandler::~AttackHandler()

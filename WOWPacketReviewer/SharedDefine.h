@@ -5412,8 +5412,6 @@ enum ActionBarIndex
 #define MAX_UNIT_ACTION_BAR_INDEX (ACTION_BAR_INDEX_END-ACTION_BAR_INDEX_START)
 
 
-
-
 String              GetEUnitFieldsName(int input);
 String              GetEItemFieldsName(int input);
 String              GetEObjectFieldsName(int input);
@@ -5467,4 +5465,73 @@ String              GetWOWClassesName(int input);
 String              GetSpellFamilyNamesName(int input);
 String              GetCreatureFamilyName(int input);
 String              GetActiveStatesName(int input);
+
+
+
+//////////////////////////////////////////////////////////////////////////////////
+//WAR3∂®“Â
+#define MAPSPEED_SLOW     0x00000000
+#define MAPSPEED_NORMAL     0x00000001
+#define MAPSPEED_FAST     0x00000002
+
+#define MAPVIS_HIDETERRAIN    0x00000100
+#define MAPVIS_EXPLORED     0x00000200
+#define MAPVIS_ALWAYSVISIBLE  0x00000400
+#define MAPVIS_DEFAULT      0x00000800
+
+#define MAPOBS_ONDEFEAT     0x00002000
+#define MAPOBS_ALLOWED      0x00003000
+#define MAPOBS_REFEREES     0x40000000
+
+#define MAPFLAG_TEAMSTOGETHER 0x00004000
+#define MAPFLAG_FIXEDTEAMS    0x00060000
+#define MAPFLAG_UNITSHARE   0x01000000
+#define MAPFLAG_RANDOMHERO    0x02000000
+#define MAPFLAG_RANDOMRACES   0x04000000
+
+#define MAPOBS_NONE       1
+
+#define MAPOPT_HIDEMINIMAP        1 << 0
+#define MAPOPT_MODIFYALLYPRIORITIES   1 << 1
+#define MAPOPT_MELEE          1 << 2    // the bot cares about this one...
+#define MAPOPT_REVEALTERRAIN      1 << 4
+#define MAPOPT_FIXEDPLAYERSETTINGS    1 << 5    // and this one...
+#define MAPOPT_CUSTOMFORCES       1 << 6    // and this one, the rest don't affect the bot's logic
+#define MAPOPT_CUSTOMTECHTREE     1 << 7
+#define MAPOPT_CUSTOMABILITIES      1 << 8
+#define MAPOPT_CUSTOMUPGRADES     1 << 9
+#define MAPOPT_WATERWAVESONCLIFFSHORES  1 << 11
+#define MAPOPT_WATERWAVESONSLOPESHORES  1 << 12
+
+#define MAPFILTER_MAKER_USER      1
+#define MAPFILTER_MAKER_BLIZZARD    2
+
+#define MAPFILTER_TYPE_MELEE      1
+#define MAPFILTER_TYPE_SCENARIO     2
+
+#define MAPFILTER_SIZE_SMALL      1
+#define MAPFILTER_SIZE_MEDIUM     2
+#define MAPFILTER_SIZE_LARGE      4
+
+#define MAPFILTER_OBS_FULL        1
+#define MAPFILTER_OBS_ONDEATH     2
+#define MAPFILTER_OBS_NONE        4
+
+#define MAPGAMETYPE_UNKNOWN0      1     // always set except for saved games?
+
+#define 				   PLAYERLEAVE_DISCONNECT 0x01
+#define 				   PLAYERLEAVE_LOST 0x07
+#define 				   PLAYERLEAVE_LOSTBUILDINGS 0x08
+#define 				   PLAYERLEAVE_WON 0x09
+#define 				   PLAYERLEAVE_DRAW 0x0A
+#define 				   PLAYERLEAVE_OBSERVER 0x0B
+#define 				   PLAYERLEAVE_LOBBY 0x0D
+
+String              GetWar3MapFlags(int input_flag);
+String              GetWar3LeaveReason(int input);
+//////////////////////////////////////////////////////////////////////////////////
+
 #endif
+
+
+
