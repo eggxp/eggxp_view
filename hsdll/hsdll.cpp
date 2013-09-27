@@ -156,6 +156,8 @@ HOOKSTRUCT gRecvHookData; //ws2_32.dll HOOK结构
 HOOKSTRUCT gConnectHookData; //ws2_32.dll HOOK结构
 HOOKSTRUCT gSendHookData; //ws2_32.dll HOOK结构
 HOOKSTRUCT gIoctlsocketHookData;
+HOOKSTRUCT gclosesocketHookData;
+HOOKSTRUCT gsocketHookData;
 HOOKSTRUCT gSendToHookData;
 HOOKSTRUCT gRecvFromHookData;
 HOOKSTRUCT gWSASendToHookData;
@@ -210,7 +212,6 @@ RecvHook(
 	{
 		LogMsg(FormatStr("Call Recv"));
     }
-
 
     HookOffOne(&gRecvHookData); //先关闭HOOK，因为已经进入我们的函数了
     int nReturn = recv(s, buf, len, flags);  //先运行原来的RECV，否则我们不能得到或不能得到全部被复制的内容
@@ -329,6 +330,38 @@ IoctlsocketHook(
 	int nReturn = ioctlsocket(s, cmd, argp);
     HookOnOne(&gIoctlsocketHookData);
     return(nReturn);
+}
+
+
+WINSOCK_API_LINKAGE
+int
+WSAAPI
+closesocketHook(
+    __in SOCKET s
+	)
+{
+	HookOffOne(&gclosesocketHookData);
+	int nReturn = closesocket(s);
+	LogMsg(FormatStr("closesocket return(%d), s(%d)", nReturn, s));
+	HookOnOne(&gclosesocketHookData);
+	return nReturn;
+}
+
+WINSOCK_API_LINKAGE
+__checkReturn
+SOCKET
+WSAAPI
+socketHook(
+    __in int af,
+    __in int type,
+    __in int protocol
+	)
+{
+	HookOffOne(&gsocketHookData);
+	SOCKET nReturn = socket(af, type, protocol);
+	LogMsg(FormatStr("socket, return(%d), af(%d), type(%d), protocol(%d)", nReturn, af, type, protocol));
+	HookOnOne(&gsocketHookData);
+	return nReturn;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -719,6 +752,18 @@ void        ProcessHook()
 		DWORD ioctlAddr = (DWORD)GetProcAddress(libHandle, "ioctlsocket");
 		LogMsg(FormatStr("Hook Ioctl, Addr = 0x%x", ioctlAddr));
 		HOOKAPI(ioctlAddr,&gIoctlsocketHookData,(DWORD)IoctlsocketHook);
+	}
+
+	{
+		DWORD closesocketAddr = (DWORD)GetProcAddress(libHandle, "closesocket");
+		LogMsg(FormatStr("Hook closesocket, Addr = 0x%x", closesocketAddr));
+		HOOKAPI(closesocketAddr,&gclosesocketHookData,(DWORD)closesocketHook);
+	}
+
+	{
+		DWORD socketAddr = (DWORD)GetProcAddress(libHandle, "socket");
+		LogMsg(FormatStr("Hook socket, Addr = 0x%x", socketAddr));
+		HOOKAPI(socketAddr,&gsocketHookData,(DWORD)socketHook);
 	}
 
 	// UDP
