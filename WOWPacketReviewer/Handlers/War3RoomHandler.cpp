@@ -323,8 +323,17 @@ void    War3RoomHandler::Handler_W3GS_CHAT_FROM_HOST(WOWPackage * packet)
 	}
 	READ_BYTE(SendPlayerID)
 	READ_BYTE(Flags)
-//	READ_DWORD(ExtraFlags)
-	READ_STRING(Message)
+	if (Flags == 16) {
+		READ_STRING(Message)
+	} else if (Flags >= 17 && Flags <= 20) {
+		READ_BYTE(ExtraFlags)
+		READ_STRING(Message)
+	} else if (Flags == 32) {
+		READ_DWORD(ExtraFlags)
+		READ_STRING(Message)
+	}
+//
+
 	READ_FINISH
 }
 

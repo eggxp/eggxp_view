@@ -521,6 +521,11 @@ bool CheckConnectUDPToTCP(const struct sockaddr FAR * dest, String info)
 										(BYTE)dest->sa_data[3],
 										(BYTE)dest->sa_data[4],
 										(BYTE)dest->sa_data[5]);
+    // LogMsg(FormatStr("sendtoIP=%s:%d", sendtoIP, sendtoPort));
+	if (gWOWHookViewInfo->WatchPort != 0 && sendtoPort != gWOWHookViewInfo->WatchPort)
+	{
+		return false;
+	}
 	if(sendtoIP == "1.0.0.0")
 	{
 		return false;
